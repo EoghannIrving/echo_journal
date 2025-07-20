@@ -204,3 +204,60 @@ The following issues were identified while reviewing the current code base.
          date = data.get("date")
      ```
      【F:main.py†L48-L52】
+
+20. **README port mismatch**
+   - The README instructs users to visit `http://localhost:8000` but `docker-compose.yml` exposes port `8510`.
+   - README lines:
+     ```
+     Visit `http://localhost:8000` from any device on your LAN.
+     ```
+     【F:README.md†L53-L55】
+   - Compose lines:
+     ```yaml
+     ports:
+       - "8510:8000"
+     ```
+     【F:docker-compose.yml†L1-L7】
+
+21. **Prompt category ignored on index page**
+   - `generate_prompt` returns a category, but `index` sets the `category` template variable to an empty string.
+   - Lines:
+     ```python
+     prompt_data = await generate_prompt()
+     prompt = prompt_data["prompt"]
+     ...
+     "category": "",  # Optionally store saved category or leave blank for saved entries
+     ```
+     【F:main.py†L87-L95】
+
+22. **`generate_prompt` assumes `categories` key exists**
+   - If `prompts.json` lacks the `categories` key, `generate_prompt` raises a `KeyError` when accessing `prompts["categories"].keys()`.
+   - Lines:
+     ```python
+     categories = list(prompts["categories"].keys())
+     ```
+     【F:main.py†L176-L177】
+
+23. **`safe_entry_path` allows empty filenames**
+   - Passing an empty `entry_date` results in the path `/journals/.md` because the sanitized name becomes an empty string.
+   - Lines:
+     ```python
+     sanitized = Path(entry_date).name
+     sanitized = re.sub(r"[^0-9A-Za-z_-]", "_", sanitized)
+     path = (DATA_DIR / sanitized).with_suffix(".md")
+     ```
+     【F:main.py†L38-L42】
+
+24. **Save entry script lacks error handling**
+   - The JavaScript fetch request assumes a JSON response without checking `response.ok` or catching exceptions. Network failures lead to uncaught errors.
+   - Lines:
+     ```javascript
+     const response = await fetch("/entry", {
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify({ date, content, prompt })
+     });
+
+     const result = await response.json();
+     ```
+     【F:templates/echo_journal.html†L72-L85】
