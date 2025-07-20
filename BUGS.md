@@ -116,17 +116,16 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L161-L163】
 
-12. **`load_entry` returns HTTP 200 on missing file**
-   - When a requested entry does not exist, the function returns a JSON object with `status` set to `"not_found"` but still responds with status code 200.
-   - A 404 response would be more appropriate.
-   - Lines:
+12. **`load_entry` returns HTTP 200 on missing file** (fixed)
+   - The endpoint now returns a proper 404 JSON response when the entry does not exist.
+   - Updated lines:
      ```python
      if file_path.exists():
          ...
          return {"status": "success", "content": entry_text}
-     return {"status": "not_found", "content": ""}
+     return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
      ```
-     【F:main.py†L72-L81】
+     【F:main.py†L86-L96】
 
 13. **Biased category selection in `generate_prompt`**
    - The category is chosen using `today.day % len(categories)`. This repeats the same categories on certain days and is predictable.
