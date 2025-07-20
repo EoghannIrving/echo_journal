@@ -88,7 +88,7 @@ if (saveButton) {
   saveButton.addEventListener('click', async () => {
     const content = document.getElementById('journal-text').value;
     const date = "{{ date }}";
-    const prompt = `{{ prompt | escape }}`;
+    const prompt = {{ prompt | tojson }};
 
     const response = await fetch("/entry", {
       method: "POST",
