@@ -52,14 +52,11 @@
   <script>
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("[DEBUG] DOMContentLoaded triggered");
 
   const el = document.getElementById("welcome-message");
   if (el) {
-    console.log("[DEBUG] #welcome-message element found");
 
     const wantsGreeting = el.dataset.dynamicGreeting === "true";
-    console.log("[DEBUG] wantsGreeting =", wantsGreeting);
 
     if (wantsGreeting) {
       const hour = new Date().getHours();
@@ -70,15 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
       else greeting = "🌙 Good evening.";
 
       el.textContent = greeting;
-      console.log("[DEBUG] Greeting set:", greeting);
     }
 
     requestAnimationFrame(() => {
-      console.log("[DEBUG] Setting opacity = 1");
       el.style.opacity = 1;
     });
-  } else {
-    console.log("[DEBUG] #welcome-message element NOT found");
   }
 });
 
