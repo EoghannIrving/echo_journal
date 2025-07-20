@@ -78,5 +78,6 @@ If you need to deploy publicly, consider one of the following approaches:
   third-party provider.
 - Place the app behind a secure reverse proxy (such as Nginx or Caddy) that
   handles HTTPS and access control.
+- See [SECURITY.md](SECURITY.md) for instructions on reporting vulnerabilities.
 
 
