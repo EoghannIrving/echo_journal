@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import random
 import asyncio
+from typing import List, Tuple
 
 import aiofiles
 
@@ -47,10 +48,10 @@ def safe_entry_path(entry_date: str) -> Path:
     return path
 
 
-def parse_entry(md_content: str) -> tuple[str, str]:
+def parse_entry(md_content: str) -> Tuple[str, str]:
     """Return (prompt, entry) sections from markdown without raising errors."""
-    prompt_lines: list[str] = []
-    entry_lines: list[str] = []
+    prompt_lines: List[str] = []
+    entry_lines: List[str] = []
     current_section = None
     for line in md_content.splitlines():
         stripped = line.strip()
