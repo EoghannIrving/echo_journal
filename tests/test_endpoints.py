@@ -97,3 +97,32 @@ def test_archive_view(client):
     assert '2020-05-02' in resp.text
     assert '2021-06-01' in resp.text
     assert 'badfile' not in resp.text
+
+def test_save_entry_invalid_date(client):
+    """Entries with malformed date strings are still saved as-is."""
+    payload = {'date': '2020-13-40', 'content': 'bad', 'prompt': 'p'}
+    resp = client.post('/entry', json=payload)
+    assert resp.status_code == 200
+    assert resp.json()['status'] == 'success'
+    assert (main.DATA_DIR / '2020-13-40.md').exists()
+
+
+def test_save_entry_path_traversal(client):
+    """Attempting directory traversal should only affect paths inside DATA_DIR."""
+    malicious = '../malicious'
+    payload = {'date': malicious, 'content': 'x', 'prompt': 'y'}
+    resp = client.post('/entry', json=payload)
+    assert resp.status_code == 200
+    expected = main.DATA_DIR / f'{malicious}.md'
+    assert expected.exists()
+    assert expected.resolve().is_relative_to(main.DATA_DIR.resolve())
+
+
+def test_get_entry_invalid_date(client):
+    resp = client.get('/entry/invalid-date')
+    assert resp.status_code == 404
+
+
+def test_view_entry_traversal(client):
+    resp = client.get('/view/../../etc/passwd')
+    assert resp.status_code == 200
