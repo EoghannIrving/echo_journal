@@ -2,14 +2,11 @@
 
 {% block title %}Settings - Echo Journal{% endblock %}
 
-{% block content %}
-<header class="flex justify-between items-center w-full max-w-md mx-auto mb-4">
+{% block header_title %}
   <h1 id="welcome-message" class="welcome-message">Settings</h1>
-  <nav class="space-x-4 text-sm" aria-label="Settings navigation">
-    <a href="/" class="link-style">Home</a>
-    <a href="/archive" class="link-style">Archive</a>
-  </nav>
-</header>
+{% endblock %}
+
+{% block content %}
 
 <p class="text-sm text-muted text-center mb-4">
   Adjust your preferences below. Changes are saved locally in your browser.
