@@ -11,21 +11,28 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L121-L125】
 
-2. **Duplicate `PROMPTS_FILE` constant**
-   - `PROMPTS_FILE` is defined twice in `main.py` (lines 13 and 85). The second definition is redundant.
-   - First definition: `PROMPTS_FILE = Path("/app/prompts.json")` at line 13.
-   - Second definition: `PROMPTS_FILE = Path("/app/prompts.json")` at line 85.
-   - 【F:main.py†L12-L15】【F:main.py†L83-L87】
-
-3. **Inconsistent entry file paths**
-   - `save_entry` writes entries to `/journals/<date>.md`, but `get_entry` looks in `/journals/<year>/<date>.md`.
-   - This mismatch will cause retrieval failures.
-   - Example lines:
+2. **Duplicate `PROMPTS_FILE` constant** (fixed)
+   - Earlier versions defined `PROMPTS_FILE` twice in `main.py`. The extra
+     definition has been removed so the constant appears only once.
+   - Current definition:
      ```python
-     file_path = DATA_DIR / f"{date}.md"      # save_entry
-     path = DATA_DIR / year / f"{date}.md"    # get_entry
+     PROMPTS_FILE = Path("/app/prompts.json")
      ```
-     【F:main.py†L48-L70】
+     【F:main.py†L18-L20】
+
+3. **Inconsistent entry file paths** (fixed)
+   - `get_entry` previously searched in a year subfolder (`/journals/<year>/<date>.md`) while other functions saved entries directly under `/journals/`.
+   - `get_entry` now looks in the same location as `save_entry`.
+   - Updated lines:
+     ```python
+     file_path = DATA_DIR / f"{entry_date}.md"
+     if file_path.exists():
+         return {
+             "date": entry_date,
+             "content": file_path.read_text(encoding="utf-8"),
+         }
+     ```
+     【F:main.py†L75-L83】
 
 4. **Archive function ignores subdirectories**
    - `archive_view` scans `DATA_DIR.glob("*.md")`. If journal entries were stored in year subfolders, they would not appear in the archive.

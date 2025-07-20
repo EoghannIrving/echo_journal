@@ -75,10 +75,12 @@ async def save_entry(data: dict):
 @app.get("/entry/{entry_date}")
 async def get_entry(entry_date: str):
     """Return the full markdown entry for the given date."""
-    year = entry_date[:4]
-    path = DATA_DIR / year / f"{entry_date}.md"
-    if path.exists():
-        return {"date": entry_date, "content": path.read_text(encoding="utf-8")}
+    file_path = DATA_DIR / f"{entry_date}.md"
+    if file_path.exists():
+        return {
+            "date": entry_date,
+            "content": file_path.read_text(encoding="utf-8"),
+        }
     return JSONResponse(status_code=404, content={"error": "Entry not found"})
 
 @app.get("/entry")
