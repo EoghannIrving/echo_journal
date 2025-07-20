@@ -174,14 +174,19 @@ async def generate_prompt():
     prompts = await load_prompts()
     if not prompts:
         return {"category": None, "prompt": "Prompts file not found"}
-    categories = list(prompts["categories"].keys())
+
+    categories_dict = prompts.get("categories")
+    if not isinstance(categories_dict, dict):
+        return {"category": None, "prompt": "No categories found"}
+
+    categories = list(categories_dict.keys())
 
     if not categories:
         return {"category": None, "prompt": "No categories found"}
 
     category = random.choice(categories)
 
-    candidates = prompts["categories"].get(category, [])
+    candidates = categories_dict.get(category, [])
     if not candidates:
         return {"category": category.capitalize(), "prompt": "No prompts in this category"}
 
