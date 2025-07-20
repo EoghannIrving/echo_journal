@@ -274,3 +274,38 @@ The following issues were identified while reviewing the current code base.
      >{{ content }}</textarea>
      ```
      【F:templates/echo_journal.html†L24-L32】
+
+26. **Dark mode toggle has no effect when system already uses dark mode**
+   - The CSS applies dark colors automatically with the `prefers-color-scheme` media query.
+   - The toggle in `settings.html` only toggles a `dark` class, which does not override these rules.
+   - Lines:
+     ```css
+     @media (prefers-color-scheme: dark) {
+       body {
+         background-color: #222;
+         color: #f5f5f5;
+       }
+     }
+     ```
+     【F:static/style.css†L20-L25】
+   - Toggle script lines:
+     ```javascript
+     const toggle = document.getElementById('dark-toggle');
+     if (toggle) {
+       const stored = localStorage.getItem('dark-mode');
+       if (stored === 'true') {
+         toggle.checked = true;
+         document.documentElement.classList.add('dark');
+       }
+       toggle.addEventListener('change', () => {
+         if (toggle.checked) {
+           document.documentElement.classList.add('dark');
+           localStorage.setItem('dark-mode', 'true');
+         } else {
+           document.documentElement.classList.remove('dark');
+           localStorage.setItem('dark-mode', 'false');
+         }
+       });
+     }
+     ```
+     【F:templates/settings.html†L28-L52】
