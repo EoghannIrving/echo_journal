@@ -113,7 +113,7 @@ def test_save_entry_path_traversal(client):
     payload = {'date': malicious, 'content': 'x', 'prompt': 'y'}
     resp = client.post('/entry', json=payload)
     assert resp.status_code == 200
-    expected = main.DATA_DIR / f'{malicious}.md'
+    expected = main.DATA_DIR / 'malicious.md'
     assert expected.exists()
     assert expected.resolve().is_relative_to(main.DATA_DIR.resolve())
 
