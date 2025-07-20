@@ -7,6 +7,7 @@ from datetime import date, datetime
 import json
 from pathlib import Path
 import random
+import re
 
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
@@ -24,6 +25,20 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Setup templates
 templates = Jinja2Templates(directory="templates")
+
+# Regular expression for YYYY-MM-DD formatted dates
+DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def valid_entry_date(value: str) -> bool:
+    """Return True if the provided value is a valid YYYY-MM-DD date."""
+    if not DATE_PATTERN.fullmatch(value):
+        return False
+    try:
+        datetime.strptime(value, "%Y-%m-%d")
+    except ValueError:
+        return False
+    return True
 
 @app.get("/")
 async def index(request: Request):
@@ -62,6 +77,9 @@ async def save_entry(data: dict):
     if not entry_date or not content or not prompt:
         return {"status": "error", "message": "Missing fields"}
 
+    if not valid_entry_date(entry_date):
+        return JSONResponse(status_code=400, content={"status": "error", "message": "Invalid date"})
+
     # Ensure /journals exists before attempting to save
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -75,6 +93,8 @@ async def save_entry(data: dict):
 @app.get("/entry/{entry_date}")
 async def get_entry(entry_date: str):
     """Return the full markdown entry for the given date."""
+    if not valid_entry_date(entry_date):
+        return JSONResponse(status_code=400, content={"error": "Invalid date"})
     file_path = DATA_DIR / f"{entry_date}.md"
     if file_path.exists():
         return {
@@ -86,6 +106,8 @@ async def get_entry(entry_date: str):
 @app.get("/entry")
 async def load_entry(entry_date: str):
     """Load the textual content for an entry without headers."""
+    if not valid_entry_date(entry_date):
+        return JSONResponse(status_code=400, content={"status": "error", "content": "", "message": "Invalid date"})
     file_path = DATA_DIR / f"{entry_date}.md"
     if file_path.exists():
         content = file_path.read_text(encoding="utf-8")
@@ -169,6 +191,17 @@ async def archive_view(request: Request):
 @app.get("/view/{entry_date}")
 async def view_entry(request: Request, entry_date: str):
     """Display a previously written journal entry."""
+    if not valid_entry_date(entry_date):
+        return templates.TemplateResponse(
+            "echo_journal.html",
+            {
+                "request": request,
+                "content": "",
+                "date": entry_date,
+                "prompt": "",
+                "readonly": True,
+            },
+        )
     file_path = DATA_DIR / f"{entry_date}.md"
     prompt = ""
     entry = ""

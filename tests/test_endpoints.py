@@ -93,3 +93,8 @@ def test_archive_view(client):
     assert '2020-05-01' in resp.text
     assert '2020-05-02' in resp.text
     assert 'badfile' not in resp.text
+
+
+def test_invalid_date_rejected(client):
+    resp = client.post('/entry', json={'date': '../hack', 'content': 'x', 'prompt': 'y'})
+    assert resp.status_code == 400

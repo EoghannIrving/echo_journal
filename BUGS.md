@@ -43,17 +43,14 @@ The following issues were identified while reviewing the current code base.
      【F:main.py†L121-L133】
 
 
-5. **Unsanitized date parameter allows path traversal**
-   - Several endpoints build file paths directly from user-supplied `date` values without validation.
-   - An attacker could supply `../` sequences to read or overwrite arbitrary files.
-   - Affected lines include:
+5. **Unsanitized date parameter allows path traversal** (fixed)
+   - Date strings are now validated with a regular expression and `datetime.strptime`.
+   - Example validation check:
      ```python
-     file_path = DATA_DIR / f"{date}.md"      # save_entry
-     path = DATA_DIR / year / f"{date}.md"    # get_entry
-     file_path = DATA_DIR / f"{date}.md"      # load_entry
-     file_path = DATA_DIR / f"{entry_date}.md"  # view_entry
+     if not valid_entry_date(entry_date):
+         return JSONResponse(status_code=400, content={"status": "error", "message": "Invalid date"})
      ```
-     【F:main.py†L48-L82】【F:main.py†L143-L146】
+     【F:main.py†L30-L41】【F:main.py†L80-L82】【F:main.py†L96-L98】【F:main.py†L109-L110】【F:main.py†L194-L205】
 
 6. **Prompt inserted into JavaScript without proper escaping** (fixed)
    - `echo_journal.html` previously embedded the prompt using `{{ prompt | escape }}` inside a template literal.
