@@ -88,8 +88,12 @@ def test_archive_view(client):
     (main.DATA_DIR / '2020-05-01.md').write_text('# Prompt\nP\n\n# Entry\nE1', encoding='utf-8')
     (main.DATA_DIR / '2020-05-02.md').write_text('# Prompt\nP\n\n# Entry\nE2', encoding='utf-8')
     (main.DATA_DIR / 'badfile.md').write_text('oops', encoding='utf-8')
+    subdir = main.DATA_DIR / '2021'
+    subdir.mkdir()
+    (subdir / '2021-06-01.md').write_text('# Prompt\nP\n\n# Entry\nE3', encoding='utf-8')
     resp = client.get('/archive')
     assert resp.status_code == 200
     assert '2020-05-01' in resp.text
     assert '2020-05-02' in resp.text
+    assert '2021-06-01' in resp.text
     assert 'badfile' not in resp.text
