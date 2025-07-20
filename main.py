@@ -148,7 +148,9 @@ async def archive_view(request: Request):
     """Render an archive of all journal entries grouped by month."""
     entries_by_month = defaultdict(list)
 
-    for file in DATA_DIR.glob("*.md"):
+    # Recursively gather markdown files to include any entries stored in
+    # subdirectories such as year folders
+    for file in DATA_DIR.rglob("*.md"):
         try:
             entry_date = datetime.strptime(file.stem, "%Y-%m-%d").date()
         except ValueError:

@@ -34,13 +34,14 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L75-L83】
 
-4. **Archive function ignores subdirectories**
-   - `archive_view` scans `DATA_DIR.glob("*.md")`. If journal entries were stored in year subfolders, they would not appear in the archive.
-   - Lines:
+4. **Archive function ignores subdirectories** (fixed)
+   - `archive_view` previously scanned only the top-level `DATA_DIR` directory using `glob("*.md")`.
+     It now recursively searches with `rglob("*.md")` so entries within year folders are included.
+   - Updated lines:
      ```python
-     for file in DATA_DIR.glob("*.md"):
+     for file in DATA_DIR.rglob("*.md"):
      ```
-     【F:main.py†L121-L133】
+     【F:main.py†L150-L158】
 
 
 5. **Unsanitized date parameter allows path traversal**
