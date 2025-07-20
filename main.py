@@ -103,7 +103,13 @@ def generate_prompt():
     weekday = today.strftime("%A")
     season = get_season(today)
 
-    prompts = json.loads(PROMPTS_FILE.read_text(encoding="utf-8"))
+    try:
+        prompts_text = PROMPTS_FILE.read_text(encoding="utf-8")
+        prompts = json.loads(prompts_text)
+    except FileNotFoundError:
+        return {"category": None, "prompt": "Prompts file not found"}
+    except json.JSONDecodeError:
+        return {"category": None, "prompt": "Invalid prompts file"}
     categories = list(prompts["categories"].keys())
 
     if not categories:
