@@ -261,3 +261,16 @@ The following issues were identified while reviewing the current code base.
      const result = await response.json();
      ```
      【F:templates/echo_journal.html†L72-L85】
+
+25. **Textarea doesn't resize on load**
+   - The textarea expands on user input, but when an existing entry is loaded the `oninput` handler never fires. The field remains at its default height and cuts off longer text until edited.
+   - Lines:
+     ```html
+     <textarea id="journal-text" class="journal-textarea justify-center"
+       placeholder="Write freely… describe what happened, how you felt, what you noticed, or anything else that stands out."
+       {% if readonly %}readonly{% endif %}
+       oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px'"
+       rows="4"
+     >{{ content }}</textarea>
+     ```
+     【F:templates/echo_journal.html†L24-L32】
