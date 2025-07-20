@@ -46,6 +46,7 @@ def safe_entry_path(entry_date: str) -> Path:
         raise ValueError("Invalid entry date") from exc
     return path
 
+
 @app.get("/")
 async def index(request: Request):
     """Render the journal entry page for the current day."""
@@ -56,7 +57,9 @@ async def index(request: Request):
     if file_path.exists():
         async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
             md_content = await fh.read()
-        prompt_part = md_content.split("# Prompt\n", 1)[1].split("\n\n# Entry\n", 1)[0].strip()
+        prompt_part = (
+            md_content.split("# Prompt\n", 1)[1].split("\n\n# Entry\n", 1)[0].strip()
+        )
         entry_part = md_content.split("# Entry\n", 1)[1].strip()
         prompt = prompt_part
         entry = entry_part
@@ -65,14 +68,18 @@ async def index(request: Request):
         prompt = prompt_data["prompt"]
         entry = ""
 
-    return templates.TemplateResponse("echo_journal.html", {
-        "request": request,
-        "prompt": prompt,
-        "category": "",  # Optionally store saved category or leave blank for saved entries
-        "date": date_str,
-        "content": entry,
-        "readonly": False  # Explicit
-    })
+    return templates.TemplateResponse(
+        "echo_journal.html",
+        {
+            "request": request,
+            "prompt": prompt,
+            "category": "",  # Optionally store saved category or leave blank for saved entries
+            "date": date_str,
+            "content": entry,
+            "readonly": False,  # Explicit
+        },
+    )
+
 
 @app.post("/entry")
 async def save_entry(data: dict):
@@ -111,6 +118,7 @@ async def get_entry(entry_date: str):
         }
     return JSONResponse(status_code=404, content={"error": "Entry not found"})
 
+
 @app.get("/entry")
 async def load_entry(entry_date: str):
     """Load the textual content for an entry without headers."""
@@ -123,7 +131,6 @@ async def load_entry(entry_date: str):
         entry_text = parts[1].strip() if len(parts) > 1 else ""
         return {"status": "success", "content": entry_text}
     return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
-
 
 
 async def load_prompts():
@@ -158,12 +165,18 @@ async def generate_prompt():
 
     candidates = prompts["categories"].get(category, [])
     if not candidates:
-        return {"category": category.capitalize(), "prompt": "No prompts in this category"}
+        return {
+            "category": category.capitalize(),
+            "prompt": "No prompts in this category",
+        }
 
     prompt_template = random.choice(candidates)
-    prompt = prompt_template.replace("{{weekday}}", weekday).replace("{{season}}", season)
+    prompt = prompt_template.replace("{{weekday}}", weekday).replace(
+        "{{season}}", season
+    )
 
     return {"category": category.capitalize(), "prompt": prompt}
+
 
 def get_season(target_date):
     """Return the season name for the given date."""
@@ -180,6 +193,7 @@ def get_season(target_date):
     if autumn_start <= target_date < winter_start:
         return "Autumn"
     return "Winter"
+
 
 @app.get("/archive", response_class=HTMLResponse)
 async def archive_view(request: Request):
@@ -202,10 +216,10 @@ async def archive_view(request: Request):
     # Sort months descending (latest first)
     sorted_entries = dict(sorted(entries_by_month.items(), reverse=True))
 
-    return templates.TemplateResponse("archives.html", {
-        "request": request,
-        "entries": sorted_entries
-    })
+    return templates.TemplateResponse(
+        "archives.html", {"request": request, "entries": sorted_entries}
+    )
+
 
 @app.get("/view/{entry_date}")
 async def view_entry(request: Request, entry_date: str):
@@ -250,8 +264,8 @@ async def view_entry(request: Request, entry_date: str):
             "content": entry,
             "date": entry_date,
             "prompt": prompt,
-        "readonly": True  # Read-only mode for archive
-        }
+            "readonly": True,  # Read-only mode for archive
+        },
     )
 
 
