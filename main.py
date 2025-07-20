@@ -1,11 +1,17 @@
-from fastapi import FastAPI, Request
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
-from pathlib import Path
-from fastapi.responses import JSONResponse, HTMLResponse
+"""Echo Journal FastAPI application."""
+
+# pylint: disable=import-error
+
 from collections import defaultdict
 from datetime import date, datetime
 import json
+from pathlib import Path
+import random
+
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse, HTMLResponse
 
 app = FastAPI()
 
@@ -21,12 +27,13 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/")
 async def index(request: Request):
+    """Render the journal entry page for the current day."""
     today = date.today()
     date_str = today.isoformat()
     file_path = DATA_DIR / f"{date_str}.md"
 
     if file_path.exists():
-        md_content = file_path.read_text()
+        md_content = file_path.read_text(encoding="utf-8")
         prompt_part = md_content.split("# Prompt\n", 1)[1].split("\n\n# Entry\n", 1)[0].strip()
         entry_part = md_content.split("# Entry\n", 1)[1].strip()
         prompt = prompt_part
@@ -47,49 +54,51 @@ async def index(request: Request):
 
 @app.post("/entry")
 async def save_entry(data: dict):
-    date = data.get("date")
+    """Save a journal entry for the provided date."""
+    entry_date = data.get("date")
     content = data.get("content")
     prompt = data.get("prompt")
 
-    if not date or not content or not prompt:
+    if not entry_date or not content or not prompt:
         return {"status": "error", "message": "Missing fields"}
 
-    file_path = DATA_DIR / f"{date}.md"
+    file_path = DATA_DIR / f"{entry_date}.md"
     markdown = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
-    file_path.write_text(markdown)
+    file_path.write_text(markdown, encoding="utf-8")
 
     return {"status": "success"}
 
 
-@app.get("/entry/{date}")
-async def get_entry(date: str):
-    year = date[:4]
-    path = DATA_DIR / year / f"{date}.md"
+@app.get("/entry/{entry_date}")
+async def get_entry(entry_date: str):
+    """Return the full markdown entry for the given date."""
+    year = entry_date[:4]
+    path = DATA_DIR / year / f"{entry_date}.md"
     if path.exists():
-        return {"date": date, "content": path.read_text()}
+        return {"date": entry_date, "content": path.read_text(encoding="utf-8")}
     return JSONResponse(status_code=404, content={"error": "Entry not found"})
 
 @app.get("/entry")
-async def load_entry(date: str):
-    file_path = DATA_DIR / f"{date}.md"
+async def load_entry(entry_date: str):
+    """Load the textual content for an entry without headers."""
+    file_path = DATA_DIR / f"{entry_date}.md"
     if file_path.exists():
-        content = file_path.read_text()
+        content = file_path.read_text(encoding="utf-8")
         # Parse markdown to extract entry text only
         parts = content.split("# Entry\n", 1)
         entry_text = parts[1].strip() if len(parts) > 1 else ""
         return {"status": "success", "content": entry_text}
     return {"status": "not_found", "content": ""}
 
-import random
 
-PROMPTS_FILE = Path("/app/prompts.json")
 
 def generate_prompt():
+    """Select and return a prompt for the current day."""
     today = date.today()
     weekday = today.strftime("%A")
     season = get_season(today)
 
-    prompts = json.loads(PROMPTS_FILE.read_text())
+    prompts = json.loads(PROMPTS_FILE.read_text(encoding="utf-8"))
     categories = list(prompts["categories"].keys())
 
     if not categories:
@@ -107,19 +116,25 @@ def generate_prompt():
 
     return {"category": category.capitalize(), "prompt": prompt}
 
-def get_season(date):
-    Y = date.year
-    if date >= datetime.date(Y, 3, 1) and date < datetime.date(Y, 6, 1):
+def get_season(target_date):
+    """Return the season name for the given date."""
+    year = target_date.year
+    spring_start = datetime.date(year, 3, 1)
+    summer_start = datetime.date(year, 6, 1)
+    autumn_start = datetime.date(year, 9, 1)
+    winter_start = datetime.date(year, 12, 1)
+
+    if spring_start <= target_date < summer_start:
         return "Spring"
-    elif date >= datetime.date(Y, 6, 1) and date < datetime.date(Y, 9, 1):
+    if summer_start <= target_date < autumn_start:
         return "Summer"
-    elif date >= datetime.date(Y, 9, 1) and date < datetime.date(Y, 12, 1):
+    if autumn_start <= target_date < winter_start:
         return "Autumn"
-    else:
-        return "Winter"
+    return "Winter"
 
 @app.get("/archive", response_class=HTMLResponse)
 async def archive_view(request: Request):
+    """Render an archive of all journal entries grouped by month."""
     entries_by_month = defaultdict(list)
 
     for file in DATA_DIR.glob("*.md"):
@@ -142,6 +157,7 @@ async def archive_view(request: Request):
 
 @app.get("/view/{entry_date}")
 async def view_entry(request: Request, entry_date: str):
+    """Display a previously written journal entry."""
     file_path = DATA_DIR / f"{entry_date}.md"
     prompt = ""
     entry = ""
@@ -154,7 +170,7 @@ async def view_entry(request: Request, entry_date: str):
             if line.strip() == "# Prompt":
                 current_section = "prompt"
                 continue
-            elif line.strip() == "# Entry":
+            if line.strip() == "# Entry":
                 current_section = "entry"
                 continue
 
