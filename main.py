@@ -7,6 +7,9 @@ from datetime import date, datetime
 import json
 from pathlib import Path
 import random
+import asyncio
+
+import aiofiles
 
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
@@ -18,6 +21,10 @@ app = FastAPI()
 DATA_DIR = Path("/journals")
 PROMPTS_FILE = Path("/app/prompts.json")
 STATIC_DIR = Path("/app/static")
+
+# Cache for loaded prompts
+PROMPTS_CACHE = None
+PROMPTS_LOCK = asyncio.Lock()
 
 # Mount all static files
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -33,13 +40,14 @@ async def index(request: Request):
     file_path = DATA_DIR / f"{date_str}.md"
 
     if file_path.exists():
-        md_content = file_path.read_text(encoding="utf-8")
+        async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
+            md_content = await fh.read()
         prompt_part = md_content.split("# Prompt\n", 1)[1].split("\n\n# Entry\n", 1)[0].strip()
         entry_part = md_content.split("# Entry\n", 1)[1].strip()
         prompt = prompt_part
         entry = entry_part
     else:
-        prompt_data = generate_prompt()
+        prompt_data = await generate_prompt()
         prompt = prompt_data["prompt"]
         entry = ""
 
@@ -67,7 +75,8 @@ async def save_entry(data: dict):
 
     file_path = DATA_DIR / f"{entry_date}.md"
     markdown = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
-    file_path.write_text(markdown, encoding="utf-8")
+    async with aiofiles.open(file_path, "w", encoding="utf-8") as fh:
+        await fh.write(markdown)
 
     return {"status": "success"}
 
@@ -77,9 +86,11 @@ async def get_entry(entry_date: str):
     """Return the full markdown entry for the given date."""
     file_path = DATA_DIR / f"{entry_date}.md"
     if file_path.exists():
+        async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
+            content = await fh.read()
         return {
             "date": entry_date,
-            "content": file_path.read_text(encoding="utf-8"),
+            "content": content,
         }
     return JSONResponse(status_code=404, content={"error": "Entry not found"})
 
@@ -88,7 +99,8 @@ async def load_entry(entry_date: str):
     """Load the textual content for an entry without headers."""
     file_path = DATA_DIR / f"{entry_date}.md"
     if file_path.exists():
-        content = file_path.read_text(encoding="utf-8")
+        async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
+            content = await fh.read()
         # Parse markdown to extract entry text only
         parts = content.split("# Entry\n", 1)
         entry_text = parts[1].strip() if len(parts) > 1 else ""
@@ -97,19 +109,30 @@ async def load_entry(entry_date: str):
 
 
 
-def generate_prompt():
+async def load_prompts():
+    """Load the prompts file once and cache it."""
+    global PROMPTS_CACHE
+    if PROMPTS_CACHE is None:
+        async with PROMPTS_LOCK:
+            if PROMPTS_CACHE is None:
+                try:
+                    async with aiofiles.open(PROMPTS_FILE, "r", encoding="utf-8") as fh:
+                        prompts_text = await fh.read()
+                    PROMPTS_CACHE = json.loads(prompts_text)
+                except (FileNotFoundError, json.JSONDecodeError):
+                    PROMPTS_CACHE = {}
+    return PROMPTS_CACHE
+
+
+async def generate_prompt():
     """Select and return a prompt for the current day."""
     today = date.today()
     weekday = today.strftime("%A")
     season = get_season(today)
 
-    try:
-        prompts_text = PROMPTS_FILE.read_text(encoding="utf-8")
-        prompts = json.loads(prompts_text)
-    except FileNotFoundError:
+    prompts = await load_prompts()
+    if not prompts:
         return {"category": None, "prompt": "Prompts file not found"}
-    except json.JSONDecodeError:
-        return {"category": None, "prompt": "Invalid prompts file"}
     categories = list(prompts["categories"].keys())
 
     if not categories:
@@ -157,7 +180,8 @@ async def archive_view(request: Request):
             continue  # Skip malformed filenames
 
         month_key = entry_date.strftime("%Y-%m")
-        content = file.read_text(encoding="utf-8")
+        async with aiofiles.open(file, "r", encoding="utf-8") as fh:
+            content = await fh.read()
         entries_by_month[month_key].append((entry_date.isoformat(), content))
 
     # Sort months descending (latest first)
@@ -175,7 +199,8 @@ async def view_entry(request: Request, entry_date: str):
     prompt = ""
     entry = ""
     if file_path.exists():
-        lines = file_path.read_text(encoding="utf-8").splitlines()
+        async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
+            lines = (await fh.read()).splitlines()
         current_section = None
         buffer = []
 
