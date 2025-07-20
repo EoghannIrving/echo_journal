@@ -13,6 +13,19 @@
   <meta name="theme-color" content="#1a1a1a">
 </head>
 <body class="min-h-screen flex flex-col items-center justify-start p-4 space-y-6">
-  {% block content %}{% endblock %}
+  <header class="flex justify-between items-center w-full max-w-md mx-auto mb-4 sticky-header">
+    {% block header_title %}
+    <h1 class="welcome-message">Echo Journal</h1>
+    {% endblock %}
+    <nav class="space-x-4 text-sm" aria-label="Main navigation">
+      <a href="/" class="link-style {% if active_page == 'home' %}active-link{% endif %}">Home</a>
+      <a href="/archive" class="link-style {% if active_page == 'archive' %}active-link{% endif %}">Archive</a>
+      <a href="/settings" class="link-style {% if active_page == 'settings' %}active-link{% endif %}">Settings</a>
+    </nav>
+  </header>
+
+  <main class="w-full max-w-md mx-auto space-y-6">
+    {% block content %}{% endblock %}
+  </main>
 </body>
 </html>

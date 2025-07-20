@@ -2,28 +2,18 @@
 
 {% block title %}Echo Journal{% endblock %}
 
-{% block content %}
-<header class="flex justify-between items-center w-full max-w-md mx-auto mb-4">
-<div class="flex items-center space-x-2">
+{% block header_title %}
   <h1 id="welcome-message" class="welcome-message"
-      {% if not readonly %} data-dynamic-greeting="true" {% endif %}>
+      {% if not readonly %} data-dynamic-greeting="true"{% endif %}>
     {% if readonly %}
       Welcome back to {{ date }}
     {% else %}
       Welcome back.
     {% endif %}
   </h1>
-</div>
+{% endblock %}
 
-  <nav class="space-x-4 text-sm" aria-label="Main navigation">
-    {% if readonly %}
-      <a href="/" class="text-blue-300 hover:underline">Home</a>
-    {% else %}
-      <a href="/archive" class="text-blue-300 hover:underline">View Archive</a>
-    {% endif %}
-    <a href="/settings" class="text-blue-300 hover:underline">Settings</a>
-  </nav>
-</header>
+{% block content %}
   <section class="w-full max-w-md space-y-4 text-center">
     <div class="prompt-section">
       <p class="prompt-text">{{ prompt }}</p>

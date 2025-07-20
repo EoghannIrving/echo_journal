@@ -269,6 +269,17 @@ a:visited {
   text-decoration: underline;
 }
 
+.active-link {
+  font-weight: 600;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: inherit;
+  z-index: 10;
+}
+
 @media (prefers-color-scheme: dark) {
   .link-style {
     color: #60a5fa; /* blue-400 for dark mode (brighter, readable) */

@@ -93,7 +93,8 @@ async def index(request: Request):
         "category": "",  # Optionally store saved category or leave blank for saved entries
         "date": date_str,
         "content": entry,
-        "readonly": False  # Explicit
+        "readonly": False,  # Explicit
+        "active_page": "home",
     })
 
 @app.post("/entry")
@@ -226,7 +227,8 @@ async def archive_view(request: Request):
 
     return templates.TemplateResponse("archives.html", {
         "request": request,
-        "entries": sorted_entries
+        "entries": sorted_entries,
+        "active_page": "archive",
     })
 
 @app.get("/view/{entry_date}")
@@ -252,7 +254,8 @@ async def view_entry(request: Request, entry_date: str):
             "content": entry,
             "date": entry_date,
             "prompt": prompt,
-        "readonly": True  # Read-only mode for archive
+            "readonly": True,  # Read-only mode for archive
+            "active_page": "archive",
         }
     )
 
@@ -260,4 +263,7 @@ async def view_entry(request: Request, entry_date: str):
 @app.get("/settings", response_class=HTMLResponse)
 async def settings_page(request: Request):
     """Render the user settings page."""
-    return templates.TemplateResponse("settings.html", {"request": request})
+    return templates.TemplateResponse(
+        "settings.html",
+        {"request": request, "active_page": "settings"},
+    )
