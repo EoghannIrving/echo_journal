@@ -155,11 +155,10 @@ The following issues were identified while reviewing the current code base.
      │   └── style.css
      ├── templates
      │   └── index.html  # (optional for Jinja2 template rendering)
-     ├── README.md
-     ├── ROADMAP.md
-     └── VALIDATION.md
-     ```
-     【F:README.md†L20-L28】
+    ├── README.md
+    └── ROADMAP.md
+    ```
+    【F:README.md†L18-L27】
 
 17. **README storage path inconsistent with code**
    - Documentation claims entries are stored in `/journals/YYYY/YYYY-MM-DD.md`, but `save_entry` actually writes to `/journals/<date>.md` with no year subfolder.

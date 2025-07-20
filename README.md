@@ -24,8 +24,7 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 ├── templates
 │   └── index.html  # (optional for Jinja2 template rendering)
 ├── README.md
-├── ROADMAP.md
-└── VALIDATION.md
+└── ROADMAP.md
 ```
 
 ## Setup instructions
