@@ -46,6 +46,29 @@ def safe_entry_path(entry_date: str) -> Path:
         raise ValueError("Invalid entry date") from exc
     return path
 
+
+def parse_entry(md_content: str) -> tuple[str, str]:
+    """Return (prompt, entry) sections from markdown without raising errors."""
+    prompt_lines: list[str] = []
+    entry_lines: list[str] = []
+    current_section = None
+    for line in md_content.splitlines():
+        stripped = line.strip()
+        if stripped == "# Prompt":
+            current_section = "prompt"
+            continue
+        if stripped == "# Entry":
+            current_section = "entry"
+            continue
+        if current_section == "prompt":
+            prompt_lines.append(line.rstrip())
+        elif current_section == "entry":
+            entry_lines.append(line.rstrip())
+
+    prompt = "\n".join(prompt_lines).strip()
+    entry = "\n".join(entry_lines).strip()
+    return prompt, entry
+
 @app.get("/")
 async def index(request: Request):
     """Render the journal entry page for the current day."""
@@ -56,10 +79,9 @@ async def index(request: Request):
     if file_path.exists():
         async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
             md_content = await fh.read()
-        prompt_part = md_content.split("# Prompt\n", 1)[1].split("\n\n# Entry\n", 1)[0].strip()
-        entry_part = md_content.split("# Entry\n", 1)[1].strip()
-        prompt = prompt_part
-        entry = entry_part
+        prompt, entry = parse_entry(md_content)
+        if not prompt and not entry:
+            entry = md_content.strip()
     else:
         prompt_data = await generate_prompt()
         prompt = prompt_data["prompt"]
@@ -217,31 +239,11 @@ async def view_entry(request: Request, entry_date: str):
         raise HTTPException(status_code=404, detail="Entry not found")
 
     async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
-        lines = (await fh.read()).splitlines()
+        md_content = await fh.read()
 
-    current_section = None
-    prompt_lines = []
-    entry_lines = []
-
-    for line in lines:
-        stripped = line.strip()
-        if stripped == "# Prompt":
-            current_section = "prompt"
-            continue
-        if stripped == "# Entry":
-            current_section = "entry"
-            continue
-
-        if current_section == "prompt":
-            prompt_lines.append(line.rstrip())
-        elif current_section == "entry":
-            entry_lines.append(line.rstrip())
-
-    if not prompt_lines or not entry_lines:
+    prompt, entry = parse_entry(md_content)
+    if not prompt or not entry:
         raise HTTPException(status_code=500, detail="Malformed entry file")
-
-    prompt = "\n".join(prompt_lines).strip()
-    entry = "\n".join(entry_lines).strip()
 
     return templates.TemplateResponse(
         "echo_journal.html",

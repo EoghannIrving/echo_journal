@@ -63,15 +63,17 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:templates/echo_journal.html†L90-L92】
 
-7. **Index parsing assumes perfect file formatting**
-   - The `index` function splits the saved Markdown using hard-coded markers.
-   - If a file is missing a section header, the `split()[1]` calls will raise `IndexError`.
-   - Lines:
+7. **Index parsing assumes perfect file formatting** (fixed)
+   - The `index` function no longer relies on fragile `split()[1]` calls.
+   - A new helper `parse_entry` safely extracts sections and falls back to the
+     raw content if headers are missing.
+   - Updated lines:
      ```python
-     md_content.split("# Prompt\n", 1)[1]
-     md_content.split("# Entry\n", 1)[1]
+     prompt, entry = parse_entry(md_content)
+     if not prompt and not entry:
+         entry = md_content.strip()
      ```
-     【F:main.py†L28-L33】
+     【F:main.py†L80-L86】
 
 8. **`generate_prompt` lacks error handling** (fixed)
    - The function now catches `FileNotFoundError` and `JSONDecodeError` when
