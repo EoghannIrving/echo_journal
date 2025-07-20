@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Echo Journal{% endblock %}
+
+{% block content %}
+<header class="flex justify-between items-center w-full max-w-md mx-auto mb-4">
+  <h1 id="welcome-message" class="welcome-message">Settings</h1>
+  <nav class="space-x-4 text-sm" aria-label="Settings navigation">
+    <a href="/" class="link-style">Home</a>
+    <a href="/archive" class="link-style">Archive</a>
+  </nav>
+</header>
+
+<p class="text-sm text-muted text-center mb-4">
+  Adjust your preferences below. Changes are saved locally in your browser.
+</p>
+
+<form class="space-y-4" aria-label="Settings form">
+  <label for="dark-toggle" class="flex items-center space-x-2">
+    <input type="checkbox" id="dark-toggle">
+    <span>Use dark mode</span>
+  </label>
+</form>
+
+<footer class="w-full max-w-md mt-8 footer-text">
+  <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="logo-inline">
+  Echo Journal
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const el = document.getElementById("welcome-message");
+  if (el) {
+    requestAnimationFrame(() => {
+      el.style.opacity = 1;
+    });
+  }
+  const toggle = document.getElementById('dark-toggle');
+  if (toggle) {
+    const stored = localStorage.getItem('dark-mode');
+    if (stored === 'true') {
+      toggle.checked = true;
+      document.documentElement.classList.add('dark');
+    }
+    toggle.addEventListener('change', () => {
+      if (toggle.checked) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('dark-mode', 'true');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('dark-mode', 'false');
+      }
+    });
+  }
+});
+</script>
+
+{% endblock %}

@@ -274,3 +274,27 @@ a:visited {
     color: #60a5fa; /* blue-400 for dark mode (brighter, readable) */
   }
 }
+
+/* Screen reader only helper */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keyboard focus outline */
+:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Error text */
+.error-text {
+  color: #dc2626; /* red-600 */
+}
