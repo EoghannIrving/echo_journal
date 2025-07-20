@@ -9,6 +9,8 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 - Markdown entry storage (`/journals/YYYY-MM-DD.md`) on NAS via Docker volume
 - No authentication, intended for secure local network (LAN) usage
 - Backend implemented with FastAPI and Jinja2 templates
+- Archive view to browse past entries
+- Settings page with client-side dark mode toggle
 
 ## Project structure
 ```
@@ -27,6 +29,8 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 │   ├── archives.html
 │   ├── base.html
 │   └── echo_journal.html
+├── tests
+│   └── test_endpoints.py
 ├── README.md
 ├── ROADMAP.md
 └── LICENSE
@@ -45,16 +49,19 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
      - ${JOURNALS_DIR:-/mnt/nas/journals}:/journals
    ```
 
-3. **Build and run**
+3. **Timezone**
+   Adjust the timezone by editing the `TZ` variable in `docker-compose.yml`.
+
+4. **Build and run**
    ```sh
    docker-compose up --build
    ```
 
-4. **Access Echo Journal**
-   Visit `http://localhost:8000` from any device on your LAN.
+5. **Access Echo Journal**
+   Visit `http://localhost:8510` from any device on your LAN.
 
 ## Daily workflow
-- Dynamic prompt rendered server-side via FastAPI + Jinja2 (`index.html`)
+- Dynamic prompt rendered server-side via FastAPI + Jinja2 (`echo_journal.html`)
 - Text area for daily entry
 - Save writes entry as a Markdown file named after the date
 
