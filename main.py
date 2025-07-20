@@ -93,7 +93,7 @@ async def load_entry(entry_date: str):
         parts = content.split("# Entry\n", 1)
         entry_text = parts[1].strip() if len(parts) > 1 else ""
         return {"status": "success", "content": entry_text}
-    return {"status": "not_found", "content": ""}
+    return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
 
 
 
