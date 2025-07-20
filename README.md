@@ -6,25 +6,30 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 - Responsive, mobile-first UI with dark mode support
 - Warm minimalist aesthetic (Nunito + Merriweather fonts, gray-blue accents)
 - Dynamic daily prompt from categorized `prompts.json` file
-- Markdown entry storage (`/journals/YYYY/YYYY-MM-DD.md`) on NAS via Docker volume
+- Markdown entry storage (`/journals/YYYY-MM-DD.md`) on NAS via Docker volume
 - No authentication, intended for secure local network (LAN) usage
 - Backend implemented with FastAPI and Jinja2 templates
 
 ## Project structure
 ```
 .
+├── BUGS.md
 ├── Dockerfile
 ├── docker-compose.yml
 ├── main.py
-├── requirements.txt
 ├── prompts.json
+├── requirements.txt
 ├── static
-│   ├── echo_journal.html
-│   └── style.css
+│   ├── style.css
+│   ├── icons/
+│   └── textures/
 ├── templates
-│   └── index.html  # (optional for Jinja2 template rendering)
+│   ├── archives.html
+│   ├── base.html
+│   └── echo_journal.html
 ├── README.md
-└── ROADMAP.md
+├── ROADMAP.md
+└── LICENSE
 ```
 
 ## Setup instructions
@@ -51,7 +56,7 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 ## Daily workflow
 - Dynamic prompt rendered server-side via FastAPI + Jinja2 (`index.html`)
 - Text area for daily entry
-- Save writes entry as Markdown file organized by year and date
+- Save writes entry as a Markdown file named after the date
 
 ## Additional notes
 - Markdown files easily readable and portable
