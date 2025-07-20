@@ -187,14 +187,14 @@ The following issues were identified while reviewing the current code base.
      【F:main.py†L57-L58】
 
 18. **Inconsistent file encoding handling** (fixed)
-   - Some functions call `read_text()` without specifying an encoding while others pass `encoding="utf-8"`. This may lead to decoding issues on systems with a different default encoding.
-   - Examples:
+   - File reads and writes now consistently specify the encoding using the `ENCODING` constant.
+   - Updated definition:
      ```python
-     md_content = file_path.read_text()
-     content = file.read_text(encoding="utf-8")
-     lines = file_path.read_text(encoding="utf-8").splitlines()
+     ENCODING = "utf-8"
      ```
-     【F:main.py†L28-L33】【F:main.py†L128-L149】
+     【F:main.py†L23-L27】
+   - All `aiofiles.open` calls pass `encoding=ENCODING`.
+     【F:main.py†L82-L245】
 
 19. **`date` class shadowed in `save_entry`** (fixed)
    - The parameter `date` in `save_entry` obscures the imported `date` class from `datetime`, which can be confusing and may lead to mistakes if the function later needs the class.

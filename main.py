@@ -23,6 +23,7 @@ app = FastAPI()
 DATA_DIR = Path("/journals")
 PROMPTS_FILE = Path("/app/prompts.json")
 STATIC_DIR = Path("/app/static")
+ENCODING = "utf-8"
 
 # Cache for loaded prompts stored on the FastAPI app state
 app.state.prompts_cache = None
@@ -78,7 +79,7 @@ async def index(request: Request):
     file_path = safe_entry_path(date_str)
 
     if file_path.exists():
-        async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
+        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
             md_content = await fh.read()
         prompt, entry = parse_entry(md_content)
         if not prompt and not entry:
@@ -116,7 +117,7 @@ async def save_entry(data: dict):
     except ValueError:
         return {"status": "error", "message": "Invalid date"}
     markdown = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
-    async with aiofiles.open(file_path, "w", encoding="utf-8") as fh:
+    async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
         await fh.write(markdown)
 
     return {"status": "success"}
@@ -127,7 +128,7 @@ async def get_entry(entry_date: str):
     """Return the full markdown entry for the given date."""
     file_path = safe_entry_path(entry_date)
     if file_path.exists():
-        async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
+        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
             content = await fh.read()
         return {
             "date": entry_date,
@@ -140,7 +141,7 @@ async def load_entry(entry_date: str):
     """Load the textual content for an entry without headers."""
     file_path = safe_entry_path(entry_date)
     if file_path.exists():
-        async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
+        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
             content = await fh.read()
         # Parse markdown to extract entry text only
         parts = content.split("# Entry\n", 1)
@@ -156,7 +157,7 @@ async def load_prompts():
         async with PROMPTS_LOCK:
             if app.state.prompts_cache is None:
                 try:
-                    async with aiofiles.open(PROMPTS_FILE, "r", encoding="utf-8") as fh:
+                    async with aiofiles.open(PROMPTS_FILE, "r", encoding=ENCODING) as fh:
                         prompts_text = await fh.read()
                     app.state.prompts_cache = json.loads(prompts_text)
                 except (FileNotFoundError, json.JSONDecodeError):
@@ -219,7 +220,7 @@ async def archive_view(request: Request):
             continue  # Skip malformed filenames
 
         month_key = entry_date.strftime("%Y-%m")
-        async with aiofiles.open(file, "r", encoding="utf-8") as fh:
+        async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
             content = await fh.read()
         entries_by_month[month_key].append((entry_date.isoformat(), content))
 
@@ -241,7 +242,7 @@ async def view_entry(request: Request, entry_date: str):
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Entry not found")
 
-    async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
+    async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
         md_content = await fh.read()
 
     prompt, entry = parse_entry(md_content)
