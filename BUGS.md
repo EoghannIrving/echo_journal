@@ -77,15 +77,17 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L92-L93】
 
-9. **Missing data directory creation**
-   - `save_entry` writes to `DATA_DIR` without ensuring the folder exists. The first save will fail if `/journals` has not been created or mounted.
-   - Lines:
+9. **Missing data directory creation** (fixed)
+   - `save_entry` now ensures the `/journals` folder exists before writing.
+   - Updated lines:
      ```python
-     file_path = DATA_DIR / f"{date}.md"
+     # Ensure /journals exists before attempting to save
+     DATA_DIR.mkdir(parents=True, exist_ok=True)
+     file_path = DATA_DIR / f"{entry_date}.md"
      markdown = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
-     file_path.write_text(markdown)
+     file_path.write_text(markdown, encoding="utf-8")
      ```
-     【F:main.py†L48-L60】
+     【F:main.py†L60-L70】
 
 10. **`view_entry` returns success even when file missing**
    - The endpoint always returns the journal template, leaving `prompt` and `entry` empty instead of sending a 404 for nonexistent dates.

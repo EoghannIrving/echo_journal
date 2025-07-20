@@ -62,6 +62,9 @@ async def save_entry(data: dict):
     if not entry_date or not content or not prompt:
         return {"status": "error", "message": "Missing fields"}
 
+    # Ensure /journals exists before attempting to save
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
     file_path = DATA_DIR / f"{entry_date}.md"
     markdown = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
     file_path.write_text(markdown, encoding="utf-8")
