@@ -230,13 +230,20 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L87-L95】
 
-22. **`generate_prompt` assumes `categories` key exists**
-   - If `prompts.json` lacks the `categories` key, `generate_prompt` raises a `KeyError` when accessing `prompts["categories"].keys()`.
-   - Lines:
+22. **`generate_prompt` assumes `categories` key exists** (fixed)
+   - If `prompts.json` lacked the `categories` key, `generate_prompt` raised a `KeyError` when accessing `prompts["categories"].keys()`.
+   - The function now safely retrieves the dictionary and handles missing or invalid values.
+   - Updated lines:
      ```python
-     categories = list(prompts["categories"].keys())
+     categories_dict = prompts.get("categories")
+     if not isinstance(categories_dict, dict):
+         return {"category": None, "prompt": "No categories found"}
+
+     categories = list(categories_dict.keys())
+     ...
+     candidates = categories_dict.get(category, [])
      ```
-     【F:main.py†L176-L177】
+     【F:main.py†L174-L190】
 
 23. **`safe_entry_path` allows empty filenames**
    - Passing an empty `entry_date` results in the path `/journals/.md` because the sanitized name becomes an empty string.
