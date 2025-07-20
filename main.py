@@ -23,8 +23,8 @@ DATA_DIR = Path("/journals")
 PROMPTS_FILE = Path("/app/prompts.json")
 STATIC_DIR = Path("/app/static")
 
-# Cache for loaded prompts
-PROMPTS_CACHE = None
+# Cache for loaded prompts stored on the FastAPI app state
+app.state.prompts_cache = None
 PROMPTS_LOCK = asyncio.Lock()
 
 # Mount all static files
@@ -127,18 +127,17 @@ async def load_entry(entry_date: str):
 
 
 async def load_prompts():
-    """Load the prompts file once and cache it."""
-    global PROMPTS_CACHE
-    if PROMPTS_CACHE is None:
+    """Load and cache journal prompts."""
+    if app.state.prompts_cache is None:
         async with PROMPTS_LOCK:
-            if PROMPTS_CACHE is None:
+            if app.state.prompts_cache is None:
                 try:
                     async with aiofiles.open(PROMPTS_FILE, "r", encoding="utf-8") as fh:
                         prompts_text = await fh.read()
-                    PROMPTS_CACHE = json.loads(prompts_text)
+                    app.state.prompts_cache = json.loads(prompts_text)
                 except (FileNotFoundError, json.JSONDecodeError):
-                    PROMPTS_CACHE = {}
-    return PROMPTS_CACHE
+                    app.state.prompts_cache = {}
+    return app.state.prompts_cache
 
 
 async def generate_prompt():
@@ -261,4 +260,3 @@ async def view_entry(request: Request, entry_date: str):
 async def settings_page(request: Request):
     """Render the user settings page."""
     return templates.TemplateResponse("settings.html", {"request": request})
-
