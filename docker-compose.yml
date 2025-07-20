@@ -6,6 +6,6 @@ services:
     volumes:
       - ./static:/app/static
       - ./prompts.json:/app/prompts.json
-      - /mnt/Movies-And-More/journals:/journals
+      - ${JOURNALS_DIR:-/mnt/nas/journals}:/journals
     environment:
       - TZ=America/New_York

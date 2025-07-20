@@ -33,10 +33,11 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
    Ensure you have Docker and Docker Compose installed.
 
 2. **NAS journal storage**
-   Adjust `docker-compose.yml` if your NAS path differs. Example:
+   The NAS location can be configured with the `JOURNALS_DIR` environment
+   variable used in `docker-compose.yml`. Example:
    ```yaml
    volumes:
-     - /mnt/nas/journals:/journals
+     - ${JOURNALS_DIR:-/mnt/nas/journals}:/journals
    ```
 
 3. **Build and run**
