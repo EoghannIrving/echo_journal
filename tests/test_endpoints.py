@@ -81,7 +81,7 @@ def test_view_entry_existing(client):
 
 def test_view_entry_missing(client):
     resp = client.get('/view/2020-04-04')
-    assert resp.status_code == 200
+    assert resp.status_code == 404
 
 
 def test_archive_view(client):
@@ -125,4 +125,4 @@ def test_get_entry_invalid_date(client):
 
 def test_view_entry_traversal(client):
     resp = client.get('/view/../../etc/passwd')
-    assert resp.status_code == 200
+    assert resp.status_code == 404
