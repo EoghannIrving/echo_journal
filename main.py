@@ -12,7 +12,7 @@ import asyncio
 
 import aiofiles
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, HTMLResponse
@@ -215,26 +215,28 @@ async def view_entry(request: Request, entry_date: str):
     file_path = safe_entry_path(entry_date)
     prompt = ""
     entry = ""
-    if file_path.exists():
-        async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
-            lines = (await fh.read()).splitlines()
-        current_section = None
-        buffer = []
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Entry not found")
 
-        for line in lines:
-            if line.strip() == "# Prompt":
-                current_section = "prompt"
-                continue
-            if line.strip() == "# Entry":
-                current_section = "entry"
-                continue
+    async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
+        lines = (await fh.read()).splitlines()
+    current_section = None
+    buffer = []
 
-            if current_section == "prompt":
-                prompt += line.strip()  # Assumes single-line prompt (adjust if multi-line later)
-            elif current_section == "entry":
-                buffer.append(line)
+    for line in lines:
+        if line.strip() == "# Prompt":
+            current_section = "prompt"
+            continue
+        if line.strip() == "# Entry":
+            current_section = "entry"
+            continue
 
-        entry = "\n".join(buffer).strip()
+        if current_section == "prompt":
+            prompt += line.strip()  # Assumes single-line prompt (adjust if multi-line later)
+        elif current_section == "entry":
+            buffer.append(line)
+
+    entry = "\n".join(buffer).strip()
 
     return templates.TemplateResponse(
         "echo_journal.html",
