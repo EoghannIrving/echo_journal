@@ -119,10 +119,10 @@ def generate_prompt():
 def get_season(target_date):
     """Return the season name for the given date."""
     year = target_date.year
-    spring_start = datetime.date(year, 3, 1)
-    summer_start = datetime.date(year, 6, 1)
-    autumn_start = datetime.date(year, 9, 1)
-    winter_start = datetime.date(year, 12, 1)
+    spring_start = date(year, 3, 1)
+    summer_start = date(year, 6, 1)
+    autumn_start = date(year, 9, 1)
+    winter_start = date(year, 12, 1)
 
     if spring_start <= target_date < summer_start:
         return "Spring"

@@ -2,15 +2,14 @@
 
 The following issues were identified while reviewing the current code base.
 
-1. **Invalid call to `datetime.date`**
-   - `get_season` tries to use `datetime.date` even though `datetime` was imported as the `datetime` class, not the module. This raises a `TypeError` at runtime.
-   - Lines showing the issue:
+1. **Invalid call to `datetime.date`** (fixed)
+   - `get_season` previously used `datetime.date` even though `datetime` was imported as the `datetime` class. The code now correctly calls the `date` constructor.
+   - Fixed lines:
      ```python
-     def get_season(date):
-         Y = date.year
-         if date >= datetime.date(Y, 3, 1) and date < datetime.date(Y, 6, 1):
+     spring_start = date(year, 3, 1)
+     summer_start = date(year, 6, 1)
      ```
-     【F:main.py†L110-L118】
+     【F:main.py†L121-L125】
 
 2. **Duplicate `PROMPTS_FILE` constant**
    - `PROMPTS_FILE` is defined twice in `main.py` (lines 13 and 85). The second definition is redundant.
