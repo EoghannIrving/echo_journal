@@ -193,6 +193,13 @@ async def view_entry(request: Request, entry_date: str):
             "content": entry,
             "date": entry_date,
             "prompt": prompt,
-            "readonly": True  # Read-only mode for archive
+        "readonly": True  # Read-only mode for archive
         }
     )
+
+
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    """Render the user settings page."""
+    return templates.TemplateResponse("settings.html", {"request": request})
+
