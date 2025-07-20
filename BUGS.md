@@ -44,17 +44,14 @@ The following issues were identified while reviewing the current code base.
      【F:main.py†L150-L158】
 
 
-5. **Unsanitized date parameter allows path traversal**
-   - Several endpoints build file paths directly from user-supplied `date` values without validation.
-   - An attacker could supply `../` sequences to read or overwrite arbitrary files.
-   - Affected lines include:
+5. **Unsanitized date parameter allows path traversal** (fixed)
+   - Endpoints previously built file paths directly from user input, allowing `../` sequences to escape the journals directory.
+   - All routes now use `safe_entry_path` to sanitize and validate paths.
+   - Updated lines:
      ```python
-     file_path = DATA_DIR / f"{date}.md"      # save_entry
-     path = DATA_DIR / year / f"{date}.md"    # get_entry
-     file_path = DATA_DIR / f"{date}.md"      # load_entry
-     file_path = DATA_DIR / f"{entry_date}.md"  # view_entry
+     file_path = safe_entry_path(entry_date)
      ```
-     【F:main.py†L48-L82】【F:main.py†L143-L146】
+     【F:main.py†L102-L118】
 
 6. **Prompt inserted into JavaScript without proper escaping** (fixed)
    - `echo_journal.html` previously embedded the prompt using `{{ prompt | escape }}` inside a template literal.
@@ -103,25 +100,23 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L60-L70】
 
-10. **`view_entry` returns success even when file missing**
-   - The endpoint always returns the journal template, leaving `prompt` and `entry` empty instead of sending a 404 for nonexistent dates.
-   - Lines:
+10. **`view_entry` returns success even when file missing** (fixed)
+   - The endpoint now checks for the file and raises `HTTPException(status_code=404)` when not found.
+   - Updated lines:
      ```python
-     if file_path.exists():
-         lines = file_path.read_text(encoding="utf-8").splitlines()
-         ...
-     return templates.TemplateResponse(...)
+     if not file_path.exists():
+         raise HTTPException(status_code=404, detail="Entry not found")
      ```
-     【F:main.py†L143-L176】
+     【F:main.py†L212-L219】
 
-11. **`view_entry` assumes single-line prompt**
-   - When parsing a saved entry, the code concatenates all lines under `# Prompt` without newlines. Multi-line prompts will be collapsed.
-   - Lines:
+11. **`view_entry` assumes single-line prompt** (fixed)
+   - The parser previously appended lines without newlines. It now accumulates lines and joins them preserving line breaks.
+   - Updated lines:
      ```python
      if current_section == "prompt":
-         prompt += line.strip()  # Assumes single-line prompt
+         prompt_lines.append(line.rstrip())
      ```
-     【F:main.py†L161-L163】
+     【F:main.py†L229-L233】
 
 12. **`load_entry` returns HTTP 200 on missing file** (fixed)
    - The endpoint now returns a proper 404 JSON response when the entry does not exist.
@@ -134,33 +129,35 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L86-L96】
 
-13. **Biased category selection in `generate_prompt`**
-   - The category is chosen using `today.day % len(categories)`. This repeats the same categories on certain days and is predictable.
-   - Lines:
+13. **Biased category selection in `generate_prompt`** (fixed)
+   - The category used to be chosen with `today.day % len(categories)`, causing predictable repetition.
+   - The function now selects a category randomly:
      ```python
-     category_index = today.day % len(categories)
-     category = categories[category_index]
+     category = random.choice(categories)
      ```
-     【F:main.py†L98-L100】
+     【F:main.py†L157-L158】
 
-14. **Blocking file I/O in async endpoints**
-   - Functions like `index` and `save_entry` call `read_text()` and `write_text()` directly. These synchronous operations can block the event loop under load.
-   - Lines:
+14. **Blocking file I/O in async endpoints** (fixed)
+   - The application now uses `aiofiles` for all file reads and writes to avoid blocking the event loop.
+   - Updated lines:
      ```python
-     md_content = file_path.read_text()
-     file_path.write_text(markdown)
+     async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
+         md_content = await fh.read()
+     async with aiofiles.open(file_path, "w", encoding="utf-8") as fh:
+         await fh.write(markdown)
      ```
-     【F:main.py†L28-L33】【F:main.py†L56-L60】
+     【F:main.py†L30-L69】
 
-15. **Prompts file reloaded on every request**
-   - `generate_prompt` reads and parses `prompts.json` each time it is called. Caching the file contents would avoid unnecessary disk I/O.
-   - Lines:
+15. **Prompts file reloaded on every request** (fixed)
+   - Journal prompts are now loaded once and cached in `app.state.prompts_cache`.
+   - Updated lines:
      ```python
-     prompts = json.loads(PROMPTS_FILE.read_text())
+     async with PROMPTS_LOCK:
+         prompts_text = await fh.read()
      ```
-     【F:main.py†L92-L93】
+     【F:main.py†L116-L134】
 
-16. **Outdated project structure in README**
+16. **Outdated project structure in README** (fixed)
    - The README lists files that do not actually exist and shows `echo_journal.html` under `static/` instead of `templates/`.
    - Lines:
      ```
@@ -174,7 +171,7 @@ The following issues were identified while reviewing the current code base.
     ```
     【F:README.md†L18-L27】
 
-17. **README storage path inconsistent with code**
+17. **README storage path inconsistent with code** (fixed)
    - Documentation claims entries are stored in `/journals/YYYY/YYYY-MM-DD.md`, but `save_entry` actually writes to `/journals/<date>.md` with no year subfolder.
    - README lines:
      ```
@@ -187,7 +184,7 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L57-L58】
 
-18. **Inconsistent file encoding handling**
+18. **Inconsistent file encoding handling** (fixed)
    - Some functions call `read_text()` without specifying an encoding while others pass `encoding="utf-8"`. This may lead to decoding issues on systems with a different default encoding.
    - Examples:
      ```python
@@ -197,7 +194,7 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L28-L33】【F:main.py†L128-L149】
 
-19. **`date` class shadowed in `save_entry`**
+19. **`date` class shadowed in `save_entry`** (fixed)
    - The parameter `date` in `save_entry` obscures the imported `date` class from `datetime`, which can be confusing and may lead to mistakes if the function later needs the class.
    - Lines:
      ```python

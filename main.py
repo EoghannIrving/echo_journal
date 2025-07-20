@@ -154,8 +154,7 @@ async def generate_prompt():
     if not categories:
         return {"category": None, "prompt": "No categories found"}
 
-    category_index = today.day % len(categories)
-    category = categories[category_index]
+    category = random.choice(categories)
 
     candidates = prompts["categories"].get(category, [])
     if not candidates:
