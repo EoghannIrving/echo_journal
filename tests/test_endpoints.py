@@ -1,5 +1,11 @@
 """Endpoint tests for the Echo Journal application."""
 
+# Disable fixture name shadowing warnings in test functions.
+# pytest expects tests to accept the ``test_client`` fixture as an argument,
+# which triggers ``redefined-outer-name`` from pylint.
+#
+# pylint: disable=redefined-outer-name
+
 import shutil
 from pathlib import Path
 
