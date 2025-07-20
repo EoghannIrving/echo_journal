@@ -75,14 +75,20 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L28-L33】
 
-8. **`generate_prompt` lacks error handling**
-   - If `prompts.json` is missing or malformed, `json.loads` will raise an exception and crash the app.
-   - Consider catching `FileNotFoundError` and `JSONDecodeError`.
-   - Lines:
+8. **`generate_prompt` lacks error handling** (fixed)
+   - The function now catches `FileNotFoundError` and `JSONDecodeError` when
+     loading `prompts.json`.
+   - Updated lines:
      ```python
-     prompts = json.loads(PROMPTS_FILE.read_text())
+     try:
+         prompts_text = PROMPTS_FILE.read_text(encoding="utf-8")
+         prompts = json.loads(prompts_text)
+     except FileNotFoundError:
+         return {"category": None, "prompt": "Prompts file not found"}
+     except json.JSONDecodeError:
+         return {"category": None, "prompt": "Invalid prompts file"}
      ```
-     【F:main.py†L92-L93】
+     【F:main.py†L106-L112】
 
 9. **Missing data directory creation** (fixed)
    - `save_entry` now ensures the `/journals` folder exists before writing.
