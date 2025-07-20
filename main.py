@@ -6,6 +6,7 @@ from collections import defaultdict
 from datetime import date, datetime
 import json
 from pathlib import Path
+import re
 import random
 import asyncio
 
@@ -32,12 +33,25 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 # Setup templates
 templates = Jinja2Templates(directory="templates")
 
+
+def safe_entry_path(entry_date: str) -> Path:
+    """Return a normalized path for the given entry date inside DATA_DIR."""
+    sanitized = Path(entry_date).name
+    sanitized = re.sub(r"[^0-9A-Za-z_-]", "_", sanitized)
+    path = (DATA_DIR / sanitized).with_suffix(".md")
+    # Ensure the path cannot escape DATA_DIR
+    try:
+        path.resolve().relative_to(DATA_DIR.resolve())
+    except ValueError as exc:
+        raise ValueError("Invalid entry date") from exc
+    return path
+
 @app.get("/")
 async def index(request: Request):
     """Render the journal entry page for the current day."""
     today = date.today()
     date_str = today.isoformat()
-    file_path = DATA_DIR / f"{date_str}.md"
+    file_path = safe_entry_path(date_str)
 
     if file_path.exists():
         async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
@@ -73,7 +87,10 @@ async def save_entry(data: dict):
     # Ensure /journals exists before attempting to save
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    file_path = DATA_DIR / f"{entry_date}.md"
+    try:
+        file_path = safe_entry_path(entry_date)
+    except ValueError:
+        return {"status": "error", "message": "Invalid date"}
     markdown = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
     async with aiofiles.open(file_path, "w", encoding="utf-8") as fh:
         await fh.write(markdown)
@@ -84,7 +101,7 @@ async def save_entry(data: dict):
 @app.get("/entry/{entry_date}")
 async def get_entry(entry_date: str):
     """Return the full markdown entry for the given date."""
-    file_path = DATA_DIR / f"{entry_date}.md"
+    file_path = safe_entry_path(entry_date)
     if file_path.exists():
         async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
             content = await fh.read()
@@ -97,7 +114,7 @@ async def get_entry(entry_date: str):
 @app.get("/entry")
 async def load_entry(entry_date: str):
     """Load the textual content for an entry without headers."""
-    file_path = DATA_DIR / f"{entry_date}.md"
+    file_path = safe_entry_path(entry_date)
     if file_path.exists():
         async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
             content = await fh.read()
@@ -195,7 +212,7 @@ async def archive_view(request: Request):
 @app.get("/view/{entry_date}")
 async def view_entry(request: Request, entry_date: str):
     """Display a previously written journal entry."""
-    file_path = DATA_DIR / f"{entry_date}.md"
+    file_path = safe_entry_path(entry_date)
     prompt = ""
     entry = ""
     if file_path.exists():
