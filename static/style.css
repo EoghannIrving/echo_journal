@@ -1,0 +1,276 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&family=Merriweather:wght@400;700&display=swap');
+
+html, body {
+  min-height: 100%;
+}
+main {
+  flex: 1;
+}
+
+body {
+  background-color: #f5f5f5;
+  color: #1f2937;
+  font-family: 'Nunito', sans-serif;
+  line-height: 1.6;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #222;
+    color: #f5f5f5;
+  }
+}
+
+header h1 {
+  font-size: clamp(1.75rem, 2vw + 1rem, 2.5rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.prompt-section {
+  padding: 1rem;
+  border-bottom: 1px solid #4b5563;
+  margin-bottom: 1.5rem;
+}
+
+.prompt-text {
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  font-family: 'Merriweather', serif;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.microcopy {
+  font-size: clamp(0.9rem, 0.8vw + 0.8rem, 1rem);
+  color: #6b7280;
+  margin-top: 0;
+  text-align: center;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .microcopy {
+    color: #9ca3af; /* Tailwind gray-400 */
+  }
+}
+
+
+textarea.journal-textarea {
+  display: block;
+  width: 90%;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  height: auto;
+  min-height: 6rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background-color: #f0f4f8;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  font-family: 'Merriweather', serif;
+  font-size: clamp(1rem, 1vw + 0.9rem, 1.25rem);
+  line-height: 1.625;
+/*  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); */
+  transition: all 0.3s ease;
+  border-radius: 1rem;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.05),
+              inset 0 -1px 2px rgba(0,0,0,0.1),
+              0 4px 12px rgba(0,0,0,0.2);
+  background-image: image-set(
+    url('/static/textures/paper-texture.avif') type('image/avif'),
+    url('/static/textures/paper-texture.webp') type('image/webp')
+  );
+  background-repeat: repeat;
+  background-size: 512px 512px;
+  background-blend-mode: multiply; /* for light mode */
+}
+
+/* Dark mode adjustment */
+@media (prefers-color-scheme: dark) {
+  textarea.journal-textarea {
+    background-color: #666666;
+    background-blend-mode: multiply; /* change from screen to multiply */
+  }
+}
+
+textarea.journal-textarea::placeholder {
+  color: #9ca3af;
+}
+
+textarea.journal-textarea:focus {
+  outline: none;
+  border-color: #64748b;
+  box-shadow: 0 0 0 2px #64748b;
+}
+
+@media (prefers-color-scheme: dark) {
+  textarea.journal-textarea {
+    background-image: image-set(
+      url('/static/textures/paper-texture.avif') type('image/avif'),
+      url('/static/textures/paper-texture.webp') type('image/webp')
+    );
+    background-repeat: repeat;
+    background-size: 512px 512px;
+    color: #f5f5f5;
+    border-color: #4b5563;
+    background-color: #374151; /* dark slate tone */
+    background-blend-mode: multiply;
+  }
+}
+
+button.save-button {
+  display: block;
+  width: 65%;
+  max-width: 15rem;
+  margin: 0.75rem auto 0 auto;
+  background-color: #64748b;
+  color: #ffffff;
+  border-radius: 1rem;
+  padding: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-family: 'Nunito', sans-serif;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+button.save-button:hover {
+  background-color: #475569;
+  filter: brightness(1.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  button.save-button {
+    background-color: #7b8794;
+  }
+  button.save-button:hover {
+    background-color: #64748b;
+  }
+}
+
+#save-status p {
+  font-size: 0.75rem;
+  text-align: center;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+#save-status p.active {
+  display: block;
+}
+
+.footer-text {
+  font-size: clamp(0.9rem, 0.8vw + 0.8rem, 1rem); /* match improved microcopy sizing */
+  color: #6b7280;
+  text-align: center;
+  margin-top: 2rem;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+/*  opacity: 0.6; */
+}
+
+@media (prefers-color-scheme: dark) {
+  .footer-text {
+    color: #9ca3af; /* Tailwind gray-400 */
+  }
+}
+
+
+.welcome-message {
+  opacity: 0;
+  transition: opacity 2s ease 0.3s;
+  font-family: 'Merriweather', serif;
+  font-weight: 700;
+  font-size: clamp(1.75rem, 2vw + 1rem, 2.5rem);
+  text-align: center;
+  margin-bottom: 0.5rem;
+  transition: opacity 2s ease 0.3s;
+}
+
+body {
+  animation: fadeInBody 1s ease;
+}
+
+@keyframes fadeInBody {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Subtle inline logo styling */
+.logo-inline {
+  height: 4rem;
+  vertical-align: middle;
+  opacity: 0.5;
+/*  filter: brightness(0) invert(0); /* Normal appearance in light mode */
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+
+@media (prefers-color-scheme: dark) {
+  textarea.journal-textarea {
+    box-shadow:
+      inset 0 1px 2px rgba(255, 255, 255, 0.08),
+      0 1px 6px rgba(255, 255, 255, 0.12);
+  }
+
+  button.save-button {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  button.save-button:hover {
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.2);
+
+  }
+}
+
+/* Make visited links consistent and visible in dark mode */
+a:visited {
+  color: #60a5fa; /* Tailwind's blue-400 */
+}
+
+/* Generic muted text color for secondary microcopy */
+.text-muted {
+  color: #6b7280; /* gray-500 for light mode */
+}
+
+@media (prefers-color-scheme: dark) {
+  .text-muted {
+    color: #9ca3af; /* gray-400 for dark mode */
+  }
+}
+
+/* Divider color for list separators and left border */
+.border-divider {
+  border-color: #d1d5db; /* gray-300 for light mode */
+}
+
+@media (prefers-color-scheme: dark) {
+  .border-divider {
+    border-color: #4b5563; /* gray-600 for dark mode */
+  }
+}
+
+/* Link styling harmonized for both modes */
+.link-style {
+  color: #2563eb; /* blue-600 for light mode (vivid, readable) */
+  text-decoration: none;
+}
+
+.link-style:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-color-scheme: dark) {
+  .link-style {
+    color: #60a5fa; /* blue-400 for dark mode (brighter, readable) */
+  }
+}

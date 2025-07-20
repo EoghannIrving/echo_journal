@@ -1,0 +1,3 @@
+fastapi
+uvicorn
+Jinja2>=3.0

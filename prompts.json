@@ -1,0 +1,136 @@
+{
+  "categories": {
+    "memory": [
+      "Describe a place from your past in detail: what could you see, hear, and smell there?",
+      "Tell the full story of a memorable day long ago, including what led up to it and how you felt.",
+      "Write about a favorite object you once had \u2014 what did it look like, feel like, and why did it matter?",
+      "What was a calm moment from your past? Describe the setting, your emotions, and what made it calm.",
+      "List three things you remember clearly about your childhood home and explain why they stand out.",
+      "Describe a journey you took long ago and what you noticed along the way.",
+      "Tell the story of a place from your past that you wish you could visit again.",
+      "What did your favorite place from childhood look and feel like at different times of day?",
+      "Describe a memory that surfaces often and explore why it returns.",
+      "What object from your past would you show someone today and why?"
+    ],
+    "emotional": [
+      "How do you feel today? Describe what influenced that feeling throughout the day.",
+      "Describe your mood today in detail, including moments when it changed and why.",
+      "What emotions did you experience today? Describe a scene where they were strongest.",
+      "Tell the story of an interaction today that shaped your feelings \u2014 what happened and how did you respond?",
+      "What was the first thing that lifted your mood today and what effect did it have on the rest of your day?",
+      "When today did you feel most at ease? What made you feel that way?",
+      "Describe a moment when your emotions caught you by surprise.",
+      "When did you feel conflicted today and why?",
+      "Who or what influenced your emotional state today the most?",
+      "Describe the emotional arc of your entire day, from start to finish."
+    ],
+    "situational": [
+      "It\u2019s {{weekday}} \u2014 what did today feel like overall? Describe moments that defined the day.",
+      "How does this {{season}} feel to you right now? What details around you reflect it?",
+      "What did the weather do today and how did it affect where you went or what you did?",
+      "Describe a scene from somewhere you visited today: include sounds, colors, textures.",
+      "Where did you go today? What was your path and what drew you there?",
+      "What made today feel like a typical or unusual {{weekday}}?",
+      "Describe how time passed today \u2014 did it feel fast or slow? Why?",
+      "Was there a turning point in your day? Describe it.",
+      "Where were you when you felt most present today?",
+      "How did the spaces you inhabited today influence your experience?"
+    ],
+    "forward": [
+      "What is something you\u2019re looking forward to soon and why does it matter to you?",
+      "Describe a small plan for the coming days \u2014 how do you imagine it unfolding?",
+      "If you had a free afternoon this week, where would you go and what would you do?",
+      "What are you avoiding this week? Describe why and how that feels.",
+      "Describe a change you hope will happen soon and what it might bring.",
+      "What opportunity would you like to create for yourself this week?",
+      "What is a small risk you could take soon and what appeals to you about it?",
+      "Describe a goal you have that feels achievable and what steps you'd take next.",
+      "What project or task are you most excited to tackle next?",
+      "What habit do you hope to establish in the near future?"
+    ],
+    "observational": [
+      "Describe a sound you heard today that stayed with you. Where were you and how did it feel?",
+      "What object caught your eye today? Describe its details and why it stood out.",
+      "List three small details you noticed today and explain why they felt important.",
+      "What was an ordinary moment today that felt meaningful? Describe the scene.",
+      "Describe a routine task today \u2014 how did it feel in your body and mind?",
+      "What patterns or textures did you notice around you today?",
+      "Describe the light and shadows you observed today.",
+      "Was there a scent or taste that defined a moment of your day?",
+      "What colors stood out in your surroundings today and where did you notice them?",
+      "What contrast between natural and man-made elements did you observe today?"
+    ],
+    "people": [
+      "Who did you cross paths with today? Describe their appearance, mood, and your impression.",
+      "Write about a conversation you overheard or participated in today \u2014 where did it happen and what was said?",
+      "Describe someone\u2019s expression or mood you noticed today. What do you think they were feeling?",
+      "What surprised you about someone\u2019s behavior today? How did it affect you?",
+      "Tell the story of your most meaningful interaction today. Where did it happen and what did it mean to you?",
+      "Who felt most familiar to you today and why?",
+      "What was an unexpected interaction you had today and how did it unfold?",
+      "Describe a person you noticed from a distance and what details you observed.",
+      "Who made you smile today and what were they doing?",
+      "Who would you like to thank for something small today?"
+    ],
+    "environment": [
+      "Describe the space where you spent most of today. What details stand out?",
+      "What object was most in your view today? Describe its texture, shape, and color.",
+      "How would you describe the atmosphere of where you are right now? Include sounds, light, and feeling.",
+      "What did you hear around you today and where were you?",
+      "What part of your environment felt comforting today and why?",
+      "Describe how the light changed in your space over the course of the day.",
+      "What textures did your surroundings contain and how did they feel visually?",
+      "How was your space arranged today and did it feel orderly or chaotic?",
+      "Describe a corner or nook of your environment in detail.",
+      "Where did you feel most comfortable today and what defined that space?"
+    ],
+    "routines": [
+      "What part of your daily routine felt different today? Describe what happened and how it felt.",
+      "Describe a task you did today \u2014 how did it feel compared to usual?",
+      "Was there anything that broke your normal routine today? How did you respond?",
+      "What time of day felt most familiar today? Describe the scene and why it felt that way.",
+      "Describe the rhythm of your day \u2014 was it smooth or interrupted? What influenced it?",
+      "What part of your routine felt most grounding today?",
+      "What task today felt automatic and what did you think about while doing it?",
+      "Was there something you delayed or skipped in your usual routine today?",
+      "Describe the start or end of your day and how it set the tone.",
+      "What did you repeat today that you\u2019ve done many times before?"
+    ],
+    "nature": [
+      "What did the sky look like today? Describe colors, clouds, or light.",
+      "Describe a natural detail you observed today \u2014 where was it and what did you notice?",
+      "How did today\u2019s weather shape your experience? Include where you were and how you felt.",
+      "Did you spend time outdoors today? Describe the environment and its effect on you.",
+      "Describe a seasonal change you noticed today \u2014 what signs told you it was happening?",
+      "What plant, tree, or flower did you notice today and how did it appear?",
+      "Describe any animals, birds, or insects you saw today.",
+      "How did the air feel today \u2014 its temperature, humidity, or breeze?",
+      "What natural textures did you observe today?",
+      "Where did nature interrupt or enhance your day?"
+    ],
+    "questions": [
+      "What question did you find yourself wondering about today? When did it come to mind?",
+      "If someone asked you what today was like, how would you describe it in detail?",
+      "What would you ask your future self about this day? Why is that question meaningful?",
+      "What did you learn about yourself today? Describe a moment that revealed it.",
+      "What unanswered question are you carrying right now? How does it feel?",
+      "What question would you ask a friend about your day today?",
+      "If you could ask today\u2019s version of yourself one thing, what would it be?",
+      "What question would help you understand your mood today?",
+      "What question are you avoiding thinking about?",
+      "What\u2019s a question you answered for someone else today?"
+    ],
+    "body": [
+      "How did your body feel today? Describe when you noticed tension, relaxation, or energy.",
+      "Describe how you physically experienced a moment of today \u2014 your posture, breath, and energy.",
+      "When did you feel most comfortable or uncomfortable today? What was happening?",
+      "What did you notice about your energy today? How did it change?",
+      "Was there a moment you felt especially present in your body? Where were you and what were you doing?",
+      "How did your physical surroundings influence how your body felt today?",
+      "Describe your breathing at different points today \u2014 when was it slow, fast, calm, shallow?",
+      "How did your body react to a specific environment today?",
+      "Did you rest today and what was that rest like?",
+      "What movements or gestures did you repeat today?"
+    ]
+  }
+}

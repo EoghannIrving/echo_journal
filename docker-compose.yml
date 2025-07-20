@@ -1,0 +1,11 @@
+services:
+  echo-journal:
+    build: .
+    ports:
+      - "8510:8000"
+    volumes:
+      - ./static:/app/static
+      - ./prompts.json:/app/prompts.json
+      - /mnt/Movies-And-More/journals:/journals
+    environment:
+      - TZ=America/New_York

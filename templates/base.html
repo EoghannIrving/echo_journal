@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Echo Journal{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <!-- Favicon integration -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/echo_journal_transparent_32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/echo_journal_transparent_16x16.png">
+  <link rel="icon" type="image/x-icon" href="/static/icons/echo_journal_favicon.ico">
+  <meta name="theme-color" content="#1a1a1a">
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start p-4 space-y-6">
+  {% block content %}{% endblock %}
+</body>
+</html>

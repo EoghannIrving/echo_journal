@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Echo Journal Archives{% endblock %}
+
+{% block content %}
+<header class="flex justify-between items-center w-full max-w-md mx-auto mb-2">
+  <h1 id="welcome-message" class="welcome-message">Archive</h1>
+  <a href="/" class="text-sm link-style">Home</a>
+</header>
+
+<p class="text-sm text-muted mt-1 mb-4 text-center">
+  A gentle record of your days — grouped for easy reflection.
+</p>
+
+<div class="w-full max-w-md mx-auto">
+  {% for period, period_entries in entries.items() %}
+    <h2 class="text-lg font-medium mt-4">{{ period }}</h2>
+    <ul class="pl-4 border-l border-divider space-y-1">
+      {% for entry_date, content in period_entries %}
+        <li class="py-1 border-b border-divider">
+          <a href="/view/{{ entry_date }}" class="text-sm link-style">{{ entry_date }}</a>
+          — {{ content[:75] }}...
+        </li>
+      {% endfor %}
+    </ul>
+  {% endfor %}
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const el = document.getElementById("welcome-message");
+  if (el) {
+    requestAnimationFrame(() => {
+      el.style.opacity = 1;
+    });
+  }
+});
+</script>
+
+{% endblock %}

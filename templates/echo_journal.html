@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Echo Journal{% endblock %}
+
+{% block content %}
+<header class="flex justify-between items-center w-full max-w-md mx-auto mb-4">
+<div class="flex items-center space-x-2">
+  <h1 id="welcome-message" class="welcome-message"
+      {% if not readonly %} data-dynamic-greeting="true" {% endif %}>
+    {% if readonly %}
+      Welcome back to {{ date }}
+    {% else %}
+      Welcome back.
+    {% endif %}
+  </h1>
+</div>
+
+  <nav class="space-x-4 text-sm">
+    {% if readonly %}
+      <a href="/" class="text-blue-300 hover:underline">Home</a>
+    {% else %}
+      <a href="/archive" class="text-blue-300 hover:underline">View Archive</a>
+    {% endif %}
+  </nav>
+</header>
+  <section class="w-full max-w-md space-y-4 text-center">
+    <div class="prompt-section">
+      <p class="prompt-text">{{ prompt }}</p>
+      <p class="microcopy">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
+    </div>
+  </section>
+
+  <section class="w-full max-w-md mt-4 justify-center">
+    <textarea id="journal-text" class="journal-textarea justify-center"
+      placeholder="Write freely… describe what happened, how you felt, what you noticed, or anything else that stands out."
+      {% if readonly %}readonly{% endif %}
+      oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px'"
+      rows="4"
+    >{{ content }}</textarea>
+  </section>
+    {% if not readonly %}
+  <section class="w-full max-w-md mt-6">
+    <button id="save-button" class="save-button">Save Entry</button>
+  </section>
+    {% endif %}
+
+  <footer class="w-full max-w-md mt-8 footer-text" id="save-status">
+  <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="logo-inline">
+  {% if content %}Last saved: loaded from file{% else %}Last saved: no entry yet{% endif %} — Echo Journal
+  </footer>
+
+  <script>
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("[DEBUG] DOMContentLoaded triggered");
+
+  const el = document.getElementById("welcome-message");
+  if (el) {
+    console.log("[DEBUG] #welcome-message element found");
+
+    const wantsGreeting = el.dataset.dynamicGreeting === "true";
+    console.log("[DEBUG] wantsGreeting =", wantsGreeting);
+
+    if (wantsGreeting) {
+      const hour = new Date().getHours();
+      let greeting = "";
+
+      if (hour < 12) greeting = "☀️ Good morning.";
+      else if (hour < 18) greeting = "🌿 Good afternoon.";
+      else greeting = "🌙 Good evening.";
+
+      el.textContent = greeting;
+      console.log("[DEBUG] Greeting set:", greeting);
+    }
+
+    requestAnimationFrame(() => {
+      console.log("[DEBUG] Setting opacity = 1");
+      el.style.opacity = 1;
+    });
+  } else {
+    console.log("[DEBUG] #welcome-message element NOT found");
+  }
+});
+
+
+const saveButton = document.getElementById('save-button');
+if (saveButton) {
+  saveButton.addEventListener('click', async () => {
+    const content = document.getElementById('journal-text').value;
+    const date = "{{ date }}";
+    const prompt = `{{ prompt | escape }}`;
+
+    const response = await fetch("/entry", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ date, content, prompt })
+    });
+
+    const result = await response.json();
+    const status = document.getElementById('save-status');
+    if (result.status === "success") {
+      status.innerHTML = "<p>Last saved: just now</p>";
+    } else {
+      status.innerHTML = "<p>Save failed</p>";
+    }
+  });
+}
+
+  </script>
+{% endblock %}
