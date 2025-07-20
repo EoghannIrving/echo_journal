@@ -79,6 +79,21 @@ def test_view_entry_existing(client):
     assert 'readonly' in resp.text
 
 
+def test_view_entry_multiline_prompt(client):
+    content = '# Prompt\nLine1\nLine2\n\n# Entry\nBody'
+    (main.DATA_DIR / '2020-03-04.md').write_text(content, encoding='utf-8')
+    resp = client.get('/view/2020-03-04')
+    assert resp.status_code == 200
+    assert 'Line1' in resp.text and 'Line2' in resp.text
+    assert 'Body' in resp.text
+
+
+def test_view_entry_malformed(client):
+    (main.DATA_DIR / 'bad.md').write_text('No headings here', encoding='utf-8')
+    resp = client.get('/view/bad')
+    assert resp.status_code == 500
+
+
 def test_view_entry_missing(client):
     resp = client.get('/view/2020-04-04')
     assert resp.status_code == 404
