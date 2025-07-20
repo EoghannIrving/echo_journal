@@ -55,15 +55,15 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L48-L82】【F:main.py†L143-L146】
 
-6. **Prompt inserted into JavaScript without proper escaping**
-   - `echo_journal.html` embeds the prompt using `{{ prompt | escape }}` inside a template literal.
-   - If the prompt contains backticks or `${}`, it could break the script or enable XSS.
-   - Use the `tojson` filter instead for safe JavaScript embedding.
-   - Lines:
+6. **Prompt inserted into JavaScript without proper escaping** (fixed)
+   - `echo_journal.html` previously embedded the prompt using `{{ prompt | escape }}` inside a template literal.
+   - If the prompt contained backticks or `${}`, it could break the script or enable XSS.
+   - The template now uses the safer `tojson` filter when embedding the prompt.
+   - Updated line:
      ```html
-     const prompt = `{{ prompt | escape }}`;
+     const prompt = {{ prompt | tojson }};
      ```
-     【F:templates/echo_journal.html†L85-L92】
+     【F:templates/echo_journal.html†L90-L92】
 
 7. **Index parsing assumes perfect file formatting**
    - The `index` function splits the saved Markdown using hard-coded markers.
