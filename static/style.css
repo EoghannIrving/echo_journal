@@ -156,17 +156,6 @@ button.save-button:hover {
   }
 }
 
-#save-status p {
-  font-size: 0.75rem;
-  text-align: center;
-  color: #6b7280;
-  margin-top: 0.5rem;
-  display: none;
-}
-
-#save-status p.active {
-  display: block;
-}
 
 .footer-text {
   font-size: clamp(0.9rem, 0.8vw + 0.8rem, 1rem); /* match improved microcopy sizing */
