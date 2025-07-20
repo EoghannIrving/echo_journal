@@ -220,23 +220,30 @@ async def view_entry(request: Request, entry_date: str):
 
     async with aiofiles.open(file_path, "r", encoding="utf-8") as fh:
         lines = (await fh.read()).splitlines()
+
     current_section = None
-    buffer = []
+    prompt_lines = []
+    entry_lines = []
 
     for line in lines:
-        if line.strip() == "# Prompt":
+        stripped = line.strip()
+        if stripped == "# Prompt":
             current_section = "prompt"
             continue
-        if line.strip() == "# Entry":
+        if stripped == "# Entry":
             current_section = "entry"
             continue
 
         if current_section == "prompt":
-            prompt += line.strip()  # Assumes single-line prompt (adjust if multi-line later)
+            prompt_lines.append(line.rstrip())
         elif current_section == "entry":
-            buffer.append(line)
+            entry_lines.append(line.rstrip())
 
-    entry = "\n".join(buffer).strip()
+    if not prompt_lines or not entry_lines:
+        raise HTTPException(status_code=500, detail="Malformed entry file")
+
+    prompt = "\n".join(prompt_lines).strip()
+    entry = "\n".join(entry_lines).strip()
 
     return templates.TemplateResponse(
         "echo_journal.html",
