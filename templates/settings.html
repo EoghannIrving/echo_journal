@@ -3,12 +3,12 @@
 {% block title %}Settings - Echo Journal{% endblock %}
 
 {% block header_title %}
-  <h1 id="welcome-message" class="welcome-message">Settings</h1>
+  <h1 id="welcome-message" class="font-serif font-bold text-[clamp(1.75rem,2vw+1rem,2.5rem)] text-center mb-2 opacity-0 transition-opacity duration-[2000ms] delay-300">Settings</h1>
 {% endblock %}
 
 {% block content %}
 
-<p class="text-sm text-muted text-center mb-4">
+<p class="text-sm text-center mb-4 text-gray-500 dark:text-gray-400">
   Adjust your preferences below. Changes are saved locally in your browser.
 </p>
 
@@ -19,8 +19,8 @@
   </label>
 </form>
 
-<footer class="w-full max-w-md mt-8 footer-text">
-  <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="logo-inline">
+<footer class="w-full max-w-md mt-8 text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">
+  <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
   Echo Journal
 </footer>
 
