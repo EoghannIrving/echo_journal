@@ -245,15 +245,18 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L174-L190】
 
-23. **`safe_entry_path` allows empty filenames**
+23. **`safe_entry_path` allows empty filenames** (fixed)
    - Passing an empty `entry_date` results in the path `/journals/.md` because the sanitized name becomes an empty string.
-   - Lines:
+   - The function now rejects empty filenames and raises `ValueError`.
+   - Updated lines:
      ```python
      sanitized = Path(entry_date).name
      sanitized = re.sub(r"[^0-9A-Za-z_-]", "_", sanitized)
+     if not sanitized:
+         raise ValueError("Invalid entry date")
      path = (DATA_DIR / sanitized).with_suffix(".md")
      ```
-     【F:main.py†L38-L42】
+     【F:main.py†L57-L69】
 
 24. **Save entry script lacks error handling**
    - The JavaScript fetch request assumes a JSON response without checking `response.ok` or catching exceptions. Network failures lead to uncaught errors.
