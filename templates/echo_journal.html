@@ -123,21 +123,32 @@ if (saveButton) {
     const date = "{{ date }}";
     const prompt = {{ prompt | tojson }};
 
-    const response = await fetch("/entry", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ date, content, prompt })
-    });
+      const status = document.getElementById('save-status');
+      try {
+        const response = await fetch("/entry", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ date, content, prompt })
+        });
 
-    const result = await response.json();
-    const status = document.getElementById('save-status');
-    if (result.status === "success") {
-      status.textContent = "Last saved: just now — Echo Journal";
-      status.classList.remove('error-text');
-    } else {
-      status.textContent = "Save failed. Please try again.";
-      status.classList.add('error-text');
-    }
+        if (!response.ok) {
+          status.textContent = "Save failed. Server error.";
+          status.classList.add('error-text');
+          return;
+        }
+
+        const result = await response.json();
+        if (result.status === "success") {
+          status.textContent = "Last saved: just now — Echo Journal";
+          status.classList.remove('error-text');
+        } else {
+          status.textContent = "Save failed. Please try again.";
+          status.classList.add('error-text');
+        }
+      } catch (err) {
+        status.textContent = "Save failed. Network error.";
+        status.classList.add('error-text');
+      }
   });
 }
 
