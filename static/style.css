@@ -81,6 +81,7 @@ textarea.journal-textarea:focus {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
+  background-color: #f0f0f0;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
@@ -90,14 +91,20 @@ textarea.journal-textarea:focus {
   opacity: 1;
   pointer-events: auto;
 }
+.dark .markdown-toolbar {
+  background-color: #4b5563;
+}
 .editor-container {
-  background-color: var(--editor-bg);
+  background-color: #fff;
   border-radius: 0.75rem;
   padding: 0.75rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+.dark .editor-container {
+  background-color: #374151;
 }
 .md-btn {
   background: none;

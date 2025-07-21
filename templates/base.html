@@ -9,14 +9,30 @@
     /* Ensure Tailwind uses class-based dark mode and apply saved preference */
     tailwind = { config: { darkMode: 'class' } };
     (function () {
-      const pref = localStorage.getItem('dark-mode');
+      const applySystemPreference = () => {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+        return prefersDark;
+      };
+      let pref = localStorage.getItem('dark-mode');
       if (pref === 'true') {
         document.documentElement.classList.add('dark');
-      } else if (pref === 'false') {
-        document.documentElement.classList.remove('dark');
-      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
+      } else {
+        localStorage.removeItem('dark-mode');
+        pref = null;
+        applySystemPreference();
       }
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('dark-mode')) {
+          if (e.matches) document.documentElement.classList.add('dark');
+          else document.documentElement.classList.remove('dark');
+          updateIcon(e.matches);
+        }
+      });
     })();
   </script>
   <link rel="stylesheet" href="/static/style.css">
@@ -52,16 +68,19 @@
       if (isDark) {
         document.documentElement.classList.add('dark');
         localStorage.setItem('dark-mode', 'true');
+        updateIcon(true);
       } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('dark-mode', 'false');
+        localStorage.removeItem('dark-mode');
+        const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefers) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+        updateIcon(prefers);
       }
-      updateIcon(isDark);
     };
     updateIcon(document.documentElement.classList.contains('dark'));
     btn.addEventListener('click', () => {
-      const isDark = !document.documentElement.classList.contains('dark');
-      setDarkMode(isDark);
+      const hasPref = localStorage.getItem('dark-mode') === 'true';
+      setDarkMode(!hasPref);
     });
     window.setDarkMode = setDarkMode;
   })();
