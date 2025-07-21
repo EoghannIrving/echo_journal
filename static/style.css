@@ -298,3 +298,36 @@ a:visited {
 .error-text {
   color: #dc2626; /* red-600 */
 }
+
+/* Minimal markdown toolbar */
+.markdown-toolbar {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.markdown-toolbar .md-btn {
+  background-color: #e5e7eb; /* gray-200 */
+  border: 1px solid #d1d5db; /* gray-300 */
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.markdown-toolbar .md-btn:hover {
+  background-color: #d1d5db; /* gray-300 */
+}
+
+@media (prefers-color-scheme: dark) {
+  .markdown-toolbar .md-btn {
+    background-color: #4b5563; /* gray-600 */
+    border-color: #6b7280; /* gray-500 */
+    color: #f5f5f5;
+  }
+  .markdown-toolbar .md-btn:hover {
+    background-color: #6b7280; /* gray-500 */
+  }
+}

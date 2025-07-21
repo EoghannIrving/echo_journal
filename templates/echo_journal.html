@@ -14,12 +14,21 @@
 {% endblock %}
 
 {% block content %}
-  <section class="w-full max-w-md space-y-4 text-center">
-    <div class="prompt-section">
-      <p class="prompt-text">{{ prompt }}</p>
-      <p class="microcopy">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
-    </div>
-  </section>
+<section class="w-full max-w-md space-y-4 text-center">
+  <div class="prompt-section">
+    <p class="prompt-text">{{ prompt }}</p>
+    <p class="microcopy">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
+  </div>
+</section>
+
+{% if not readonly %}
+<section id="md-toolbar" class="w-full max-w-md flex space-x-2 justify-center markdown-toolbar" aria-label="Formatting toolbar">
+  <button type="button" class="md-btn" data-action="bold" title="Bold"><strong>B</strong></button>
+  <button type="button" class="md-btn" data-action="italic" title="Italic"><em>I</em></button>
+  <button type="button" class="md-btn" data-action="header" title="Heading">H1</button>
+  <button type="button" class="md-btn" data-action="list" title="List">&#8226;</button>
+</section>
+{% endif %}
 
 <section class="w-full max-w-md mt-4 justify-center">
   <label for="journal-text" class="sr-only">Journal entry</label>
@@ -63,6 +72,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     requestAnimationFrame(() => {
       el.style.opacity = 1;
+    });
+  }
+
+  const toolbar = document.getElementById('md-toolbar');
+  const textarea = document.getElementById('journal-text');
+  if (toolbar && textarea) {
+    toolbar.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+
+      const wrap = (token) => {
+        const selected = text.slice(start, end);
+        const result = text.slice(0, start) + token + selected + token + text.slice(end);
+        textarea.value = result;
+        textarea.selectionStart = start + token.length;
+        textarea.selectionEnd = end + token.length;
+      };
+
+      const prefixLines = (prefix) => {
+        const before = text.slice(0, start);
+        const selection = text.slice(start, end);
+        const after = text.slice(end);
+        const lines = selection.split(/\n/);
+        const formatted = lines.map(line => prefix + line).join('\n');
+        textarea.value = before + formatted + after;
+        textarea.selectionStart = start;
+        textarea.selectionEnd = start + formatted.length;
+      };
+
+      if (action === 'bold') wrap('**');
+      else if (action === 'italic') wrap('_');
+      else if (action === 'header') prefixLines('# ');
+      else if (action === 'list') prefixLines('- ');
+
+      textarea.focus();
     });
   }
 });
