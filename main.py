@@ -139,9 +139,9 @@ async def save_entry(data: dict):
         file_path = safe_entry_path(entry_date)
     except ValueError:
         return {"status": "error", "message": "Invalid date"}
-    markdown = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
+    md_text = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
     async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
-        await fh.write(markdown)
+        await fh.write(md_text)
 
     return {"status": "success"}
 
