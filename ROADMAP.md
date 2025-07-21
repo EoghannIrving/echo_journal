@@ -16,11 +16,11 @@
 - Dark mode texture consistency and polish
 
 ## Phase 3: UX polish + Markdown support (In progress)
-- **Markdown formatting toolbar (editor view):**
+- **Markdown formatting toolbar (editor view): Completed**
   - Inline helpers for `Bold`, `Italic`, `Heading`, `List`, `Quote`.
   - Minimalist design, simple JS handlers.
 
-- **Markdown rendering for `/view/<date>`:**
+- **Markdown rendering for `/view/<date>`: Completed**
   - Server-side rendering with Python `markdown`.
   - Styled output for consistent minimalist aesthetic and dark mode support.
 
