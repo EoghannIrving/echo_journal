@@ -98,7 +98,7 @@ def test_view_entry_existing(test_client):
     resp = test_client.get('/view/2020-03-03')
     assert resp.status_code == 200
     assert 'B' in resp.text
-    assert 'readonly' in resp.text
+    assert 'journal-html' in resp.text
 
 
 def test_view_entry_multiline_prompt(test_client):

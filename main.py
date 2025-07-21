@@ -12,6 +12,8 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import List, Tuple
 
+import markdown
+
 import aiofiles
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -288,11 +290,14 @@ async def view_entry(request: Request, entry_date: str):
     if not prompt or not entry:
         raise HTTPException(status_code=500, detail="Malformed entry file")
 
+    html_entry = markdown.markdown(entry)
+
     return templates.TemplateResponse(
         "echo_journal.html",
         {
             "request": request,
             "content": entry,
+            "content_html": html_entry,
             "date": entry_date,
             "prompt": prompt,
             "readonly": True,  # Read-only mode for archive
