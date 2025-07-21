@@ -10,6 +10,7 @@ import re
 import random
 import asyncio
 from typing import List, Tuple
+import os
 
 import aiofiles
 
@@ -20,9 +21,12 @@ from fastapi.responses import JSONResponse, HTMLResponse
 
 app = FastAPI()
 
-DATA_DIR = Path("/journals")
-PROMPTS_FILE = Path("/app/prompts.json")
-STATIC_DIR = Path("/app/static")
+# Allow overriding important paths via environment variables for easier testing
+# and deployment in restricted environments.
+APP_DIR = Path(os.getenv("APP_DIR", "/app"))
+DATA_DIR = Path(os.getenv("DATA_DIR", "/journals"))
+PROMPTS_FILE = Path(os.getenv("PROMPTS_FILE", str(APP_DIR / "prompts.json")))
+STATIC_DIR = Path(os.getenv("STATIC_DIR", str(APP_DIR / "static")))
 ENCODING = "utf-8"
 
 # Cache for loaded prompts stored on the FastAPI app state
