@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Echo Journal{% endblock %}</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    /* Ensure Tailwind uses class-based dark mode and apply saved preference */
+    tailwind = { config: { darkMode: 'class' } };
+    (function () {
+      const pref = localStorage.getItem('dark-mode');
+      if (pref === 'true') {
+        document.documentElement.classList.add('dark');
+      } else if (pref === 'false') {
+        document.documentElement.classList.remove('dark');
+      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
   <link rel="stylesheet" href="/static/style.css">
   <!-- Favicon integration -->
   <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/echo_journal_transparent_32x32.png">

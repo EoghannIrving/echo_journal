@@ -35,9 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggle = document.getElementById('dark-toggle');
   if (toggle) {
     const stored = localStorage.getItem('dark-mode');
-    if (stored === 'true') {
+    if (stored === 'true' ||
+        (stored === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       toggle.checked = true;
-      document.documentElement.classList.add('dark');
     }
     toggle.addEventListener('change', () => {
       if (toggle.checked) {
