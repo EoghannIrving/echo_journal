@@ -308,15 +308,6 @@ a:visited {
   gap: 0.5rem;
 }
 
-.markdown-toolbar .md-btn {
-  background-color: #e5e7eb; /* gray-200 */
-  border: 1px solid #d1d5db; /* gray-300 */
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
 .markdown-toolbar .md-btn:hover {
   background-color: #d1d5db; /* gray-300 */
 }
@@ -330,4 +321,60 @@ a:visited {
   .markdown-toolbar .md-btn:hover {
     background-color: #6b7280; /* gray-500 */
   }
+}
+
+.editor-container {
+  background-color: var(--editor-bg); /* Match dark mode theme */
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+
+.prompt-section + .editor-container {
+  margin-top: 0.5rem;
+}
+
+.editor-container:hover .markdown-toolbar,
+.editor-container:focus-within .markdown-toolbar {
+  opacity: 1;
+}
+
+
+.md-btn {
+  background: none;
+  border: none;
+  color: var(--editor-toolbar-color, #ccc);
+  cursor: pointer;
+  padding: 0.4rem  0.6rem;
+}
+
+.md-btn:hover {
+  color: var(--accent-color, #fff);
+}
+
+.journal-textarea {
+  background: transparent;
+  border: none;
+  resize: vertical;
+  width: 100%;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  min-height: 10rem;
+}
+
+.markdown-toolbar {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.editor-container:hover .markdown-toolbar,
+.editor-container:focus-within .markdown-toolbar {
+  opacity: 1;
+  pointer-events: auto;
 }

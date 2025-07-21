@@ -14,25 +14,23 @@
 {% endblock %}
 
 {% block content %}
-<section class="w-full max-w-md space-y-4 text-center">
+<section class="w-full mx-auto space-y-2 text-center">
   <div class="prompt-section">
     <p class="prompt-text">{{ prompt }}</p>
     <p class="microcopy">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
   </div>
 </section>
-
-{% if not readonly %}
-<section id="md-toolbar" class="w-full max-w-md flex space-x-2 justify-center markdown-toolbar" aria-label="Formatting toolbar">
-  <button type="button" class="md-btn" data-action="bold" title="Bold"><strong>B</strong></button>
-  <button type="button" class="md-btn" data-action="italic" title="Italic"><em>I</em></button>
-  <button type="button" class="md-btn" data-action="header" title="Heading">H1</button>
-  <button type="button" class="md-btn" data-action="list" title="List">&#8226;</button>
-</section>
-{% endif %}
-
-<section class="w-full max-w-md mt-4 justify-center">
+<section class="w-full mx-auto editor-container">
+  {% if not readonly %}
+  <div id="md-toolbar" class="flex space-x-2 justify-center markdown-toolbar" aria-label="Formatting toolbar">
+    <button type="button" class="md-btn text-base md:text-2xl" data-action="bold" title="Bold"><strong>B</strong></button>
+    <button type="button" class="md-btn text-base md:text-2xl" data-action="italic" title="Italic"><em>I</em></button>
+    <button type="button" class="md-btn text-base md:text-2xl" data-action="header" title="Heading">H1</button>
+    <button type="button" class="md-btn text-base md:text-2xl" data-action="list" title="List">&#8226;</button>
+  </div>
+  {% endif %}
   <label for="journal-text" class="sr-only">Journal entry</label>
-  <textarea id="journal-text" class="journal-textarea justify-center"
+  <textarea id="journal-text" class="journal-textarea"
     placeholder="Write freely… describe what happened, how you felt, what you noticed, or anything else that stands out."
     {% if readonly %}readonly{% endif %}
     oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px'"
@@ -40,12 +38,12 @@
   >{{ content }}</textarea>
 </section>
     {% if not readonly %}
-  <section class="w-full max-w-md mt-6">
+  <section class="w-full mx-auto mt-6">
     <button id="save-button" class="save-button" aria-label="Save entry">Save Entry</button>
   </section>
     {% endif %}
 
-  <footer class="w-full max-w-md mt-8 footer-text" id="save-status" aria-live="polite" role="status">
+  <footer class="w-full mx-auto mt-8 footer-text" id="save-status" aria-live="polite" role="status">
   <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="logo-inline">
   {% if content %}Last saved: loaded from file{% else %}Last saved: no entry yet{% endif %} — Echo Journal
   </footer>
