@@ -205,19 +205,19 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L48-L52】
 
-20. **README port mismatch**
-   - The README instructs users to visit `http://localhost:8000` but `docker-compose.yml` exposes port `8510`.
-   - README lines:
-     ```
-     Visit `http://localhost:8000` from any device on your LAN.
-     ```
-     【F:README.md†L53-L55】
-   - Compose lines:
-     ```yaml
-     ports:
-       - "8510:8000"
-     ```
-     【F:docker-compose.yml†L1-L7】
+20. **README port mismatch** (fixed)
+  - The README previously instructed users to visit `http://localhost:8000` but `docker-compose.yml` exposes port `8510`.
+  - README now shows:
+    ```
+    Visit `http://localhost:8510` from any device on your LAN.
+    ```
+    【F:README.md†L60-L63】
+  - Compose lines:
+    ```yaml
+    ports:
+      - "8510:8000"
+    ```
+    【F:docker-compose.yml†L1-L5】
 
 21. **Prompt category ignored on index page**
    - `generate_prompt` returns a category, but `index` sets the `category` template variable to an empty string.
