@@ -269,7 +269,7 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:templates/echo_journal.html†L72-L85】
 
-25. **Textarea doesn't resize on load**
+25. **Textarea doesn't resize on load** (fixed)
    - The textarea expands on user input, but when an existing entry is loaded the `oninput` handler never fires. The field remains at its default height and cuts off longer text until edited.
    - Lines:
      ```html
