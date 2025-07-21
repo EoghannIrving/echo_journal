@@ -47,8 +47,12 @@ document.addEventListener("DOMContentLoaded", () => {
           document.documentElement.classList.add('dark');
           localStorage.setItem('dark-mode', 'true');
         } else {
-          document.documentElement.classList.remove('dark');
-          localStorage.setItem('dark-mode', 'false');
+          localStorage.removeItem('dark-mode');
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
         }
       }
     });
