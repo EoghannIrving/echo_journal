@@ -75,7 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const frag = document.createDocumentFragment();
     [...text].forEach((char, idx) => {
       const span = document.createElement('span');
-      span.textContent = char;
+      // Preserve spaces when animating character fade-in
+      span.textContent = char === ' ' ? '\u00A0' : char;
       span.className = 'inline-block opacity-0 transition-opacity duration-300';
       span.style.transitionDelay = `${idx * 60}ms`;
       frag.appendChild(span);
