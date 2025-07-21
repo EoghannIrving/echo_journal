@@ -180,3 +180,9 @@ def test_view_entry_traversal(test_client):
     """Path traversal attempts in view routes should be denied."""
     resp = test_client.get("/view/../../etc/passwd")
     assert resp.status_code == 404
+
+
+def test_load_entry_empty_date(test_client):
+    """Empty entry_date should return a 404 error."""
+    resp = test_client.get("/entry", params={"entry_date": ""})
+    assert resp.status_code == 404
