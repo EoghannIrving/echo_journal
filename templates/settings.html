@@ -40,12 +40,16 @@ document.addEventListener("DOMContentLoaded", () => {
       toggle.checked = true;
     }
     toggle.addEventListener('change', () => {
-      if (toggle.checked) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('dark-mode', 'true');
+      if (typeof window.setDarkMode === 'function') {
+        window.setDarkMode(toggle.checked);
       } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('dark-mode', 'false');
+        if (toggle.checked) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('dark-mode', 'true');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('dark-mode', 'false');
+        }
       }
     });
   }
