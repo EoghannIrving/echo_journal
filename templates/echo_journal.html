@@ -3,7 +3,7 @@
 {% block title %}Echo Journal{% endblock %}
 
 {% block header_title %}
-  <h1 id="welcome-message" class="welcome-message"
+  <h1 id="welcome-message" class="font-serif font-bold text-[clamp(1.75rem,2vw+1rem,2.5rem)] text-center mb-2 opacity-0 transition-opacity duration-[2000ms] delay-300"
       {% if not readonly %} data-dynamic-greeting="true"{% endif %}>
     {% if readonly %}
       Welcome back to {{ date }}
@@ -15,9 +15,9 @@
 
 {% block content %}
 <section class="w-full mx-auto space-y-2 text-center">
-  <div class="prompt-section">
-    <p class="prompt-text">{{ prompt }}</p>
-    <p class="microcopy">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
+  <div class="p-4 border-b border-gray-600 mb-6">
+    <p class="font-serif font-medium text-[clamp(1.5rem,2vw+1rem,2rem)] leading-snug mb-2">{{ prompt }}</p>
+    <p class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
   </div>
 </section>
 <section class="w-full mx-auto editor-container">
@@ -40,12 +40,12 @@
 </section>
     {% if not readonly %}
   <section class="w-full mx-auto mt-6">
-    <button id="save-button" class="save-button" aria-label="Save entry">Save Entry</button>
+    <button id="save-button" class="block w-[65%] max-w-[15rem] mx-auto mt-3 bg-slate-500 text-white rounded-xl py-3 text-lg font-semibold shadow transition hover:bg-slate-600 hover:brightness-105 hover:shadow-lg dark:bg-gray-400 dark:hover:bg-slate-500" aria-label="Save entry">Save Entry</button>
   </section>
     {% endif %}
 
-  <footer class="w-full mx-auto mt-8 footer-text" id="save-status" aria-live="polite" role="status">
-  <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="logo-inline">
+  <footer class="w-full mx-auto mt-8 text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide" id="save-status" aria-live="polite" role="status">
+  <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
   {% if content %}Last saved: loaded from file{% else %}Last saved: no entry yet{% endif %} — Echo Journal
   </footer>
 

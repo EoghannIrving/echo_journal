@@ -3,10 +3,6 @@
 html, body {
   min-height: 100%;
 }
-main {
-  flex: 1;
-}
-
 body {
   background-color: #f5f5f5;
   color: #1f2937;
@@ -15,59 +11,24 @@ body {
   padding: 1rem;
   display: flex;
   flex-direction: column;
+  animation: fadeInBody 1s ease;
 }
-
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #222;
     color: #f5f5f5;
   }
 }
-
-header h1 {
-  font-size: clamp(1.75rem, 2vw + 1rem, 2.5rem);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  margin-bottom: 0.5rem;
+@keyframes fadeInBody {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
-
-.prompt-section {
-  padding: 1rem;
-  border-bottom: 1px solid #4b5563;
-  margin-bottom: 1.5rem;
-}
-
-.prompt-text {
-  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
-  font-family: 'Merriweather', serif;
-  font-weight: 500;
-  line-height: 1.4;
-  margin-bottom: 0.5rem;
-}
-
-.microcopy {
-  font-size: clamp(0.9rem, 0.8vw + 0.8rem, 1rem);
-  color: #6b7280;
-  margin-top: 0;
-  text-align: center;
-  line-height: 1.4;
-  letter-spacing: 0.02em;
-}
-
-@media (prefers-color-scheme: dark) {
-  .microcopy {
-    color: #9ca3af; /* Tailwind gray-400 */
-  }
-}
-
-
 textarea.journal-textarea {
   display: block;
   width: 90%;
   max-width: 90%;
   margin-left: auto;
   margin-right: auto;
-  height: auto;
   min-height: 6rem;
   padding: 1.5rem;
   border-radius: 1rem;
@@ -77,9 +38,7 @@ textarea.journal-textarea {
   font-family: 'Merriweather', serif;
   font-size: clamp(1rem, 1vw + 0.9rem, 1.25rem);
   line-height: 1.625;
-/*  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); */
   transition: all 0.3s ease;
-  border-radius: 1rem;
   box-shadow: inset 0 1px 2px rgba(255,255,255,0.05),
               inset 0 -1px 2px rgba(0,0,0,0.1),
               0 4px 12px rgba(0,0,0,0.2);
@@ -89,242 +48,45 @@ textarea.journal-textarea {
   );
   background-repeat: repeat;
   background-size: 512px 512px;
-  background-blend-mode: multiply; /* for light mode */
+  background-blend-mode: multiply;
 }
-
-/* Dark mode adjustment */
 @media (prefers-color-scheme: dark) {
   textarea.journal-textarea {
-    background-color: #666666;
-    background-blend-mode: multiply; /* change from screen to multiply */
+    background-color: #374151;
+    color: #f5f5f5;
+    border-color: #4b5563;
+    background-blend-mode: multiply;
+    box-shadow:
+      inset 0 1px 2px rgba(255, 255, 255, 0.08),
+      0 1px 6px rgba(255, 255, 255, 0.12);
   }
 }
-
 textarea.journal-textarea::placeholder {
   color: #9ca3af;
 }
-
 textarea.journal-textarea:focus {
   outline: none;
   border-color: #64748b;
   box-shadow: 0 0 0 2px #64748b;
 }
 
-@media (prefers-color-scheme: dark) {
-  textarea.journal-textarea {
-    background-image: image-set(
-      url('/static/textures/paper-texture.avif') type('image/avif'),
-      url('/static/textures/paper-texture.webp') type('image/webp')
-    );
-    background-repeat: repeat;
-    background-size: 512px 512px;
-    color: #f5f5f5;
-    border-color: #4b5563;
-    background-color: #374151; /* dark slate tone */
-    background-blend-mode: multiply;
-  }
-}
-
-button.save-button {
-  display: block;
-  width: 65%;
-  max-width: 15rem;
-  margin: 0.75rem auto 0 auto;
-  background-color: #64748b;
-  color: #ffffff;
-  border-radius: 1rem;
-  padding: 0.75rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  font-family: 'Nunito', sans-serif;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-button.save-button:hover {
-  background-color: #475569;
-  filter: brightness(1.05);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-@media (prefers-color-scheme: dark) {
-  button.save-button {
-    background-color: #7b8794;
-  }
-  button.save-button:hover {
-    background-color: #64748b;
-  }
-}
-
-
-.footer-text {
-  font-size: clamp(0.9rem, 0.8vw + 0.8rem, 1rem); /* match improved microcopy sizing */
-  color: #6b7280;
-  text-align: center;
-  margin-top: 2rem;
-  line-height: 1.4;
-  letter-spacing: 0.02em;
-/*  opacity: 0.6; */
-}
-
-@media (prefers-color-scheme: dark) {
-  .footer-text {
-    color: #9ca3af; /* Tailwind gray-400 */
-  }
-}
-
-
-.welcome-message {
-  opacity: 0;
-  transition: opacity 2s ease 0.3s;
-  font-family: 'Merriweather', serif;
-  font-weight: 700;
-  font-size: clamp(1.75rem, 2vw + 1rem, 2.5rem);
-  text-align: center;
-  margin-bottom: 0.5rem;
-  transition: opacity 2s ease 0.3s;
-}
-
-body {
-  animation: fadeInBody 1s ease;
-}
-
-@keyframes fadeInBody {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* Subtle inline logo styling */
-.logo-inline {
-  height: 4rem;
-  vertical-align: middle;
-  opacity: 0.5;
-/*  filter: brightness(0) invert(0); /* Normal appearance in light mode */
-  transition: filter 0.3s ease, opacity 0.3s ease;
-}
-
-
-@media (prefers-color-scheme: dark) {
-  textarea.journal-textarea {
-    box-shadow:
-      inset 0 1px 2px rgba(255, 255, 255, 0.08),
-      0 1px 6px rgba(255, 255, 255, 0.12);
-  }
-
-  button.save-button {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-  }
-
-  button.save-button:hover {
-    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.2);
-
-  }
-}
-
-/* Make visited links consistent and visible in dark mode */
-a:visited {
-  color: #60a5fa; /* Tailwind's blue-400 */
-}
-
-/* Generic muted text color for secondary microcopy */
-.text-muted {
-  color: #6b7280; /* gray-500 for light mode */
-}
-
-@media (prefers-color-scheme: dark) {
-  .text-muted {
-    color: #9ca3af; /* gray-400 for dark mode */
-  }
-}
-
-/* Divider color for list separators and left border */
-.border-divider {
-  border-color: #d1d5db; /* gray-300 for light mode */
-}
-
-@media (prefers-color-scheme: dark) {
-  .border-divider {
-    border-color: #4b5563; /* gray-600 for dark mode */
-  }
-}
-
-/* Link styling harmonized for both modes */
-.link-style {
-  color: #2563eb; /* blue-600 for light mode (vivid, readable) */
-  text-decoration: none;
-}
-
-.link-style:hover {
-  text-decoration: underline;
-}
-
-.active-link {
-  font-weight: 600;
-}
-
-.sticky-header {
-  position: sticky;
-  top: 0;
-  background-color: inherit;
-  z-index: 10;
-}
-
-@media (prefers-color-scheme: dark) {
-  .link-style {
-    color: #60a5fa; /* blue-400 for dark mode (brighter, readable) */
-  }
-}
-
-/* Screen reader only helper */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Keyboard focus outline */
-:focus {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-}
-
-/* Error text */
-.error-text {
-  color: #dc2626; /* red-600 */
-}
-
-/* Minimal markdown toolbar */
 .markdown-toolbar {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   display: flex;
   justify-content: center;
   gap: 0.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
 }
-
-.markdown-toolbar .md-btn:hover {
-  background-color: #d1d5db; /* gray-300 */
+.editor-container:hover .markdown-toolbar,
+.editor-container:focus-within .markdown-toolbar {
+  opacity: 1;
+  pointer-events: auto;
 }
-
-@media (prefers-color-scheme: dark) {
-  .markdown-toolbar .md-btn {
-    background-color: #4b5563; /* gray-600 */
-    border-color: #6b7280; /* gray-500 */
-    color: #f5f5f5;
-  }
-  .markdown-toolbar .md-btn:hover {
-    background-color: #6b7280; /* gray-500 */
-  }
-}
-
 .editor-container {
-  background-color: var(--editor-bg); /* Match dark mode theme */
+  background-color: var(--editor-bg);
   border-radius: 0.75rem;
   padding: 0.75rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -332,50 +94,27 @@ a:visited {
   flex-direction: column;
   gap: 0.5rem;
 }
-
-
-.prompt-section + .editor-container {
-  margin-top: 0.5rem;
-}
-
-.editor-container:hover .markdown-toolbar,
-.editor-container:focus-within .markdown-toolbar {
-  opacity: 1;
-}
-
-
 .md-btn {
   background: none;
   border: none;
   color: var(--editor-toolbar-color, #ccc);
   cursor: pointer;
-  padding: 0.4rem  0.6rem;
+  padding: 0.4rem 0.6rem;
 }
-
 .md-btn:hover {
   color: var(--accent-color, #fff);
 }
-
-.journal-textarea {
-  background: transparent;
-  border: none;
-  resize: vertical;
-  width: 100%;
-  color: inherit;
-  font-size: 1rem;
-  line-height: 1.5;
-  min-height: 10rem;
+@media (prefers-color-scheme: dark) {
+  .markdown-toolbar .md-btn {
+    background-color: #4b5563;
+    border-color: #6b7280;
+    color: #f5f5f5;
+  }
+  .markdown-toolbar .md-btn:hover {
+    background-color: #6b7280;
+  }
 }
 
-.markdown-toolbar {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
+.error-text {
+  color: #dc2626;
 }
-
-.editor-container:hover .markdown-toolbar,
-.editor-container:focus-within .markdown-toolbar {
-  opacity: 1;
-  pointer-events: auto;
-}
-
