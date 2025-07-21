@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
       frag.appendChild(span);
     });
     el.appendChild(frag);
+    el.classList.remove('opacity-0');
 
     requestAnimationFrame(() => {
       el.querySelectorAll('span').forEach(span => span.classList.add('opacity-100'));
