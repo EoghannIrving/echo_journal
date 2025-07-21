@@ -39,7 +39,8 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 ## Setup instructions
 
 1. **Prepare your environment**
-   Ensure you have Docker and Docker Compose installed.
+    Ensure you have Docker and Docker Compose installed. If you intend to run
+    the application outside of Docker, Python 3.10 or newer is required.
 
 2. **NAS journal storage**
    The NAS location can be configured with the `JOURNALS_DIR` environment

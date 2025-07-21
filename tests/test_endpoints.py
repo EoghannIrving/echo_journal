@@ -6,7 +6,9 @@
 #
 # pylint: disable=redefined-outer-name
 
+import os
 import shutil
+import tempfile
 from pathlib import Path
 
 import pytest  # pylint: disable=import-error
@@ -14,10 +16,15 @@ from fastapi.testclient import TestClient  # pylint: disable=import-error
 
 # Prepare required directories before importing the app
 ROOT = Path(__file__).resolve().parents[1]
-APP_DIR = Path('/app')
+APP_DIR = Path(tempfile.gettempdir()) / 'ej_app'
 STATIC_DIR = APP_DIR / 'static'
 PROMPTS_FILE = APP_DIR / 'prompts.json'
-DATA_ROOT = Path('/journals')
+DATA_ROOT = Path(tempfile.gettempdir()) / 'ej_journals'
+
+os.environ['APP_DIR'] = str(APP_DIR)
+os.environ['DATA_DIR'] = str(DATA_ROOT)
+os.environ['STATIC_DIR'] = str(STATIC_DIR)
+os.environ['PROMPTS_FILE'] = str(PROMPTS_FILE)
 
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
 DATA_ROOT.mkdir(parents=True, exist_ok=True)

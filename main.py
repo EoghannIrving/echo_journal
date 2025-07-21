@@ -2,27 +2,43 @@
 
 # pylint: disable=import-error
 
+import asyncio
+import json
+import os
+import random
+import re
 from collections import defaultdict
 from datetime import date, datetime
-import json
 from pathlib import Path
-import re
-import random
-import asyncio
 from typing import List, Tuple
 
 import aiofiles
-
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+
+
+# Provide pathlib.Path.is_relative_to on Python < 3.9
+if not hasattr(Path, "is_relative_to"):
+
+    def _is_relative_to(self: Path, *other: Path) -> bool:
+        try:
+            self.relative_to(*other)
+            return True
+        except ValueError:
+            return False
+
+    Path.is_relative_to = _is_relative_to  # type: ignore[attr-defined]
 
 app = FastAPI()
 
-DATA_DIR = Path("/journals")
-PROMPTS_FILE = Path("/app/prompts.json")
-STATIC_DIR = Path("/app/static")
+# Allow overriding important paths via environment variables for easier testing
+# and deployment in restricted environments.
+APP_DIR = Path(os.getenv("APP_DIR", "/app"))
+DATA_DIR = Path(os.getenv("DATA_DIR", "/journals"))
+PROMPTS_FILE = Path(os.getenv("PROMPTS_FILE", str(APP_DIR / "prompts.json")))
+STATIC_DIR = Path(os.getenv("STATIC_DIR", str(APP_DIR / "static")))
 ENCODING = "utf-8"
 
 # Cache for loaded prompts stored on the FastAPI app state
@@ -71,6 +87,7 @@ def parse_entry(md_content: str) -> Tuple[str, str]:
     entry = "\n".join(entry_lines).strip()
     return prompt, entry
 
+
 @app.get("/")
 async def index(request: Request):
     """Render the journal entry page for the current day."""
@@ -89,15 +106,19 @@ async def index(request: Request):
         prompt = prompt_data["prompt"]
         entry = ""
 
-    return templates.TemplateResponse("echo_journal.html", {
-        "request": request,
-        "prompt": prompt,
-        "category": "",  # Optionally store saved category or leave blank for saved entries
-        "date": date_str,
-        "content": entry,
-        "readonly": False,  # Explicit
-        "active_page": "home",
-    })
+    return templates.TemplateResponse(
+        "echo_journal.html",
+        {
+            "request": request,
+            "prompt": prompt,
+            "category": "",  # Optionally store saved category or leave blank for saved entries
+            "date": date_str,
+            "content": entry,
+            "readonly": False,  # Explicit
+            "active_page": "home",
+        },
+    )
+
 
 @app.post("/entry")
 async def save_entry(data: dict):
@@ -136,6 +157,7 @@ async def get_entry(entry_date: str):
         }
     return JSONResponse(status_code=404, content={"error": "Entry not found"})
 
+
 @app.get("/entry")
 async def load_entry(entry_date: str):
     """Load the textual content for an entry without headers."""
@@ -150,14 +172,15 @@ async def load_entry(entry_date: str):
     return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
 
 
-
 async def load_prompts():
     """Load and cache journal prompts."""
     if app.state.prompts_cache is None:
         async with PROMPTS_LOCK:
             if app.state.prompts_cache is None:
                 try:
-                    async with aiofiles.open(PROMPTS_FILE, "r", encoding=ENCODING) as fh:
+                    async with aiofiles.open(
+                        PROMPTS_FILE, "r", encoding=ENCODING
+                    ) as fh:
                         prompts_text = await fh.read()
                     app.state.prompts_cache = json.loads(prompts_text)
                 except (FileNotFoundError, json.JSONDecodeError):
@@ -188,12 +211,18 @@ async def generate_prompt():
 
     candidates = categories_dict.get(category, [])
     if not candidates:
-        return {"category": category.capitalize(), "prompt": "No prompts in this category"}
+        return {
+            "category": category.capitalize(),
+            "prompt": "No prompts in this category",
+        }
 
     prompt_template = random.choice(candidates)
-    prompt = prompt_template.replace("{{weekday}}", weekday).replace("{{season}}", season)
+    prompt = prompt_template.replace("{{weekday}}", weekday).replace(
+        "{{season}}", season
+    )
 
     return {"category": category.capitalize(), "prompt": prompt}
+
 
 def get_season(target_date):
     """Return the season name for the given date."""
@@ -210,6 +239,7 @@ def get_season(target_date):
     if autumn_start <= target_date < winter_start:
         return "Autumn"
     return "Winter"
+
 
 @app.get("/archive", response_class=HTMLResponse)
 async def archive_view(request: Request):
@@ -232,11 +262,15 @@ async def archive_view(request: Request):
     # Sort months descending (latest first)
     sorted_entries = dict(sorted(entries_by_month.items(), reverse=True))
 
-    return templates.TemplateResponse("archives.html", {
-        "request": request,
-        "entries": sorted_entries,
-        "active_page": "archive",
-    })
+    return templates.TemplateResponse(
+        "archives.html",
+        {
+            "request": request,
+            "entries": sorted_entries,
+            "active_page": "archive",
+        },
+    )
+
 
 @app.get("/view/{entry_date}")
 async def view_entry(request: Request, entry_date: str):
@@ -263,7 +297,7 @@ async def view_entry(request: Request, entry_date: str):
             "prompt": prompt,
             "readonly": True,  # Read-only mode for archive
             "active_page": "archive",
-        }
+        },
     )
 
 
