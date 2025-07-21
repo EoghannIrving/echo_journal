@@ -58,6 +58,8 @@ def safe_entry_path(entry_date: str) -> Path:
     """Return a normalized path for the given entry date inside DATA_DIR."""
     sanitized = Path(entry_date).name
     sanitized = re.sub(r"[^0-9A-Za-z_-]", "_", sanitized)
+    if not sanitized:
+        raise ValueError("Invalid entry date")
     path = (DATA_DIR / sanitized).with_suffix(".md")
     # Ensure the path cannot escape DATA_DIR
     try:
@@ -149,7 +151,10 @@ async def save_entry(data: dict):
 @app.get("/entry/{entry_date}")
 async def get_entry(entry_date: str):
     """Return the full markdown entry for the given date."""
-    file_path = safe_entry_path(entry_date)
+    try:
+        file_path = safe_entry_path(entry_date)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail="Entry not found") from exc
     if file_path.exists():
         async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
             content = await fh.read()
@@ -163,7 +168,12 @@ async def get_entry(entry_date: str):
 @app.get("/entry")
 async def load_entry(entry_date: str):
     """Load the textual content for an entry without headers."""
-    file_path = safe_entry_path(entry_date)
+    try:
+        file_path = safe_entry_path(entry_date)
+    except ValueError:
+        return JSONResponse(
+            status_code=404, content={"status": "not_found", "content": ""}
+        )
     if file_path.exists():
         async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
             content = await fh.read()
@@ -277,7 +287,10 @@ async def archive_view(request: Request):
 @app.get("/view/{entry_date}")
 async def view_entry(request: Request, entry_date: str):
     """Display a previously written journal entry."""
-    file_path = safe_entry_path(entry_date)
+    try:
+        file_path = safe_entry_path(entry_date)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail="Entry not found") from exc
     prompt = ""
     entry = ""
     if not file_path.exists():
