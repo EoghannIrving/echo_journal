@@ -2,3 +2,5 @@ fastapi
 uvicorn
 Jinja2>=3.0
 aiofiles
+markdown
+httpx
