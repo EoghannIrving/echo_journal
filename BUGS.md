@@ -4,15 +4,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
 
 
 
-44. **Index route doesn't handle read errors**
-   - If opening today's entry fails (permission denied etc.) the exception isn't caught and a 500 error occurs.
-   - Lines:
-     ```python
-     async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
-         md_content = await fh.read()
-     ```
-     【F:main.py†L102-L105】
-
 45. **Archive view read errors unhandled**
    - `archive_view` opens each file without error handling; unreadable files crash the request.
    - Lines:
