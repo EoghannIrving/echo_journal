@@ -84,10 +84,16 @@ running the app in other environments.
 
 ## Additional notes
 - Markdown files easily readable and portable
-- Designed for ultra-low friction daily journaling: 
+- Designed for ultra-low friction daily journaling:
   - ≤ 5s load time target
   - ≤ 1s save time target
 - Clean separation of UI, API, and storage logic
+
+## Monitoring request timings
+
+Each response includes an `X-Response-Time` header showing how long the request
+took. You can also visit the `/metrics` endpoint to see a JSON list of recent
+paths and their durations.
 
 ## Security considerations
 
