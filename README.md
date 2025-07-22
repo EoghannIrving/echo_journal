@@ -42,13 +42,17 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
     Ensure you have Docker and Docker Compose installed. If you intend to run
     the application outside of Docker, Python 3.10 or newer is required.
 
-2. **NAS journal storage**
-   The NAS location can be configured with the `JOURNALS_DIR` environment
-   variable used in `docker-compose.yml`. Example:
+2. **Journal storage path**
+   When using Docker Compose, set the `JOURNALS_DIR` environment variable
+   to control the host path that is mounted to `/journals` inside the
+   container:
    ```yaml
    volumes:
      - ${JOURNALS_DIR:-/mnt/nas/journals}:/journals
    ```
+   If you run the application without Docker, or need to override the
+   location inside the container, set the `DATA_DIR` environment variable
+   to the desired path before starting the app.
 
 3. **Timezone**
    Adjust the timezone by editing the `TZ` variable in `docker-compose.yml`.
@@ -60,6 +64,18 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 
 5. **Access Echo Journal**
    Visit `http://localhost:8510` from any device on your LAN.
+
+## Environment variables
+
+The application looks for the following optional variables:
+
+- `DATA_DIR` – path used to store journal Markdown files
+- `APP_DIR` – base directory for static assets and templates
+- `PROMPTS_FILE` – location of the prompts JSON file
+- `STATIC_DIR` – directory for static files served under `/static`
+
+Defaults are suitable for Docker Compose but can be overridden when
+running the app in other environments.
 
 ## Daily workflow
 - Dynamic prompt rendered server-side via FastAPI + Jinja2 (`echo_journal.html`)
