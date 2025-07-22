@@ -274,8 +274,14 @@ async def archive_view(request: Request):
             continue  # Skip malformed filenames
 
         month_key = entry_date.strftime("%Y-%m")
-        async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
-            content = await fh.read()
+
+        try:
+            async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
+                content = await fh.read()
+        except OSError:
+            # Skip unreadable files instead of failing the entire request
+            continue
+
         entries_by_month[month_key].append((entry_date.isoformat(), content))
 
     # Sort months descending (latest first)

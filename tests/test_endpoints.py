@@ -11,6 +11,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+import aiofiles  # type: ignore
 
 import pytest  # pylint: disable=import-error
 from fastapi.testclient import TestClient  # pylint: disable=import-error
@@ -163,6 +164,25 @@ def test_archive_view(test_client):
     assert "2020-05-02" in resp.text
     assert "2021-06-01" in resp.text
     assert "badfile" not in resp.text
+
+
+def test_archive_view_unreadable_file(test_client, monkeypatch):
+    """Unreadable files should be skipped without error."""
+    bad_path = main.DATA_DIR / "2020-07-07.md"
+    bad_path.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+
+    orig_open = aiofiles.open
+
+    def open_mock(file, *args, **kwargs):
+        if Path(file) == bad_path:
+            raise OSError("cannot read")
+        return orig_open(file, *args, **kwargs)
+
+    monkeypatch.setattr(aiofiles, "open", open_mock)
+
+    resp = test_client.get("/archive")
+    assert resp.status_code == 200
+    assert "2020-07-07" not in resp.text
 
 
 def test_save_entry_invalid_date(test_client):
