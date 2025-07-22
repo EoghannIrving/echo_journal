@@ -219,7 +219,7 @@ The following issues were identified while reviewing the current code base.
     ```
     【F:docker-compose.yml†L1-L5】
 
-21. **Prompt category ignored on index page**
+21. **Prompt category ignored on index page** (fixed)
    - `generate_prompt` returns a category, but `index` sets the `category` template variable to an empty string.
    - Lines:
      ```python
@@ -258,7 +258,7 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:main.py†L57-L69】
 
-24. **Save entry script lacks error handling**
+24. **Save entry script lacks error handling** (fixed)
    - The JavaScript fetch request assumes a JSON response without checking `response.ok` or catching exceptions. Network failures lead to uncaught errors.
    - Lines:
      ```javascript
@@ -285,7 +285,7 @@ The following issues were identified while reviewing the current code base.
      ```
      【F:templates/echo_journal.html†L24-L32】
 
-26. **Dark mode toggle has no effect when system already uses dark mode**
+26. **Dark mode toggle has no effect when system already uses dark mode** (fixed)
    - The CSS applies dark colors automatically with the `prefers-color-scheme` media query.
    - The toggle in `settings.html` only toggles a `dark` class, which does not override these rules.
    - Lines:
