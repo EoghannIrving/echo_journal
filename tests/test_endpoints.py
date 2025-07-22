@@ -110,6 +110,16 @@ def test_view_entry_existing(test_client):
     assert "journal-html" in resp.text
 
 
+def test_view_entry_sanitized(test_client):
+    """Malicious HTML in entries should be escaped."""
+    content = "# Prompt\nA\n\n# Entry\n<script>alert('X')</script>"
+    (main.DATA_DIR / "2020-03-05.md").write_text(content, encoding="utf-8")
+    resp = test_client.get("/view/2020-03-05")
+    assert resp.status_code == 200
+    assert "<script>alert('X')" not in resp.text
+    assert "&lt;script&gt;" in resp.text
+
+
 def test_view_entry_multiline_prompt(test_client):
     """Prompts spanning multiple lines should render correctly."""
     content = "# Prompt\nLine1\nLine2\n\n# Entry\nBody"

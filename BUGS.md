@@ -2,17 +2,6 @@
 
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
 
-28. **Rendered Markdown not sanitized**
-   - Entries are converted to HTML with `markdown.markdown` and inserted with the `safe` filter. Malicious HTML is therefore executed when viewing an entry.
-   - Lines:
-     ```python
-     html_entry = markdown.markdown(entry)
-     ```
-     【F:main.py†L306-L313】
-     ```html
-     {{ content_html|safe }}
-     ```
-     【F:templates/echo_journal.html†L38-L39】
 
 38. **File I/O errors not handled**
    - `get_entry` opens files without catching `OSError`, so permission issues crash the server.

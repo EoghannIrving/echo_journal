@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 import markdown
+import bleach
 
 import aiofiles
 from fastapi import FastAPI, HTTPException, Request
@@ -304,6 +305,11 @@ async def view_entry(request: Request, entry_date: str):
         raise HTTPException(status_code=500, detail="Malformed entry file")
 
     html_entry = markdown.markdown(entry)
+    html_entry = bleach.clean(
+        html_entry,
+        tags=bleach.sanitizer.ALLOWED_TAGS.union({"p", "pre"}),
+        attributes=bleach.sanitizer.ALLOWED_ATTRIBUTES,
+    )
 
     return templates.TemplateResponse(
         "echo_journal.html",
