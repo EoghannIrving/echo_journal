@@ -9,15 +9,8 @@
 {% block content %}
 
 <p class="text-sm text-center mb-4 text-gray-500 dark:text-gray-400">
-  Adjust your preferences below. Changes are saved locally in your browser.
+  No settings are currently available.
 </p>
-
-<form class="space-y-4" aria-label="Settings form">
-  <label for="dark-toggle" class="flex items-center space-x-2">
-    <input type="checkbox" id="dark-toggle">
-    <span>Use dark mode</span>
-  </label>
-</form>
 
 <footer class="w-full max-w-md mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">
   <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
@@ -32,31 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
       el.style.opacity = 1;
     });
   }
-  const toggle = document.getElementById('dark-toggle');
-  if (toggle) {
-    const stored = localStorage.getItem('dark-mode');
-    if (stored === 'true' ||
-        (stored === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      toggle.checked = true;
-    }
-    toggle.addEventListener('change', () => {
-      if (typeof window.setDarkMode === 'function') {
-        window.setDarkMode(toggle.checked);
-      } else {
-        if (toggle.checked) {
-          document.documentElement.classList.add('dark');
-          localStorage.setItem('dark-mode', 'true');
-        } else {
-          localStorage.removeItem('dark-mode');
-          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-        }
-      }
-    });
-  }
+  // no settings to initialize
 });
 </script>
 
