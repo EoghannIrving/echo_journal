@@ -13,20 +13,20 @@
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (prefersDark) {
           document.documentElement.classList.add('dark');
-          document.body.classList.add('dark');
+          if (document.body) document.body.classList.add('dark');
         } else {
           document.documentElement.classList.remove('dark');
-          document.body.classList.remove('dark');
+          if (document.body) document.body.classList.remove('dark');
         }
         return prefersDark;
       };
       let pref = localStorage.getItem('dark-mode');
       if (pref === 'true') {
         document.documentElement.classList.add('dark');
-        document.body.classList.add('dark');
+        if (document.body) document.body.classList.add('dark');
       } else if (pref === 'false') {
         document.documentElement.classList.remove('dark');
-        document.body.classList.remove('dark');
+        if (document.body) document.body.classList.remove('dark');
       } else {
         pref = null;
         applySystemPreference();
@@ -35,10 +35,10 @@
           if (!localStorage.getItem('dark-mode')) {
             if (e.matches) {
               document.documentElement.classList.add('dark');
-              document.body.classList.add('dark');
+              if (document.body) document.body.classList.add('dark');
             } else {
               document.documentElement.classList.remove('dark');
-              document.body.classList.remove('dark');
+              if (document.body) document.body.classList.remove('dark');
             }
             if (typeof window.updateIcon === 'function') {
               window.updateIcon(e.matches);
