@@ -168,4 +168,14 @@ textarea.journal-textarea:focus {
   color: #f87171;
 }
 
+@keyframes fadeInHeader {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeInHeader 2s ease forwards;
+  animation-delay: 0.3s;
+}
+
 
