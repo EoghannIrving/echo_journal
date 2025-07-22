@@ -15,9 +15,9 @@
 <div class="w-full mx-auto">
   {% for period, period_entries in entries.items() %}
     <h2 class="text-lg font-medium mt-4">{{ period }}</h2>
-    <ul class="pl-4 border-l border-gray-300 dark:border-gray-600 space-y-1">
+    <ul class="pl-4 border-l border-gray-300 dark:border-gray-600 space-y-1 text-gray-800 dark:text-gray-100">
       {% for entry_date, content in period_entries %}
-        <li class="py-1 border-b border-gray-300 dark:border-gray-600">
+        <li class="py-1 border-b border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100">
           <a href="/view/{{ entry_date }}" class="text-sm text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 hover:underline">{{ entry_date }}</a>
         — {{ content[:75] }}...
         </li>
