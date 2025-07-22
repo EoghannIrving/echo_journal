@@ -10,7 +10,7 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 - No authentication, intended for secure local network (LAN) usage
 - Backend implemented with FastAPI and Jinja2 templates
 - Archive view to browse past entries
-- Settings page with client-side dark mode toggle
+- Settings page placeholder for future options
 
 ## Project structure
 ```

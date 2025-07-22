@@ -6,46 +6,17 @@
   <title>{% block title %}Echo Journal{% endblock %}</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
   <script>
-    /* Ensure Tailwind uses class-based dark mode and apply saved preference */
-    tailwind = { config: { darkMode: 'class' } };
-    (function () {
-      const applySystemPreference = () => {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (prefersDark) {
-          document.documentElement.classList.add('dark');
-          if (document.body) document.body.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-          if (document.body) document.body.classList.remove('dark');
-        }
-        return prefersDark;
-      };
-      let pref = localStorage.getItem('dark-mode');
-      if (pref === 'true') {
-        document.documentElement.classList.add('dark');
-        if (document.body) document.body.classList.add('dark');
-      } else if (pref === 'false') {
-        document.documentElement.classList.remove('dark');
-        if (document.body) document.body.classList.remove('dark');
-      } else {
-        pref = null;
-        applySystemPreference();
-      }
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-          if (!localStorage.getItem('dark-mode')) {
-            if (e.matches) {
-              document.documentElement.classList.add('dark');
-              if (document.body) document.body.classList.add('dark');
-            } else {
-              document.documentElement.classList.remove('dark');
-              if (document.body) document.body.classList.remove('dark');
-            }
-            if (typeof window.updateIcon === 'function') {
-              window.updateIcon(e.matches);
-            }
-          }
-        });
-    })();
+      /* Ensure Tailwind uses class-based dark mode and follow system preference */
+      tailwind = { config: { darkMode: 'class' } };
+      (function () {
+        const applyPreference = () => {
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', prefersDark);
+          if (document.body) document.body.classList.toggle('dark', prefersDark);
+        };
+        applyPreference();
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyPreference);
+      })();
   </script>
   <link rel="stylesheet" href="/static/style.css">
   <!-- Favicon integration -->
@@ -64,34 +35,11 @@
       <a href="/" class="text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 hover:underline {% if active_page == 'home' %}font-semibold{% endif %}">Home</a>
       <a href="/archive" class="text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 hover:underline {% if active_page == 'archive' %}font-semibold{% endif %}">Archive</a>
       <a href="/settings" class="text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 hover:underline {% if active_page == 'settings' %}font-semibold{% endif %}">Settings</a>
-      <button id="nav-dark-toggle" aria-label="Toggle dark mode" class="ml-2 text-xl align-middle">🌙</button>
     </nav>
   </header>
 
   <main class="prose dark:prose-invert w-full max-w-md md:max-w-2xl lg:max-w-4xl mx-auto space-y-6 bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100">
     {% block content %}{% endblock %}
   </main>
-  <script>
-  (function() {
-    const btn = document.getElementById('nav-dark-toggle');
-    if (!btn) return;
-    const updateIcon = (isDark) => { btn.textContent = isDark ? '🌞' : '🌙'; };
-    const setDarkMode = (isDark) => {
-      document.documentElement.classList.toggle('dark', isDark);
-      document.body.classList.toggle('dark', isDark);
-      localStorage.setItem('dark-mode', isDark ? 'true' : 'false');
-      updateIcon(isDark);
-    };
-    window.updateIcon = updateIcon;
-    window.setDarkMode = setDarkMode;
-    const initialDark = document.documentElement.classList.contains('dark');
-    if (initialDark) document.body.classList.add('dark');
-    updateIcon(initialDark);
-    btn.addEventListener('click', () => {
-      const currentlyDark = document.documentElement.classList.contains('dark');
-      setDarkMode(!currentlyDark);
-    });
-  })();
-  </script>
 </body>
 </html>
