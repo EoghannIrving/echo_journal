@@ -118,15 +118,15 @@ textarea.journal-textarea:focus {
   transform: translateX(-50%);
   display: none;
   justify-content: center;
-  gap: 0.5rem;
-  background-color: #f0f0f0;
+  gap: 0.25rem;
+  background-color: #f0f4f8;
   width: max-content;
 }
 .editor-container:focus-within .markdown-toolbar {
     display: flex;
 }
 .dark .markdown-toolbar {
-  background-color: #4b5563;
+  background-color: #374151;
 }
 .editor-container {
   position: relative;
