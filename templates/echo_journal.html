@@ -16,7 +16,7 @@
 {% block content %}
 <section class="w-full mx-auto space-y-2 text-center bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100">
   <div class="p-4 border-b border-gray-300 dark:border-gray-600 mb-6">
-    <p class="font-sans font-medium text-[clamp(1.5rem,2vw+1rem,2rem)] leading-snug mb-2">{{ prompt }}</p>
+    <p id="daily-prompt" class="font-sans font-medium text-[clamp(1.5rem,2vw+1rem,2rem)] leading-snug mb-2 opacity-0">{{ prompt }}</p>
     <p class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
   </div>
 </section>
@@ -54,10 +54,31 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const el = document.getElementById("welcome-message");
-  if (el) {
+  const animateText = (target, startDelay = 0) => {
+    if (!target) return 0;
+    const text = target.textContent.trim();
+    target.textContent = "";
+    const frag = document.createDocumentFragment();
+    [...text].forEach((char, idx) => {
+      const span = document.createElement('span');
+      // Preserve spaces when animating character fade-in
+      span.textContent = char === ' ' ? '\u00A0' : char;
+      span.className = 'inline-block opacity-0 transition-opacity duration-300';
+      span.style.transitionDelay = `${startDelay + idx * 60}ms`;
+      frag.appendChild(span);
+    });
+    target.appendChild(frag);
+    target.classList.remove('opacity-0');
+    requestAnimationFrame(() => {
+      target.querySelectorAll('span').forEach(span => span.classList.add('opacity-100'));
+    });
+    return startDelay + text.length * 60;
+  };
 
-    const wantsGreeting = el.dataset.dynamicGreeting === "true";
+  const welcomeEl = document.getElementById("welcome-message");
+  let delay = 0;
+  if (welcomeEl) {
+    const wantsGreeting = welcomeEl.dataset.dynamicGreeting === "true";
 
     if (wantsGreeting) {
       const hour = new Date().getHours();
@@ -67,26 +88,15 @@ document.addEventListener("DOMContentLoaded", () => {
       else if (hour < 18) greeting = "🌿 Good afternoon.";
       else greeting = "🌙 Good evening.";
 
-      el.textContent = greeting;
+      welcomeEl.textContent = greeting;
     }
 
-    const text = el.textContent.trim();
-    el.textContent = "";
-    const frag = document.createDocumentFragment();
-    [...text].forEach((char, idx) => {
-      const span = document.createElement('span');
-      // Preserve spaces when animating character fade-in
-      span.textContent = char === ' ' ? '\u00A0' : char;
-      span.className = 'inline-block opacity-0 transition-opacity duration-300';
-      span.style.transitionDelay = `${idx * 60}ms`;
-      frag.appendChild(span);
-    });
-    el.appendChild(frag);
-    el.classList.remove('opacity-0');
+    delay = animateText(welcomeEl);
+  }
 
-    requestAnimationFrame(() => {
-      el.querySelectorAll('span').forEach(span => span.classList.add('opacity-100'));
-    });
+  const promptEl = document.getElementById("daily-prompt");
+  if (promptEl) {
+    animateText(promptEl, delay + 300);
   }
 
   const toolbar = document.getElementById('md-toolbar');
