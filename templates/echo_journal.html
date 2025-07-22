@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       wordSpan.style.whiteSpace = 'nowrap';
       wordSpan.style.display = 'inline-block';
 
-      token.split('').forEach((ch) => {
+      Array.from(token).forEach((ch) => {
         const letter = document.createElement('span');
         letter.textContent = ch;
         letter.className = 'letter-span inline-block opacity-0 transition-opacity duration-200';
