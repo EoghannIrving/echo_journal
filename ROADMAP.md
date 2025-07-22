@@ -15,7 +15,7 @@
 - Accessibility improvements (link contrast, footer legibility)
 - Dark mode texture consistency and polish
 
-## Phase 3: UX polish + Markdown support (In progress)
+## Phase 3: UX polish + Markdown support ✅ Completed
 - **Markdown formatting toolbar (editor view): Completed**
   - Inline helpers for `Bold`, `Italic`, `Heading`, `List`, `Quote`.
   - Minimalist design, simple JS handlers.
@@ -24,10 +24,10 @@
   - Server-side rendering with Python `markdown`.
   - Styled output for consistent minimalist aesthetic and dark mode support.
 
-- **UI consistency audit:**
+- **UI consistency audit: Completed** 
   - Typography, spacing, shadow depth, border radii harmonization.
 
-- **Animated letter-by-letter fade-in for `#welcome-message`:**
+- **Animated letter-by-letter fade-in for `#welcome-message`: Completed**
   - Smooth staggered reveal on `/` and `/view/<date>`.
 
 ## Phase 4: Archive + Stats foundation for enrichment (Planned)
