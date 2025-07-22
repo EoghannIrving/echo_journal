@@ -281,8 +281,23 @@ The following issues were identified and subsequently resolved.
        {% if readonly %}readonly{% endif %}
        oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px'"
        rows="4"
-     >{{ content }}</textarea>
+    >{{ content }}</textarea>
+    ```
+    【F:templates/echo_journal.html†L24-L32】
+
+26. **Rendered Markdown not sanitized** (fixed)
+   - `view_entry` converted Markdown to HTML without cleaning it. Combined with
+     the `safe` filter in the template, this allowed arbitrary HTML injection.
+   - The HTML output is now sanitized using `bleach.clean` before rendering.
+   - Updated lines:
+     ```python
+     html_entry = markdown.markdown(entry)
+     html_entry = bleach.clean(
+         html_entry,
+         tags=bleach.sanitizer.ALLOWED_TAGS.union({"p", "pre"}),
+         attributes=bleach.sanitizer.ALLOWED_ATTRIBUTES,
+     )
      ```
-     【F:templates/echo_journal.html†L24-L32】
+     【F:main.py†L307-L312】
 
 
