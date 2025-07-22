@@ -298,6 +298,18 @@ The following issues were identified and subsequently resolved.
          attributes=bleach.sanitizer.ALLOWED_ATTRIBUTES,
      )
      ```
-     【F:main.py†L307-L312】
+    【F:main.py†L307-L312】
+
+27. **File I/O errors not handled** (fixed)
+   - `get_entry` now catches `OSError` when reading entry files and returns a 500 error instead of crashing.
+   - Updated lines:
+     ```python
+     try:
+         async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+             content = await fh.read()
+     except OSError as exc:
+         raise HTTPException(status_code=500, detail="Could not read entry") from exc
+     ```
+     【F:main.py†L160-L166】
 
 
