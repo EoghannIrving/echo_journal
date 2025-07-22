@@ -86,9 +86,8 @@ textarea.journal-textarea:focus {
   background-color: #f0f0f0;
   width: max-content;
 }
-.editor-container:hover .markdown-toolbar,
 .editor-container:focus-within .markdown-toolbar {
-  display: flex;
+    display: flex;
 }
 .dark .markdown-toolbar {
   background-color: #4b5563;
