@@ -322,7 +322,22 @@ The following issues were identified and subsequently resolved.
              md_content = await fh.read()
      except OSError as exc:
          raise HTTPException(status_code=500, detail="Could not read entry") from exc
-     ```
-     【F:main.py†L103-L108】
+    ```
+    【F:main.py†L103-L108】
 
+
+29. **Archive view read errors unhandled** (fixed)
+   - Unreadable files in the journals directory would raise ``OSError`` and
+     crash the ``/archive`` route. The function now skips files it cannot read
+     instead of failing the request.
+   - Fixed lines:
+     ```python
+     try:
+         async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
+             content = await fh.read()
+     except OSError:
+         # Skip unreadable files instead of failing the entire request
+         continue
+     ```
+     【F:main.py†L278-L283】
 

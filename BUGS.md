@@ -4,15 +4,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
 
 
 
-45. **Archive view read errors unhandled**
-   - `archive_view` opens each file without error handling; unreadable files crash the request.
-   - Lines:
-     ```python
-     async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
-         content = await fh.read()
-     ```
-     【F:main.py†L270-L272】
-
 46. **`view_entry` lacks file error handling**
    - Similar to the archive route, a failure to read the entry file results in a 500 response.
    - Lines:
