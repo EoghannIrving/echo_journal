@@ -3,14 +3,6 @@
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
 
 
-38. **File I/O errors not handled**
-   - `get_entry` opens files without catching `OSError`, so permission issues crash the server.
-   - Lines:
-     ```python
-     async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
-         content = await fh.read()
-     ```
-     【F:main.py†L158-L160】
 
 44. **Index route doesn't handle read errors**
    - If opening today's entry fails (permission denied etc.) the exception isn't caught and a 500 error occurs.

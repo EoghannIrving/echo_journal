@@ -157,8 +157,11 @@ async def get_entry(entry_date: str):
     except ValueError as exc:
         raise HTTPException(status_code=404, detail="Entry not found") from exc
     if file_path.exists():
-        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
-            content = await fh.read()
+        try:
+            async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+                content = await fh.read()
+        except OSError as exc:
+            raise HTTPException(status_code=500, detail="Could not read entry") from exc
         return {
             "date": entry_date,
             "content": content,
