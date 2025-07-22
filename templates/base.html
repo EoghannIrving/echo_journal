@@ -21,18 +21,21 @@
       let pref = localStorage.getItem('dark-mode');
       if (pref === 'true') {
         document.documentElement.classList.add('dark');
+      } else if (pref === 'false') {
+        document.documentElement.classList.remove('dark');
       } else {
-        localStorage.removeItem('dark-mode');
         pref = null;
         applySystemPreference();
       }
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        if (!localStorage.getItem('dark-mode')) {
-          if (e.matches) document.documentElement.classList.add('dark');
-          else document.documentElement.classList.remove('dark');
-          updateIcon(e.matches);
-        }
-      });
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+          if (!localStorage.getItem('dark-mode')) {
+            if (e.matches) document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+            if (typeof window.updateIcon === 'function') {
+              window.updateIcon(e.matches);
+            }
+          }
+        });
     })();
   </script>
   <link rel="stylesheet" href="/static/style.css">
@@ -65,24 +68,18 @@
     if (!btn) return;
     const updateIcon = (isDark) => { btn.textContent = isDark ? '🌞' : '🌙'; };
     const setDarkMode = (isDark) => {
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('dark-mode', 'true');
-        updateIcon(true);
-      } else {
-        localStorage.removeItem('dark-mode');
-        const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (prefers) document.documentElement.classList.add('dark');
-        else document.documentElement.classList.remove('dark');
-        updateIcon(prefers);
-      }
+      document.documentElement.classList.toggle('dark', isDark);
+      localStorage.setItem('dark-mode', isDark ? 'true' : 'false');
+      updateIcon(isDark);
     };
-    updateIcon(document.documentElement.classList.contains('dark'));
-    btn.addEventListener('click', () => {
-      const hasPref = localStorage.getItem('dark-mode') === 'true';
-      setDarkMode(!hasPref);
-    });
+    window.updateIcon = updateIcon;
     window.setDarkMode = setDarkMode;
+    const initialDark = document.documentElement.classList.contains('dark');
+    updateIcon(initialDark);
+    btn.addEventListener('click', () => {
+      const currentlyDark = document.documentElement.classList.contains('dark');
+      setDarkMode(!currentlyDark);
+    });
   })();
   </script>
 </body>
