@@ -101,8 +101,11 @@ async def index(request: Request):
     file_path = safe_entry_path(date_str)
 
     if file_path.exists():
-        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
-            md_content = await fh.read()
+        try:
+            async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+                md_content = await fh.read()
+        except OSError as exc:
+            raise HTTPException(status_code=500, detail="Could not read entry") from exc
         prompt, entry = parse_entry(md_content)
         if not prompt and not entry:
             entry = md_content.strip()

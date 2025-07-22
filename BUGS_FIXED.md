@@ -310,6 +310,19 @@ The following issues were identified and subsequently resolved.
      except OSError as exc:
          raise HTTPException(status_code=500, detail="Could not read entry") from exc
      ```
-     【F:main.py†L160-L166】
+    【F:main.py†L160-L166】
+
+28. **Index route doesn't handle read errors** (fixed)
+   - Opening today's entry file could raise an uncaught ``OSError`` and crash the application.
+     The index route now catches file read errors and returns an HTTP 500 response instead.
+   - Fixed lines:
+     ```python
+     try:
+         async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+             md_content = await fh.read()
+     except OSError as exc:
+         raise HTTPException(status_code=500, detail="Could not read entry") from exc
+     ```
+     【F:main.py†L103-L108】
 
 
