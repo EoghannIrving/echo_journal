@@ -54,7 +54,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const animateText = (target, startDelay = 0) => {
+  const animateText = (target, startDelay = 0, letterDelay = 80, wordDelay = 150) => {
     if (!target) return 0;
     const text = target.textContent.trim();
     target.textContent = "";
@@ -68,17 +68,26 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const span = document.createElement('span');
-      span.textContent = token;
-      span.className = 'inline-block opacity-0 transition-opacity duration-200';
-      span.style.transitionDelay = `${delay}ms`;
-      delay += 120;
-      target.appendChild(span);
+      const wordSpan = document.createElement('span');
+      wordSpan.style.whiteSpace = 'nowrap';
+      wordSpan.style.display = 'inline-block';
+
+      token.split('').forEach((ch) => {
+        const letter = document.createElement('span');
+        letter.textContent = ch;
+        letter.className = 'letter-span inline-block opacity-0 transition-opacity duration-200';
+        letter.style.transitionDelay = `${delay}ms`;
+        delay += letterDelay;
+        wordSpan.appendChild(letter);
+      });
+
+      delay += wordDelay;
+      target.appendChild(wordSpan);
     });
 
     target.classList.remove('opacity-0');
     requestAnimationFrame(() => {
-      target.querySelectorAll('span').forEach((span) => span.classList.add('opacity-100'));
+      target.querySelectorAll('.letter-span').forEach((span) => span.classList.add('opacity-100'));
     });
 
     return delay;
@@ -100,12 +109,12 @@ document.addEventListener("DOMContentLoaded", () => {
       welcomeEl.textContent = greeting;
     }
 
-    delay = animateText(welcomeEl);
+    delay = animateText(welcomeEl, 0, 120, 200);
   }
 
   const promptEl = document.getElementById("daily-prompt");
   if (promptEl) {
-    animateText(promptEl, delay + 300);
+    animateText(promptEl, delay + 300, 60, 80);
   }
 
   const toolbar = document.getElementById('md-toolbar');
