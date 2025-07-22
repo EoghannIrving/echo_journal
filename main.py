@@ -12,6 +12,9 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import List, Tuple
 
+import logging
+import time
+
 import markdown
 import bleach
 
@@ -36,6 +39,14 @@ if not hasattr(Path, "is_relative_to"):
 
 app = FastAPI()
 
+# Setup basic logging for timing middleware
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("ej.timing")
+
+# Store recent request timings on the FastAPI state
+MAX_TIMINGS = 50
+app.state.request_timings = []
+
 # Allow overriding important paths via environment variables for easier testing
 # and deployment in restricted environments.
 APP_DIR = Path(os.getenv("APP_DIR", "/app"))
@@ -53,6 +64,23 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Setup templates
 templates = Jinja2Templates(directory="templates")
+
+
+@app.middleware("http")
+async def timing_middleware(request: Request, call_next):
+    """Record processing time for each request and attach header."""
+    start = time.perf_counter()
+    response = await call_next(request)
+    elapsed = time.perf_counter() - start
+    response.headers["X-Response-Time"] = f"{elapsed:.3f}s"
+
+    timings = app.state.request_timings
+    timings.append({"path": request.url.path, "time": elapsed})
+    if len(timings) > MAX_TIMINGS:
+        timings.pop(0)
+
+    logger.info("%s completed in %.3fs", request.url.path, elapsed)
+    return response
 
 
 def safe_entry_path(entry_date: str) -> Path:
@@ -344,3 +372,9 @@ async def settings_page(request: Request):
         "settings.html",
         {"request": request, "active_page": "settings"},
     )
+
+
+@app.get("/metrics")
+async def metrics() -> JSONResponse:
+    """Return recent request timing information."""
+    return JSONResponse(content={"timings": app.state.request_timings})
