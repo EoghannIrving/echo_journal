@@ -8,6 +8,7 @@
 
 import os
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 
@@ -26,11 +27,15 @@ os.environ["DATA_DIR"] = str(DATA_ROOT)
 os.environ["STATIC_DIR"] = str(STATIC_DIR)
 os.environ["PROMPTS_FILE"] = str(PROMPTS_FILE)
 
+# Ensure directories for the application exist before importing ``main``
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
 DATA_ROOT.mkdir(parents=True, exist_ok=True)
 # copy prompts file if not already
 if not PROMPTS_FILE.exists():
     shutil.copy(ROOT / "prompts.json", PROMPTS_FILE)
+
+# Make sure the repository root is on ``sys.path`` so ``main`` can be imported
+sys.path.insert(0, str(ROOT))
 
 # Import the application after environment setup
 import main  # type: ignore  # pylint: disable=wrong-import-position
