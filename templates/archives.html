@@ -18,8 +18,8 @@
     <ul class="pl-4 border-l border-gray-300 dark:border-gray-600 space-y-1">
       {% for entry_date, content in period_entries %}
         <li class="py-1 border-b border-gray-300 dark:border-gray-600">
-          <a href="/view/{{ entry_date }}" class="text-sm text-blue-600 visited:text-blue-400 dark:text-blue-400 hover:underline">{{ entry_date }}</a>
-          — {{ content[:75] }}...
+          <a href="/view/{{ entry_date }}" class="text-sm text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 hover:underline">{{ entry_date }}</a>
+        — {{ content[:75] }}...
         </li>
       {% endfor %}
     </ul>
