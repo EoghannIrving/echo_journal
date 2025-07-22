@@ -127,5 +127,8 @@ textarea.journal-textarea:focus {
 .error-text {
   color: #dc2626;
 }
+.dark .error-text {
+  color: #f87171;
+}
 
 
