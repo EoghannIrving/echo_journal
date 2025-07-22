@@ -109,12 +109,12 @@ document.addEventListener("DOMContentLoaded", () => {
       welcomeEl.textContent = greeting;
     }
 
-    delay = animateText(welcomeEl, 0, 120, 200);
+    delay = animateText(welcomeEl, 0, 80, 150);
   }
 
   const promptEl = document.getElementById("daily-prompt");
   if (promptEl) {
-    animateText(promptEl, delay + 300, 60, 80);
+    animateText(promptEl, delay + 300, 20, 40);
   }
 
   const toolbar = document.getElementById('md-toolbar');
