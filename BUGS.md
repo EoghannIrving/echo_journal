@@ -192,3 +192,102 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
      entries_by_month[month_key].append((entry_date.isoformat(), content))
      ```
      【F:main.py†L263-L272】
+42. **`JOURNALS_DIR` docs mismatch code**
+   - README instructs using `JOURNALS_DIR` but the application reads `DATA_DIR`, so the env var has no effect.
+   - Lines:
+     ```text
+     The NAS location can be configured with the `JOURNALS_DIR` environment
+     variable used in `docker-compose.yml`.
+     ```
+     【F:README.md†L45-L51】
+     ```python
+     DATA_DIR = Path(os.getenv("DATA_DIR", "/journals"))
+     ```
+     【F:main.py†L40-L44】
+
+43. **Double `.md` extension possible**
+   - `safe_entry_path` appends `.md` even if the input already ends with `.md`, producing filenames like `2020-01-01.md.md`.
+   - Lines:
+     ```python
+     sanitized = Path(entry_date).name
+     sanitized = re.sub(r"[^0-9A-Za-z_-]", "_", sanitized)
+     path = (DATA_DIR / sanitized).with_suffix(".md")
+     ```
+     【F:main.py†L58-L63】
+
+44. **Index route doesn't handle read errors**
+   - If opening today's entry fails (permission denied etc.) the exception isn't caught and a 500 error occurs.
+   - Lines:
+     ```python
+     async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+         md_content = await fh.read()
+     ```
+     【F:main.py†L102-L105】
+
+45. **Archive view read errors unhandled**
+   - `archive_view` opens each file without error handling; unreadable files crash the request.
+   - Lines:
+     ```python
+     async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
+         content = await fh.read()
+     ```
+     【F:main.py†L270-L272】
+
+46. **`view_entry` lacks file error handling**
+   - Similar to the archive route, a failure to read the entry file results in a 500 response.
+   - Lines:
+     ```python
+     async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+         md_content = await fh.read()
+     ```
+     【F:main.py†L299-L300】
+
+47. **Formatting toolbar doesn't resize textarea**
+   - The markdown toolbar updates the textarea value but never triggers the oninput handler, so the field height stays wrong after applying formatting.
+   - Lines:
+     ```javascript
+     toolbar.addEventListener('click', (e) => {
+       ...
+       textarea.value = before + formatted + after;
+       textarea.selectionStart = start;
+       textarea.selectionEnd = start + formatted.length;
+     });
+     ```
+     【F:templates/echo_journal.html†L120-L157】
+
+48. **Templates path not configurable**
+   - `Jinja2Templates` is created with a hard-coded `"templates"` directory, ignoring `APP_DIR` or other environment settings.
+   - Lines:
+     ```python
+     templates = Jinja2Templates(directory="templates")
+     ```
+     【F:main.py†L53-L54】
+
+49. **Prompt category never saved**
+   - Entries are written without storing the selected prompt category, so the information is lost when reloading.
+   - Lines:
+     ```python
+     md_text = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
+     ```
+     【F:main.py†L144-L144】
+
+50. **Concurrent saves may overwrite each other**
+   - `save_entry` writes directly with no file locking, allowing simultaneous requests to clobber the same file.
+   - Lines:
+     ```python
+     async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
+         await fh.write(md_text)
+     ```
+     【F:main.py†L145-L146】
+
+51. **Malformed filenames hidden from archive**
+   - Files with names that don't parse as dates are silently skipped, so they never appear in the archive view.
+   - Lines:
+     ```python
+     for file in DATA_DIR.rglob("*.md"):
+         try:
+             entry_date = datetime.strptime(file.stem, "%Y-%m-%d").date()
+         except ValueError:
+             continue  # Skip malformed filenames
+     ```
+     【F:main.py†L263-L267】
