@@ -76,25 +76,25 @@ textarea.journal-textarea:focus {
 }
 
 .markdown-toolbar {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  display: flex;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
   justify-content: center;
   gap: 0.5rem;
   background-color: #f0f0f0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
+  width: max-content;
 }
 .editor-container:hover .markdown-toolbar,
 .editor-container:focus-within .markdown-toolbar {
-  opacity: 1;
-  pointer-events: auto;
+  display: flex;
 }
 .dark .markdown-toolbar {
   background-color: #4b5563;
 }
 .editor-container {
+  position: relative;
   background-color: #fff;
   border-radius: 0.75rem;
   padding: 0.75rem;
