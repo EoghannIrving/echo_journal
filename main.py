@@ -348,8 +348,8 @@ async def view_entry(request: Request, entry_date: str):
         raise HTTPException(status_code=500, detail="Could not read entry") from exc
 
     prompt, entry = parse_entry(md_content)
-    if not prompt or not entry:
-        raise HTTPException(status_code=500, detail="Malformed entry file")
+    if not prompt and not entry:
+        entry = md_content.strip()
 
     html_entry = markdown.markdown(entry)
     html_entry = bleach.clean(

@@ -5,15 +5,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
 
 
 
-29. **Empty sections cause server error**
-   - `view_entry` raises a 500 error if either the prompt or entry section is empty even though index handles missing headers gracefully.
-   - Lines:
-     ```python
-     prompt, entry = parse_entry(md_content)
-     if not prompt or not entry:
-         raise HTTPException(status_code=500, detail="Malformed entry file")
-     ```
-     【F:main.py†L302-L305】
 
 31. **`load_entry` split assumes Unix newline**
    - The load_entry endpoint splits file contents using `"# Entry\n"`. Files created with Windows newlines (`\r\n`) or without a trailing newline won't parse correctly.

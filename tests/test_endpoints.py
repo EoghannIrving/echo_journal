@@ -132,10 +132,11 @@ def test_view_entry_multiline_prompt(test_client):
 
 
 def test_view_entry_malformed(test_client):
-    """Malformed files trigger a server error."""
+    """Malformed files are displayed as plain text without error."""
     (main.DATA_DIR / "bad.md").write_text("No headings here", encoding="utf-8")
     resp = test_client.get("/view/bad")
-    assert resp.status_code == 500
+    assert resp.status_code == 200
+    assert "No headings here" in resp.text
 
 
 def test_view_entry_missing(test_client):
