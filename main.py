@@ -58,6 +58,8 @@ ENCODING = "utf-8"
 # Cache for loaded prompts stored on the FastAPI app state
 app.state.prompts_cache = None
 PROMPTS_LOCK = asyncio.Lock()
+# Locks for concurrent saves keyed by entry path
+SAVE_LOCKS = defaultdict(asyncio.Lock)
 
 # Mount all static files
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -174,8 +176,10 @@ async def save_entry(data: dict):
     except ValueError:
         return {"status": "error", "message": "Invalid date"}
     md_text = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
-    async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
-        await fh.write(md_text)
+    lock = SAVE_LOCKS[str(file_path)]
+    async with lock:
+        async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
+            await fh.write(md_text)
 
     return {"status": "success"}
 

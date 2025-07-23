@@ -351,5 +351,17 @@ The following issues were identified and subsequently resolved.
      except OSError as exc:
          raise HTTPException(status_code=500, detail="Could not read entry") from exc
      ```
-     【F:main.py†L340-L345】
+    【F:main.py†L340-L345】
+
+31. **Concurrent saves may overwrite each other** (fixed)
+   - `save_entry` now acquires an asyncio lock per file path so simultaneous
+     requests cannot clobber the same entry.
+   - Fixed lines:
+     ```python
+     lock = SAVE_LOCKS[str(file_path)]
+     async with lock:
+         async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
+             await fh.write(md_text)
+     ```
+     【F:main.py†L178-L182】
 

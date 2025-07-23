@@ -4,14 +4,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
 
 
 
-50. **Concurrent saves may overwrite each other**
-   - `save_entry` writes directly with no file locking, allowing simultaneous requests to clobber the same file.
-   - Lines:
-     ```python
-     async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
-         await fh.write(md_text)
-     ```
-     【F:main.py†L145-L146】
 
 29. **Empty sections cause server error**
    - `view_entry` raises a 500 error if either the prompt or entry section is empty even though index handles missing headers gracefully.
