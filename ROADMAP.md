@@ -49,6 +49,9 @@
   - Geolocation.
   - Weather API.
   - AI-assisted prompts (“Need inspiration?” feature).
+  - Optional "New Prompt" link to gently refresh the daily suggestion if it doesn't resonate.
+    - Subtle secondary text that fades in on hover/tap.
+    - Client-side localStorage ensures the prompt stays consistent after saving.
   - Optional secure remote access (auth, VPN/reverse proxy).
 
 ## Design Guardrails
