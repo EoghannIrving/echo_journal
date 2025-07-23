@@ -337,8 +337,11 @@ async def view_entry(request: Request, entry_date: str):
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Entry not found")
 
-    async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
-        md_content = await fh.read()
+    try:
+        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+            md_content = await fh.read()
+    except OSError as exc:
+        raise HTTPException(status_code=500, detail="Could not read entry") from exc
 
     prompt, entry = parse_entry(md_content)
     if not prompt or not entry:

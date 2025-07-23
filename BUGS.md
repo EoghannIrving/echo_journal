@@ -4,15 +4,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
 
 
 
-46. **`view_entry` lacks file error handling**
-   - Similar to the archive route, a failure to read the entry file results in a 500 response.
-   - Lines:
-     ```python
-     async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
-         md_content = await fh.read()
-     ```
-     【F:main.py†L299-L300】
-
 50. **Concurrent saves may overwrite each other**
    - `save_entry` writes directly with no file locking, allowing simultaneous requests to clobber the same file.
    - Lines:
