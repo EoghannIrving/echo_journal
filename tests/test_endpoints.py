@@ -185,6 +185,24 @@ def test_archive_view_unreadable_file(test_client, monkeypatch):
     assert "2020-07-07" not in resp.text
 
 
+def test_view_entry_unreadable_file(test_client, monkeypatch):
+    """Unreadable entry files should return a 500 error."""
+    bad_path = main.DATA_DIR / "2020-08-08.md"
+    bad_path.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+
+    orig_open = aiofiles.open
+
+    def open_mock(file, *args, **kwargs):
+        if Path(file) == bad_path:
+            raise OSError("cannot read")
+        return orig_open(file, *args, **kwargs)
+
+    monkeypatch.setattr(aiofiles, "open", open_mock)
+
+    resp = test_client.get("/view/2020-08-08")
+    assert resp.status_code == 500
+
+
 def test_save_entry_invalid_date(test_client):
     """Entries with malformed date strings are still saved as-is."""
     payload = {"date": "2020-13-40", "content": "bad", "prompt": "p"}

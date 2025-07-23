@@ -338,6 +338,18 @@ The following issues were identified and subsequently resolved.
      except OSError:
          # Skip unreadable files instead of failing the entire request
          continue
+    ```
+    【F:main.py†L278-L283】
+
+30. **`view_entry` lacks file error handling** (fixed)
+   - The view route now catches read errors and returns a 500 status instead of crashing.
+   - Fixed lines:
+     ```python
+     try:
+         async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+             md_content = await fh.read()
+     except OSError as exc:
+         raise HTTPException(status_code=500, detail="Could not read entry") from exc
      ```
-     【F:main.py†L278-L283】
+     【F:main.py†L340-L345】
 
