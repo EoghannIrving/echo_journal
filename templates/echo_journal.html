@@ -39,6 +39,9 @@
     {{ content_html|safe }}</div>
   {% endif %}
 </section>
+<div id="location-display" class="text-sm text-gray-600 dark:text-gray-300 mt-2 italic">
+  📍 Trying to detect your location...
+</div>
     {% if not readonly %}
   <section class="w-full mx-auto mt-6 bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100">
     <button id="save-button" class="block w-[65%] max-w-[15rem] mx-auto mt-3 bg-slate-500 text-white rounded-xl py-3 text-lg font-semibold shadow transition hover:bg-slate-600 hover:brightness-105 hover:shadow-lg dark:bg-gray-400 dark:hover:bg-slate-500" aria-label="Save entry">Save Entry</button>
@@ -109,12 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
       welcomeEl.textContent = greeting;
     }
 
-    delay = animateText(welcomeEl, 0, 80, 150);
+    delay = animateText(welcomeEl, 0, 60, 200);
   }
 
   const promptEl = document.getElementById("daily-prompt");
   if (promptEl) {
-    animateText(promptEl, delay + 300, 20, 40);
+    animateText(promptEl, delay + 300, 15, 40);
   }
 
   const toolbar = document.getElementById('md-toolbar');
@@ -204,4 +207,44 @@ document.addEventListener('keydown', (e) => {
 });
 
   </script>
+
+<script>
+async function fetchGeolocationDetails() {
+  if (!navigator.geolocation) return;
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const { latitude, longitude, accuracy } = pos.coords;
+    let locationLabel = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+
+    // Try to reverse geocode
+    try {
+      const res = await fetch(`/api/reverse_geocode?lat=${latitude}&lon=${longitude}`);
+      if (res.ok) {
+        const data = await res.json();
+        locationLabel = data.city || data.region || data.country || data.display_name || locationLabel;
+      }
+    } catch (e) {
+      console.warn("Reverse geocoding failed:", e);
+    }
+
+    // Display it somewhere (optional)
+    const el = document.getElementById("location-display");
+    if (el) {
+      el.textContent = `📍 ${locationLabel} (±${Math.round(accuracy)}m)`;
+      el.dataset.lat = latitude;
+      el.dataset.lon = longitude;
+      el.dataset.accuracy = accuracy;
+      el.dataset.locationName = locationLabel;
+    }
+  },
+  (err) => {
+    console.warn("Geolocation permission denied or failed:", err);
+  },
+  { enableHighAccuracy: true, timeout: 5000 });
+}
+
+window.addEventListener("DOMContentLoaded", fetchGeolocationDetails);
+</script>
+
+
 {% endblock %}

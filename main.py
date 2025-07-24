@@ -385,3 +385,30 @@ async def settings_page(request: Request):
 async def metrics() -> JSONResponse:
     """Return recent request timing information."""
     return JSONResponse(content={"timings": app.state.request_timings})
+
+@app.get("/api/reverse_geocode")
+async def reverse_geocode(lat: float, lon: float):
+    url = "https://nominatim.openstreetmap.org/reverse"
+    params = {
+        "lat": lat,
+        "lon": lon,
+        "format": "json",
+        "zoom": 10,
+    }
+    headers = {
+        "User-Agent": "EchoJournal/1.0 (you@example.com)"
+    }
+
+    async with httpx.AsyncClient() as client:
+        r = await client.get(url, params=params, headers=headers)
+        r.raise_for_status()
+        data = r.json()
+
+    return {
+        "display_name": data.get("display_name"),
+        "city": data.get("address", {}).get("city") or
+                data.get("address", {}).get("town") or
+                data.get("address", {}).get("village"),
+        "region": data.get("address", {}).get("state"),
+        "country": data.get("address", {}).get("country")
+    }
