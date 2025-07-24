@@ -1,3 +1,5 @@
+"""Core application paths and configuration constants."""
+
 from pathlib import Path
 import os
 
