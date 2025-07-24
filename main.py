@@ -3,14 +3,10 @@
 # pylint: disable=import-error
 
 import asyncio
-import json
-import os
-import random
-import re
 from collections import defaultdict
 from datetime import date, datetime
 from pathlib import Path
-from typing import List, Tuple, Optional
+
 
 import logging
 import time
@@ -24,6 +20,15 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
+from config import DATA_DIR, STATIC_DIR, ENCODING
+from file_utils import (
+    safe_entry_path,
+    parse_entry,
+    read_existing_frontmatter,
+)
+from prompt_utils import generate_prompt
+from weather_utils import build_frontmatter
 
 
 # Provide pathlib.Path.is_relative_to on Python < 3.9
@@ -48,17 +53,6 @@ logger = logging.getLogger("ej.timing")
 MAX_TIMINGS = 50
 app.state.request_timings = []
 
-# Allow overriding important paths via environment variables for easier testing
-# and deployment in restricted environments.
-APP_DIR = Path(os.getenv("APP_DIR", "/app"))
-DATA_DIR = Path(os.getenv("DATA_DIR", "/journals"))
-PROMPTS_FILE = Path(os.getenv("PROMPTS_FILE", str(APP_DIR / "prompts.json")))
-STATIC_DIR = Path(os.getenv("STATIC_DIR", str(APP_DIR / "static")))
-ENCODING = "utf-8"
-
-# Cache for loaded prompts stored on the FastAPI app state
-app.state.prompts_cache = None
-PROMPTS_LOCK = asyncio.Lock()
 # Locks for concurrent saves keyed by entry path
 SAVE_LOCKS = defaultdict(asyncio.Lock)
 
@@ -86,102 +80,6 @@ async def timing_middleware(request: Request, call_next):
     return response
 
 
-def safe_entry_path(entry_date: str) -> Path:
-    """Return a normalized path for the given entry date inside DATA_DIR."""
-    sanitized = Path(entry_date).name
-    sanitized = re.sub(r"[^0-9A-Za-z_-]", "_", sanitized)
-    if not sanitized:
-        raise ValueError("Invalid entry date")
-    path = (DATA_DIR / sanitized).with_suffix(".md")
-    # Ensure the path cannot escape DATA_DIR
-    try:
-        path.resolve().relative_to(DATA_DIR.resolve())
-    except ValueError as exc:
-        raise ValueError("Invalid entry date") from exc
-    return path
-
-
-def parse_entry(md_content: str) -> Tuple[str, str]:
-    """Return (prompt, entry) sections from markdown without raising errors."""
-    prompt_lines: List[str] = []
-    entry_lines: List[str] = []
-    current_section = None
-    for line in md_content.splitlines():
-        stripped = line.strip()
-        if stripped == "# Prompt":
-            current_section = "prompt"
-            continue
-        if stripped == "# Entry":
-            current_section = "entry"
-            continue
-        if current_section == "prompt":
-            prompt_lines.append(line.rstrip())
-        elif current_section == "entry":
-            entry_lines.append(line.rstrip())
-
-    prompt = "\n".join(prompt_lines).strip()
-    entry = "\n".join(entry_lines).strip()
-    return prompt, entry
-
-
-def split_frontmatter(text: str) -> Tuple[Optional[str], str]:
-    """Return frontmatter and remaining content if present."""
-    if text.startswith("---"):
-        parts = text.split("---", 2)
-        if len(parts) >= 3:
-            fm = parts[1].strip()
-            body = parts[2].lstrip("\n")
-            return fm, body
-    return None, text
-
-
-async def fetch_weather(lat: float, lon: float) -> Optional[str]:
-    """Fetch current weather description from Open-Meteo."""
-    if lat == 0 and lon == 0:
-        return None
-    url = "https://api.open-meteo.com/v1/forecast"
-    params = {"latitude": lat, "longitude": lon, "current_weather": True}
-    try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(url, params=params, timeout=10)
-            resp.raise_for_status()
-            data = resp.json()
-            cw = data.get("current_weather", {})
-            temp = cw.get("temperature")
-            code = cw.get("weathercode")
-            if temp is not None and code is not None:
-                return f"{temp}°C code {code}"
-    except (httpx.HTTPError, ValueError):
-        # Network issues or JSON parsing errors
-        return None
-    return None
-
-
-async def build_frontmatter(location: dict) -> str:
-    """Return a YAML frontmatter string based on the provided location."""
-    lat = float(location.get("lat") or 0)
-    lon = float(location.get("lon") or 0)
-    label = location.get("label") or ""
-    weather = await fetch_weather(lat, lon)
-
-    lines = []
-    if label:
-        lines.append(f"location: {label}")
-    if weather:
-        lines.append(f"weather: {weather}")
-    lines.append("photos: []")
-    return "\n".join(lines)
-
-
-async def read_existing_frontmatter(file_path: Path) -> Optional[str]:
-    """Return frontmatter from the given file path if present."""
-    try:
-        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
-            existing = await fh.read()
-        frontmatter, _ = split_frontmatter(existing)
-        return frontmatter
-    except OSError:
-        return None
 
 
 @app.get("/")
@@ -189,7 +87,7 @@ async def index(request: Request):
     """Render the journal entry page for the current day."""
     today = date.today()
     date_str = today.isoformat()
-    file_path = safe_entry_path(date_str)
+    file_path = safe_entry_path(date_str, DATA_DIR)
 
     if file_path.exists():
         try:
@@ -234,7 +132,7 @@ async def save_entry(data: dict):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     try:
-        file_path = safe_entry_path(entry_date)
+        file_path = safe_entry_path(entry_date, DATA_DIR)
     except ValueError:
         return {"status": "error", "message": "Invalid date"}
     first_save = not file_path.exists()
@@ -261,7 +159,7 @@ async def save_entry(data: dict):
 async def get_entry(entry_date: str):
     """Return the full markdown entry for the given date."""
     try:
-        file_path = safe_entry_path(entry_date)
+        file_path = safe_entry_path(entry_date, DATA_DIR)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail="Entry not found") from exc
     if file_path.exists():
@@ -281,7 +179,7 @@ async def get_entry(entry_date: str):
 async def load_entry(entry_date: str):
     """Load the textual content for an entry without headers."""
     try:
-        file_path = safe_entry_path(entry_date)
+        file_path = safe_entry_path(entry_date, DATA_DIR)
     except ValueError:
         return JSONResponse(
             status_code=404, content={"status": "not_found", "content": ""}
@@ -296,73 +194,6 @@ async def load_entry(entry_date: str):
     return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
 
 
-async def load_prompts():
-    """Load and cache journal prompts."""
-    if app.state.prompts_cache is None:
-        async with PROMPTS_LOCK:
-            if app.state.prompts_cache is None:
-                try:
-                    async with aiofiles.open(
-                        PROMPTS_FILE, "r", encoding=ENCODING
-                    ) as fh:
-                        prompts_text = await fh.read()
-                    app.state.prompts_cache = json.loads(prompts_text)
-                except (FileNotFoundError, json.JSONDecodeError):
-                    app.state.prompts_cache = {}
-    return app.state.prompts_cache
-
-
-async def generate_prompt():
-    """Select and return a prompt for the current day."""
-    today = date.today()
-    weekday = today.strftime("%A")
-    season = get_season(today)
-
-    prompts = await load_prompts()
-    if not prompts:
-        return {"category": None, "prompt": "Prompts file not found"}
-
-    categories_dict = prompts.get("categories")
-    if not isinstance(categories_dict, dict):
-        return {"category": None, "prompt": "No categories found"}
-
-    categories = list(categories_dict.keys())
-
-    if not categories:
-        return {"category": None, "prompt": "No categories found"}
-
-    category = random.choice(categories)
-
-    candidates = categories_dict.get(category, [])
-    if not candidates:
-        return {
-            "category": category.capitalize(),
-            "prompt": "No prompts in this category",
-        }
-
-    prompt_template = random.choice(candidates)
-    prompt = prompt_template.replace("{{weekday}}", weekday).replace(
-        "{{season}}", season
-    )
-
-    return {"category": category.capitalize(), "prompt": prompt}
-
-
-def get_season(target_date):
-    """Return the season name for the given date."""
-    year = target_date.year
-    spring_start = date(year, 3, 1)
-    summer_start = date(year, 6, 1)
-    autumn_start = date(year, 9, 1)
-    winter_start = date(year, 12, 1)
-
-    if spring_start <= target_date < summer_start:
-        return "Spring"
-    if summer_start <= target_date < autumn_start:
-        return "Summer"
-    if autumn_start <= target_date < winter_start:
-        return "Autumn"
-    return "Winter"
 
 
 @app.get("/archive", response_class=HTMLResponse)
@@ -406,7 +237,7 @@ async def archive_view(request: Request):
 async def view_entry(request: Request, entry_date: str):
     """Display a previously written journal entry."""
     try:
-        file_path = safe_entry_path(entry_date)
+        file_path = safe_entry_path(entry_date, DATA_DIR)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail="Entry not found") from exc
     prompt = ""
