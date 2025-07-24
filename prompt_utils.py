@@ -4,29 +4,27 @@ import asyncio
 import json
 import random
 from datetime import date
-from typing import Optional
 
 import aiofiles
 
 from config import PROMPTS_FILE, ENCODING
 
-_prompts_cache: Optional[dict] = None
+_prompts_cache: dict = {"data": None}
 _prompts_lock = asyncio.Lock()
 
 
 async def load_prompts() -> dict:
-    """Load and cache journal prompts from PROMPTS_FILE."""
-    global _prompts_cache
-    if _prompts_cache is None:
+    """Load and cache journal prompts from ``PROMPTS_FILE``."""
+    if _prompts_cache["data"] is None:
         async with _prompts_lock:
-            if _prompts_cache is None:
+            if _prompts_cache["data"] is None:
                 try:
                     async with aiofiles.open(PROMPTS_FILE, "r", encoding=ENCODING) as fh:
                         prompts_text = await fh.read()
-                    _prompts_cache = json.loads(prompts_text)
+                    _prompts_cache["data"] = json.loads(prompts_text)
                 except (FileNotFoundError, json.JSONDecodeError):
-                    _prompts_cache = {}
-    return _prompts_cache
+                    _prompts_cache["data"] = {}
+    return _prompts_cache["data"]
 
 
 def get_season(target_date: date) -> str:
