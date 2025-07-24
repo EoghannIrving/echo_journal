@@ -218,7 +218,8 @@ async def archive_view(request: Request):
             # Skip unreadable files instead of failing the entire request
             continue
 
-        entries_by_month[month_key].append((entry_date.isoformat(), content))
+        prompt, _ = parse_entry(content)
+        entries_by_month[month_key].append((entry_date.isoformat(), prompt))
 
     # Sort months descending (latest first)
     sorted_entries = dict(sorted(entries_by_month.items(), reverse=True))
