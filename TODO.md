@@ -20,7 +20,7 @@ This list captures planned work from the project roadmap. Completed items from e
 
 - [ ] **Enrichment integration prep**
   - [ ] Support Immich photo integration
-  - [ ] Add geolocation capture
+  - [X] Add geolocation capture
   - [ ] Query a weather API for recent conditions
   - [ ] AI assisted prompts / "Need inspiration?" feature
   - [ ] Optional "New Prompt" link with hover/tap hint
