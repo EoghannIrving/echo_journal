@@ -17,10 +17,10 @@
     <details class="mt-6 mb-4">
       <summary class="cursor-pointer text-lg font-medium">{{ period }}</summary>
       <ul class="mt-2 pl-4 border-l border-gray-300 dark:border-gray-600 space-y-2 text-gray-800 dark:text-gray-100">
-        {% for entry_date, content in period_entries %}
+        {% for entry_date, prompt in period_entries %}
           <li class="py-2 border-b border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100">
             <a href="/view/{{ entry_date }}" class="block text-sm text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 hover:underline">{{ entry_date }}</a>
-            <span class="text-sm text-gray-600 dark:text-gray-400">{{ content[:75] }}...</span>
+            <span class="text-sm text-gray-600 dark:text-gray-400">{{ prompt[:75] }}...</span>
           </li>
         {% endfor %}
       </ul>
