@@ -26,6 +26,9 @@ from file_utils import (
     safe_entry_path,
     parse_entry,
     read_existing_frontmatter,
+    split_frontmatter,
+    parse_frontmatter,
+    format_weather,
 )
 from prompt_utils import generate_prompt
 from weather_utils import build_frontmatter
@@ -78,8 +81,6 @@ async def timing_middleware(request: Request, call_next):
 
     logger.info("%s completed in %.3fs", request.url.path, elapsed)
     return response
-
-
 
 
 @app.get("/")
@@ -194,8 +195,6 @@ async def load_entry(entry_date: str):
     return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
 
 
-
-
 @app.get("/archive", response_class=HTMLResponse)
 async def archive_view(request: Request):
     """Render an archive of all journal entries grouped by month."""
@@ -252,9 +251,15 @@ async def view_entry(request: Request, entry_date: str):
     except OSError as exc:
         raise HTTPException(status_code=500, detail="Could not read entry") from exc
 
-    prompt, entry = parse_entry(md_content)
+    frontmatter, body = split_frontmatter(md_content)
+    meta = parse_frontmatter(frontmatter) if frontmatter else {}
+    location = meta.get("location", "")
+    weather_raw = meta.get("weather", "")
+    weather = format_weather(weather_raw) if weather_raw else ""
+
+    prompt, entry = parse_entry(body)
     if not prompt and not entry:
-        entry = md_content.strip()
+        entry = body.strip()
 
     html_entry = markdown.markdown(entry)
     html_entry = bleach.clean(
@@ -271,6 +276,8 @@ async def view_entry(request: Request, entry_date: str):
             "content_html": html_entry,
             "date": entry_date,
             "prompt": prompt,
+            "location": location,
+            "weather": weather,
             "readonly": True,  # Read-only mode for archive
             "active_page": "archive",
         },
@@ -291,6 +298,7 @@ async def metrics() -> JSONResponse:
     """Return recent request timing information."""
     return JSONResponse(content={"timings": app.state.request_timings})
 
+
 @app.get("/api/reverse_geocode")
 async def reverse_geocode(lat: float, lon: float):
     """Return location details for given coordinates using Nominatim."""
@@ -301,9 +309,7 @@ async def reverse_geocode(lat: float, lon: float):
         "format": "json",
         "zoom": 18,
     }
-    headers = {
-        "User-Agent": "EchoJournal/1.0 (you@example.com)"
-    }
+    headers = {"User-Agent": "EchoJournal/1.0 (you@example.com)"}
 
     async with httpx.AsyncClient() as client:
         r = await client.get(url, params=params, headers=headers)
@@ -312,9 +318,9 @@ async def reverse_geocode(lat: float, lon: float):
 
     return {
         "display_name": data.get("display_name"),
-        "city": data.get("address", {}).get("city") or
-                data.get("address", {}).get("town") or
-                data.get("address", {}).get("village"),
+        "city": data.get("address", {}).get("city")
+        or data.get("address", {}).get("town")
+        or data.get("address", {}).get("village"),
         "region": data.get("address", {}).get("state"),
-        "country": data.get("address", {}).get("country")
+        "country": data.get("address", {}).get("country"),
     }
