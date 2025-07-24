@@ -151,9 +151,37 @@ async def fetch_weather(lat: float, lon: float) -> Optional[str]:
             code = cw.get("weathercode")
             if temp is not None and code is not None:
                 return f"{temp}°C code {code}"
-    except Exception:  # network or parse errors
+    except (httpx.HTTPError, ValueError):
+        # Network issues or JSON parsing errors
         return None
     return None
+
+
+async def build_frontmatter(location: dict) -> str:
+    """Return a YAML frontmatter string based on the provided location."""
+    lat = float(location.get("lat") or 0)
+    lon = float(location.get("lon") or 0)
+    label = location.get("label") or ""
+    weather = await fetch_weather(lat, lon)
+
+    lines = []
+    if label:
+        lines.append(f"location: {label}")
+    if weather:
+        lines.append(f"weather: {weather}")
+    lines.append("photos: []")
+    return "\n".join(lines)
+
+
+async def read_existing_frontmatter(file_path: Path) -> Optional[str]:
+    """Return frontmatter from the given file path if present."""
+    try:
+        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+            existing = await fh.read()
+        frontmatter, _ = split_frontmatter(existing)
+        return frontmatter
+    except OSError:
+        return None
 
 
 @app.get("/")
@@ -210,29 +238,10 @@ async def save_entry(data: dict):
     except ValueError:
         return {"status": "error", "message": "Invalid date"}
     first_save = not file_path.exists()
-    frontmatter = None
     if first_save:
-        lat = float(location.get("lat") or 0)
-        lon = float(location.get("lon") or 0)
-        label = location.get("label") or ""
-        weather = await fetch_weather(lat, lon)
-        fm_lines = []
-        if label:
-            fm_lines.append(f"location: {label}")
-        if weather:
-            fm_lines.append(f"weather: {weather}")
-        fm_lines.append("photos: []")
-        frontmatter = "\n".join(fm_lines)
+        frontmatter = await build_frontmatter(location)
     else:
-        # preserve existing frontmatter if present
-        try:
-            async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
-                existing = await fh.read()
-            fm, _ = split_frontmatter(existing)
-            if fm:
-                frontmatter = fm
-        except OSError:
-            frontmatter = None
+        frontmatter = await read_existing_frontmatter(file_path)
 
     md_body = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
     if frontmatter is not None:
@@ -452,6 +461,7 @@ async def metrics() -> JSONResponse:
 
 @app.get("/api/reverse_geocode")
 async def reverse_geocode(lat: float, lon: float):
+    """Return location details for given coordinates using Nominatim."""
     url = "https://nominatim.openstreetmap.org/reverse"
     params = {
         "lat": lat,
