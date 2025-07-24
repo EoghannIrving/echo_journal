@@ -154,7 +154,7 @@ textarea.journal-textarea:focus {
   border-radius: 0.25rem;
   color: var(--editor-toolbar-color, #ccc);
   cursor: pointer;
-  padding: 0.4rem 0.6rem;
+  padding: 0.2rem 0.4rem;
 }
 .md-btn:hover {
   color: var(--accent-color, #fff);
