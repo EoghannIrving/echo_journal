@@ -10,7 +10,7 @@ import re
 from collections import defaultdict
 from datetime import date, datetime
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import logging
 import time
@@ -124,6 +124,38 @@ def parse_entry(md_content: str) -> Tuple[str, str]:
     return prompt, entry
 
 
+def split_frontmatter(text: str) -> Tuple[Optional[str], str]:
+    """Return frontmatter and remaining content if present."""
+    if text.startswith("---"):
+        parts = text.split("---", 2)
+        if len(parts) >= 3:
+            fm = parts[1].strip()
+            body = parts[2].lstrip("\n")
+            return fm, body
+    return None, text
+
+
+async def fetch_weather(lat: float, lon: float) -> Optional[str]:
+    """Fetch current weather description from Open-Meteo."""
+    if lat == 0 and lon == 0:
+        return None
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {"latitude": lat, "longitude": lon, "current_weather": True}
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, params=params, timeout=10)
+            resp.raise_for_status()
+            data = resp.json()
+            cw = data.get("current_weather", {})
+            temp = cw.get("temperature")
+            code = cw.get("weathercode")
+            if temp is not None and code is not None:
+                return f"{temp}°C code {code}"
+    except Exception:  # network or parse errors
+        return None
+    return None
+
+
 @app.get("/")
 async def index(request: Request):
     """Render the journal entry page for the current day."""
@@ -165,6 +197,7 @@ async def save_entry(data: dict):
     entry_date = data.get("date")
     content = data.get("content")
     prompt = data.get("prompt")
+    location = data.get("location") or {}
 
     if not entry_date or not content or not prompt:
         return {"status": "error", "message": "Missing fields"}
@@ -176,7 +209,37 @@ async def save_entry(data: dict):
         file_path = safe_entry_path(entry_date)
     except ValueError:
         return {"status": "error", "message": "Invalid date"}
-    md_text = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
+    first_save = not file_path.exists()
+    frontmatter = None
+    if first_save:
+        lat = float(location.get("lat") or 0)
+        lon = float(location.get("lon") or 0)
+        label = location.get("label") or ""
+        weather = await fetch_weather(lat, lon)
+        fm_lines = []
+        if label:
+            fm_lines.append(f"location: {label}")
+        if weather:
+            fm_lines.append(f"weather: {weather}")
+        fm_lines.append("photos: []")
+        frontmatter = "\n".join(fm_lines)
+    else:
+        # preserve existing frontmatter if present
+        try:
+            async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+                existing = await fh.read()
+            fm, _ = split_frontmatter(existing)
+            if fm:
+                frontmatter = fm
+        except OSError:
+            frontmatter = None
+
+    md_body = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
+    if frontmatter is not None:
+        md_text = f"---\n{frontmatter}\n---\n{md_body}"
+    else:
+        md_text = md_body
+
     lock = SAVE_LOCKS[str(file_path)]
     async with lock:
         async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
