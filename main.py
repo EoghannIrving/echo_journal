@@ -394,7 +394,7 @@ async def reverse_geocode(lat: float, lon: float):
         "lat": lat,
         "lon": lon,
         "format": "json",
-        "zoom": 10,
+        "zoom": 14,
     }
     headers = {
         "User-Agent": "EchoJournal/1.0 (you@example.com)"
