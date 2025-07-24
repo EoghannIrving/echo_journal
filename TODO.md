@@ -13,6 +13,9 @@ This list captures planned work from the project roadmap. Completed items from e
 
 - [ ] **Metadata parsing improvements**
   - [ ] Unify parsing logic and support frontmatter if needed
+  - [ ] Document YAML frontmatter structure with `location`, `weather` and `photos` keys
+  - [ ] Parse this frontmatter in `archive_view` to expose icon flags
+  - [ ] Use `pyyaml` to read the frontmatter delimited by `---` at the top of each entry
   - [ ] Maintain compatibility with legacy `.md` entries
 
 - [ ] **Enrichment integration prep**
