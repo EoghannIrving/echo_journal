@@ -19,6 +19,7 @@ import markdown
 import bleach
 
 import aiofiles
+import httpx
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
