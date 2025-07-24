@@ -204,6 +204,23 @@ def test_view_entry_unreadable_file(test_client, monkeypatch):
     assert resp.status_code == 500
 
 
+def test_view_entry_uses_frontmatter(test_client):
+    """Location and weather come from frontmatter when viewing entries."""
+    content = (
+        "---\n"
+        "location: Testville\n"
+        "weather: 12\u00b0C code 1\n"
+        "photos: []\n"
+        "---\n"
+        "# Prompt\nP\n\n# Entry\nE"
+    )
+    (main.DATA_DIR / "2020-09-09.md").write_text(content, encoding="utf-8")
+    resp = test_client.get("/view/2020-09-09")
+    assert resp.status_code == 200
+    assert "Testville" in resp.text
+    assert "12\u00b0C" in resp.text
+
+
 def test_save_entry_invalid_date(test_client):
     """Entries with malformed date strings are still saved as-is."""
     payload = {"date": "2020-13-40", "content": "bad", "prompt": "p"}

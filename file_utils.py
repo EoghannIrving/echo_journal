@@ -2,7 +2,7 @@
 
 from pathlib import Path
 import re
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict
 
 import aiofiles
 
@@ -67,3 +67,50 @@ async def read_existing_frontmatter(file_path: Path) -> Optional[str]:
         return frontmatter
     except OSError:
         return None
+
+
+def parse_frontmatter(frontmatter: str) -> Dict[str, str]:
+    """Return a dict of key/value pairs from a simple YAML frontmatter string."""
+    result: Dict[str, str] = {}
+    for line in frontmatter.splitlines():
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        result[key.strip()] = value.strip()
+    return result
+
+
+WEATHER_ICONS = {
+    0: "☀️",
+    1: "🌤️",
+    2: "⛅",
+    3: "☁️",
+    45: "🌫️",
+    48: "🌫️",
+    51: "🌦️",
+    53: "🌦️",
+    55: "🌦️",
+    61: "🌧️",
+    63: "🌧️",
+    65: "🌧️",
+    71: "❄️",
+    73: "❄️",
+    75: "❄️",
+    80: "🌦️",
+    81: "🌦️",
+    82: "🌧️",
+    95: "⛈️",
+    96: "⛈️",
+    99: "⛈️",
+}
+
+
+def format_weather(weather: str) -> str:
+    """Return a formatted weather string like ``☀️ 20°C`` from frontmatter."""
+    match = re.search(r"(-?\d+(?:\.\d+)?)°C code (\d+)", weather)
+    if not match:
+        return weather
+    temp = match.group(1)
+    code = int(match.group(2))
+    icon = WEATHER_ICONS.get(code, "")
+    return f"{icon} {temp}°C".strip()
