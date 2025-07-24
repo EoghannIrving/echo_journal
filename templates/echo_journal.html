@@ -42,6 +42,7 @@
 <div id="location-display" class="text-sm text-gray-600 dark:text-gray-300 mt-2 italic">
   📍 Trying to detect your location...
 </div>
+<div id="weather-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic"></div>
     {% if not readonly %}
   <section class="w-full mx-auto mt-6 bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100">
     <button id="save-button" class="block w-[65%] max-w-[15rem] mx-auto mt-3 bg-slate-500 text-white rounded-xl py-3 text-lg font-semibold shadow transition hover:bg-slate-600 hover:brightness-105 hover:shadow-lg dark:bg-gray-400 dark:hover:bg-slate-500" aria-label="Save entry">Save Entry</button>
@@ -216,6 +217,44 @@ document.addEventListener('keydown', (e) => {
   </script>
 
 <script>
+async function fetchWeather(lat, lon) {
+  try {
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const cw = data.current_weather;
+    if (!cw) return null;
+    return { temperature: cw.temperature, code: cw.weathercode };
+  } catch (e) {
+    console.warn('Weather fetch failed:', e);
+    return null;
+  }
+}
+
+const weatherMap = {
+  0: 'Clear',
+  1: 'Mostly clear',
+  2: 'Partly cloudy',
+  3: 'Overcast',
+  45: 'Fog',
+  48: 'Fog',
+  51: 'Drizzle',
+  53: 'Drizzle',
+  55: 'Drizzle',
+  61: 'Rain',
+  63: 'Rain',
+  65: 'Heavy rain',
+  71: 'Snow',
+  73: 'Snow',
+  75: 'Snow',
+  80: 'Showers',
+  81: 'Showers',
+  82: 'Heavy showers',
+  95: 'Thunderstorm',
+  96: 'Thunderstorm',
+  99: 'Thunderstorm'
+};
+
 async function fetchGeolocationDetails() {
   if (!navigator.geolocation) return;
 
@@ -242,6 +281,15 @@ async function fetchGeolocationDetails() {
       el.dataset.lon = longitude;
       el.dataset.accuracy = accuracy;
       el.dataset.locationName = locationLabel;
+    }
+
+    const weatherEl = document.getElementById("weather-display");
+    if (weatherEl) {
+      const weather = await fetchWeather(latitude, longitude);
+      if (weather) {
+        const desc = weatherMap[weather.code] || '';
+        weatherEl.textContent = `${weather.temperature}\u00B0C ${desc}`.trim();
+      }
     }
   },
   (err) => {
