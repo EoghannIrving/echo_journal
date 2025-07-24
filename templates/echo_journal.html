@@ -167,13 +167,20 @@ if (saveButton) {
     const content = document.getElementById('journal-text').value;
     const date = "{{ date }}";
     const prompt = {{ prompt | tojson }};
+    const locEl = document.getElementById('location-display');
+    const location = locEl ? {
+      lat: parseFloat(locEl.dataset.lat || 0),
+      lon: parseFloat(locEl.dataset.lon || 0),
+      accuracy: parseFloat(locEl.dataset.accuracy || 0),
+      label: locEl.dataset.locationName || ''
+    } : null;
 
       const status = document.getElementById('save-status');
       try {
         const response = await fetch("/entry", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ date, content, prompt })
+          body: JSON.stringify({ date, content, prompt, location })
         });
 
         if (!response.ok) {
