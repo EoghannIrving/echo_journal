@@ -231,28 +231,28 @@ async function fetchWeather(lat, lon) {
   }
 }
 
-const weatherMap = {
-  0: 'Clear',
-  1: 'Mostly clear',
-  2: 'Partly cloudy',
-  3: 'Overcast',
-  45: 'Fog',
-  48: 'Fog',
-  51: 'Drizzle',
-  53: 'Drizzle',
-  55: 'Drizzle',
-  61: 'Rain',
-  63: 'Rain',
-  65: 'Heavy rain',
-  71: 'Snow',
-  73: 'Snow',
-  75: 'Snow',
-  80: 'Showers',
-  81: 'Showers',
-  82: 'Heavy showers',
-  95: 'Thunderstorm',
-  96: 'Thunderstorm',
-  99: 'Thunderstorm'
+const weatherIcons = {
+  0: '☀️',        // Clear
+  1: '🌤️',       // Mostly clear
+  2: '⛅',        // Partly cloudy
+  3: '☁️',        // Overcast
+  45: '🌫️',      // Fog
+  48: '🌫️',      // Fog
+  51: '🌦️',      // Drizzle
+  53: '🌦️',      // Drizzle
+  55: '🌦️',      // Drizzle
+  61: '🌧️',      // Rain
+  63: '🌧️',      // Rain
+  65: '🌧️',      // Heavy rain
+  71: '❄️',       // Snow
+  73: '❄️',       // Snow
+  75: '❄️',       // Snow
+  80: '🌦️',      // Showers
+  81: '🌦️',      // Showers
+  82: '🌧️',      // Heavy showers
+  95: '⛈️',      // Thunderstorm
+  96: '⛈️',      // Thunderstorm
+  99: '⛈️'       // Thunderstorm
 };
 
 async function fetchGeolocationDetails() {
@@ -287,8 +287,8 @@ async function fetchGeolocationDetails() {
     if (weatherEl) {
       const weather = await fetchWeather(latitude, longitude);
       if (weather) {
-        const desc = weatherMap[weather.code] || '';
-        weatherEl.textContent = `${weather.temperature}\u00B0C ${desc}`.trim();
+        const icon = weatherIcons[weather.code] || '';
+        weatherEl.textContent = `${icon} ${weather.temperature}\u00B0C`.trim();
       }
     }
   },
