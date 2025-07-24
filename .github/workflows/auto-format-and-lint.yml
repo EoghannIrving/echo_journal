@@ -24,6 +24,7 @@ jobs:
     - name: Install Black and Pylint
       run: |
         pip install black pylint
+        pip install -r requirements.txt
 
     - name: Auto-format code using Black
       run: |
