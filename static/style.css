@@ -209,5 +209,29 @@ textarea.journal-textarea:focus {
   animation-delay: 0.3s;
 }
 
+select {
+  background-color: #f0f4f8;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.375rem;
+}
+
+.dark select {
+  background-color: #374151;
+  color: #f5f5f5;
+  border-color: #4b5563;
+}
+
+summary::marker,
+summary::-webkit-details-marker {
+  color: #4b5563;
+}
+
+.dark summary::marker,
+.dark summary::-webkit-details-marker {
+  color: #f5f5f5;
+}
+
 
 .hidden { display: none; }
