@@ -1,4 +1,5 @@
-import os
+"""Utilities for interacting with the Immich API."""
+
 import json
 from pathlib import Path
 from typing import List, Dict, Any
@@ -9,7 +10,9 @@ import aiofiles
 from config import IMMICH_URL, IMMICH_API_KEY, ENCODING
 
 
-async def fetch_assets_for_date(date_str: str, media_type: str = "IMAGE") -> List[Dict[str, Any]]:
+async def fetch_assets_for_date(
+    date_str: str, media_type: str = "IMAGE"
+) -> List[Dict[str, Any]]:
     """Return a list of assets for the given date from the Immich API."""
     if not IMMICH_URL:
         return []
@@ -18,7 +21,9 @@ async def fetch_assets_for_date(date_str: str, media_type: str = "IMAGE") -> Lis
     headers = {"x-api-key": IMMICH_API_KEY} if IMMICH_API_KEY else {}
     try:
         async with httpx.AsyncClient() as client:
-            resp = await client.get(f"{IMMICH_URL}/assets", params=params, headers=headers, timeout=10)
+            resp = await client.get(
+                f"{IMMICH_URL}/assets", params=params, headers=headers, timeout=10
+            )
             resp.raise_for_status()
             data = resp.json()
             if isinstance(data, list):
@@ -36,11 +41,13 @@ async def update_photo_metadata(entry_path: Path) -> None:
     for asset in assets:
         if asset.get("type") != "IMAGE":
             continue
-        photos.append({
-            "url": asset.get("url"),
-            "thumb": asset.get("thumb"),
-            "caption": asset.get("caption", ""),
-        })
+        photos.append(
+            {
+                "url": asset.get("url"),
+                "thumb": asset.get("thumb"),
+                "caption": asset.get("caption", ""),
+            }
+        )
     if not photos:
         return
 
