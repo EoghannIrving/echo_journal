@@ -29,7 +29,7 @@ async def fetch_assets_for_date(
         "type": media_type,
     }
     headers = {"x-api-key": IMMICH_API_KEY} if IMMICH_API_KEY else {}
-    logger.info("Fetching assets for %s from %s/asset/search", date_str, IMMICH_URL)
+    logger.info("Fetching assets for %s from %s/asset/search", date_str, IMMICH_URL, headers)
     try:
         async with httpx.AsyncClient() as client:
             resp = await client.post(
