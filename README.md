@@ -12,6 +12,7 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 - Archive view to browse past entries
 - Settings page placeholder for future options
 - Stats dashboard showing entry counts, word totals and streaks
+- Optional metadata saved with each entry, including location, weather and time of day
 
 ## Project structure
 ```

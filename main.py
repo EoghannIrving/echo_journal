@@ -32,7 +32,7 @@ from file_utils import (
     format_weather,
 )
 from prompt_utils import generate_prompt
-from weather_utils import build_frontmatter
+from weather_utils import build_frontmatter, time_of_day_label
 
 
 # Provide pathlib.Path.is_relative_to on Python < 3.9
@@ -142,6 +142,21 @@ async def save_entry(data: dict):
         frontmatter = await build_frontmatter(location)
     else:
         frontmatter = await read_existing_frontmatter(file_path)
+
+    # Update or add save_time field
+    label = time_of_day_label()
+    fm_lines: list[str] = []
+    if frontmatter:
+        fm_lines = frontmatter.splitlines()
+    updated = False
+    for i, line in enumerate(fm_lines):
+        if line.startswith("save_time:"):
+            fm_lines[i] = f"save_time: {label}"
+            updated = True
+            break
+    if not updated:
+        fm_lines.append(f"save_time: {label}")
+    frontmatter = "\n".join(fm_lines) if fm_lines else None
 
     md_body = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
     if frontmatter is not None:
