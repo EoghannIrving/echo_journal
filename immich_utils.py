@@ -12,7 +12,6 @@ from config import IMMICH_URL, IMMICH_API_KEY, ENCODING
 
 logger = logging.getLogger("ej.immich")
 
-
 async def fetch_assets_for_date(
     date_str: str, media_type: str = "IMAGE"
 ) -> List[Dict[str, Any]]:
@@ -28,29 +27,35 @@ async def fetch_assets_for_date(
         },
         "type": media_type,
     }
+
     headers = {"x-api-key": IMMICH_API_KEY} if IMMICH_API_KEY else {}
-    logger.info("Fetching assets for %s from %s/asset/search", date_str, IMMICH_URL)
+
+    logger.info("Fetching assets for %s from %s/api/search/metadata", date_str, IMMICH_URL)
+
     try:
         async with httpx.AsyncClient() as client:
             resp = await client.post(
-                f"{IMMICH_URL}/search/metadata",
+                f"{IMMICH_URL}/api/search/metadata",  # ✅ fixed path
                 headers=headers,
                 json=payload,
                 timeout=10,
             )
             resp.raise_for_status()
             data = resp.json()
+            logger.debug("Immich raw response: %s", data)
+
             if isinstance(data, list):
                 logger.info("Received %d assets", len(data))
                 return data
             if isinstance(data, dict) and isinstance(data.get("assets"), list):
                 logger.info("Received %d assets", len(data["assets"]))
                 return data["assets"]
+
     except (httpx.HTTPError, ValueError) as exc:
         logger.error("Error fetching assets from Immich: %s", exc)
         return []
-    return []
 
+    return []
 
 async def update_photo_metadata(entry_path: Path) -> None:
     """Fetch photo metadata for the entry date and save to a companion JSON file."""
