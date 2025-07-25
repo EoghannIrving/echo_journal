@@ -57,12 +57,21 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 3. **Timezone**
    Adjust the timezone by editing the `TZ` variable in `docker-compose.yml`.
 
-4. **Build and run**
+4. **Install frontend dependencies**
+   Generate the Tailwind CSS by running:
+   ```sh
+   npm install
+   npm run build:css
+   ```
+   This step is optional when building with Docker Compose, as the Dockerfile
+   performs it automatically.
+
+5. **Build and run**
    ```sh
    docker-compose up --build
    ```
 
-5. **Access Echo Journal**
+6. **Access Echo Journal**
    Visit `http://localhost:8510` from any device on your LAN.
 
 ## Environment variables
