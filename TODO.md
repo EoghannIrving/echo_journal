@@ -5,6 +5,7 @@ This list captures planned work from the project roadmap. Completed items from e
 - [ ] **Expanded Archive view**
   - [X] Display metadata markers (location, weather, photo indicator)
   - [ ] Optional sorting and filtering by available enrichment
+  - [ ] Rework Archive page layout to be more compact.
 
 - [ ] **Stats dashboard**
   - [ ] Show entry counts by week, month and year
@@ -24,7 +25,9 @@ This list captures planned work from the project roadmap. Completed items from e
   - [X] Query a weather API for recent conditions
   - [ ] Pull a "Word of the Day" and add that to the journal
   - [ ] Pull a "Fact of the Day" and add that to the journal
+  - [ ] Record save time in front matter
   - [ ] AI assisted prompts / "Need inspiration?" feature
   - [ ] Optional "New Prompt" link with hover/tap hint
   - [ ] Evaluate secure remote access options (auth or VPN/proxy)
+  - [ ] Settings to allow for turning off optional integrations
 
