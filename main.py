@@ -9,15 +9,14 @@ from pathlib import Path
 
 from typing import Dict
 
+import json
 import logging
 import time
 
-import markdown
-import bleach
-
 import aiofiles
+import bleach
 import httpx
-import json
+import markdown
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -309,8 +308,6 @@ async def view_entry(request: Request, entry_date: str):
         file_path = safe_entry_path(entry_date, DATA_DIR)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail="Entry not found") from exc
-    prompt = ""
-    entry = ""
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Entry not found")
 
@@ -322,18 +319,13 @@ async def view_entry(request: Request, entry_date: str):
 
     frontmatter, body = split_frontmatter(md_content)
     meta = parse_frontmatter(frontmatter) if frontmatter else {}
-    location = meta.get("location", "")
-    weather_raw = meta.get("weather", "")
-    weather = format_weather(weather_raw) if weather_raw else ""
-    wotd = meta.get("wotd", "")
 
     prompt, entry = parse_entry(body)
     if not prompt and not entry:
         entry = body.strip()
 
-    html_entry = markdown.markdown(entry)
     html_entry = bleach.clean(
-        html_entry,
+        markdown.markdown(entry),
         tags=bleach.sanitizer.ALLOWED_TAGS.union({"p", "pre"}),
         attributes=bleach.sanitizer.ALLOWED_ATTRIBUTES,
     )
@@ -346,9 +338,9 @@ async def view_entry(request: Request, entry_date: str):
             "content_html": html_entry,
             "date": entry_date,
             "prompt": prompt,
-            "location": location,
-            "weather": weather,
-            "wotd": wotd,
+            "location": meta.get("location", ""),
+            "weather": format_weather(meta["weather"]) if meta.get("weather") else "",
+            "wotd": meta.get("wotd", ""),
             "readonly": True,  # Read-only mode for archive
             "active_page": "archive",
         },
