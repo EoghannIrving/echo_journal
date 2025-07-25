@@ -1,3 +1,5 @@
+"""Utility functions for interacting with the Wordnik API."""
+
 import os
 from typing import Optional
 import httpx
