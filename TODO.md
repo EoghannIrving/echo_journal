@@ -5,7 +5,7 @@ This list captures planned work from the project roadmap. Completed items from e
 - [ ] **Expanded Archive view**
   - [X] Display metadata markers (location, weather, photo indicator)
   - [ ] Optional sorting and filtering by available enrichment
-  - [ ] Rework Archive page layout to be more compact.
+  - [X] Rework Archive page layout to be more compact.
 
 - [ ] **Stats dashboard**
   - [ ] Show entry counts by week, month and year
