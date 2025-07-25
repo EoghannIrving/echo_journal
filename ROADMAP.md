@@ -30,12 +30,12 @@
 - **Animated letter-by-letter fade-in for `#welcome-message`: Completed**
   - Smooth staggered reveal on `/` and `/view/<date>`.
 
-## Phase 4: Archive + Stats foundation for enrichment (Planned)
+## Phase 4: Archive + Stats foundation for enrichment ✅ Completed
 - Expanded Archive view:
   - Show metadata presence (📍location, 🌦️weather, 📷photo marker).
   - Optional sorting/filtering by enrichment.
 
-- Stats dashboard:
+- Stats dashboard: ✅ Completed
   - Entry count by week/month/year.
   - Word count stats.
   - Optional "streaks" tracking (days/weeks with consecutive entries).
