@@ -45,6 +45,9 @@
 <div id="weather-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not (readonly and active_page == 'archive' and weather) %}hidden{% endif %}">
   {% if readonly and active_page == 'archive' and weather %}{{ weather }}{% endif %}
 </div>
+<div id="wotd-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not wotd %}hidden{% endif %}">
+  {% if wotd %}📖 {{ wotd }}{% endif %}
+</div>
     {% if not readonly %}
   <section class="w-full mx-auto mt-6 bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100">
     <button id="save-button" class="block w-[65%] max-w-[15rem] mx-auto mt-3 bg-slate-500 text-white rounded-xl py-3 text-lg font-semibold shadow transition hover:bg-slate-600 hover:brightness-105 hover:shadow-lg dark:bg-gray-400 dark:hover:bg-slate-500" aria-label="Save entry">Save Entry</button>

@@ -97,13 +97,17 @@ async def index(request: Request):
                 md_content = await fh.read()
         except OSError as exc:
             raise HTTPException(status_code=500, detail="Could not read entry") from exc
-        prompt, entry = parse_entry(md_content)
+        frontmatter, body = split_frontmatter(md_content)
+        meta = parse_frontmatter(frontmatter) if frontmatter else {}
+        prompt, entry = parse_entry(body)
         if not prompt and not entry:
-            entry = md_content.strip()
+            entry = body.strip()
+        wotd = meta.get("wotd", "")
     else:
         prompt_data = await generate_prompt()
         prompt = prompt_data["prompt"]
         entry = ""
+        wotd = ""
 
     return templates.TemplateResponse(
         "echo_journal.html",
@@ -115,6 +119,7 @@ async def index(request: Request):
             "content": entry,
             "readonly": False,  # Explicit
             "active_page": "home",
+            "wotd": wotd,
         },
     )
 
@@ -306,6 +311,7 @@ async def view_entry(request: Request, entry_date: str):
     location = meta.get("location", "")
     weather_raw = meta.get("weather", "")
     weather = format_weather(weather_raw) if weather_raw else ""
+    wotd = meta.get("wotd", "")
 
     prompt, entry = parse_entry(body)
     if not prompt and not entry:
@@ -328,6 +334,7 @@ async def view_entry(request: Request, entry_date: str):
             "prompt": prompt,
             "location": location,
             "weather": weather,
+            "wotd": wotd,
             "readonly": True,  # Read-only mode for archive
             "active_page": "archive",
         },
