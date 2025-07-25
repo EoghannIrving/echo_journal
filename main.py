@@ -303,9 +303,11 @@ async def metrics() -> JSONResponse:
 @app.get("/stats", response_class=HTMLResponse)
 async def stats_page(request: Request):
     """Render journal statistics including entry counts and words."""
-    counts_week = defaultdict(int)
-    counts_month = defaultdict(int)
-    counts_year = defaultdict(int)
+    counts = {
+        "week": defaultdict(int),
+        "month": defaultdict(int),
+        "year": defaultdict(int),
+    }
     total_words = 0
     total_entries = 0
 
@@ -321,31 +323,29 @@ async def stats_page(request: Request):
         except OSError:
             continue
 
-        _, body = split_frontmatter(content)
-        _, entry = parse_entry(body)
-        if not entry:
-            entry = body.strip()
-
-        word_count = len(entry.split())
+        body = split_frontmatter(content)[1]
+        entry_text = parse_entry(body)[1] or body.strip()
 
         iso = entry_date.isocalendar()
         week_key = f"{iso[0]}-W{iso[1]:02d}"
         month_key = entry_date.strftime("%Y-%m")
         year_key = entry_date.strftime("%Y")
 
-        counts_week[week_key] += 1
-        counts_month[month_key] += 1
-        counts_year[year_key] += 1
-        total_words += word_count
+        counts["week"][week_key] += 1
+        counts["month"][month_key] += 1
+        counts["year"][year_key] += 1
+        total_words += len(entry_text.split())
         total_entries += 1
 
     stats: Dict[str, object] = {
-        "weeks": sorted(counts_week.items(), reverse=True),
-        "months": sorted(counts_month.items(), reverse=True),
-        "years": sorted(counts_year.items(), reverse=True),
+        "weeks": sorted(counts["week"].items(), reverse=True),
+        "months": sorted(counts["month"].items(), reverse=True),
+        "years": sorted(counts["year"].items(), reverse=True),
         "total_entries": total_entries,
         "total_words": total_words,
-        "average_words": round(total_words / total_entries, 1) if total_entries else 0,
+        "average_words": round(total_words / total_entries, 1)
+        if total_entries
+        else 0,
     }
 
     return templates.TemplateResponse(
