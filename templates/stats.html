@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Stats - Echo Journal{% endblock %}
+
+{% block header_title %}
+  <h1 id="welcome-message" class="font-serif font-bold text-[clamp(1.75rem,2vw+1rem,2.5rem)] text-center mb-2 opacity-0 transition-opacity duration-[2000ms] delay-300">Stats</h1>
+{% endblock %}
+
+{% block content %}
+<p class="text-sm text-center mb-4 text-gray-500 dark:text-gray-400">
+  Overview of your journaling activity.
+</p>
+
+<div class="space-y-4">
+  <p class="text-lg">Total entries: {{ stats.total_entries }}</p>
+  <p class="text-lg">Total words: {{ stats.total_words }}</p>
+  <p class="text-lg">Average words per entry: {{ stats.average_words }}</p>
+
+  <details open>
+    <summary class="cursor-pointer font-semibold">By Year</summary>
+    <ul class="mt-2 pl-4 border-l border-gray-300 dark:border-gray-600 space-y-1">
+      {% for period, count in stats.years %}
+      <li>{{ period }}: {{ count }}</li>
+      {% endfor %}
+    </ul>
+  </details>
+
+  <details>
+    <summary class="cursor-pointer font-semibold">By Month</summary>
+    <ul class="mt-2 pl-4 border-l border-gray-300 dark:border-gray-600 space-y-1">
+      {% for period, count in stats.months %}
+      <li>{{ period }}: {{ count }}</li>
+      {% endfor %}
+    </ul>
+  </details>
+
+  <details>
+    <summary class="cursor-pointer font-semibold">By Week</summary>
+    <ul class="mt-2 pl-4 border-l border-gray-300 dark:border-gray-600 space-y-1">
+      {% for period, count in stats.weeks %}
+      <li>{{ period }}: {{ count }}</li>
+      {% endfor %}
+    </ul>
+  </details>
+</div>
+
+<footer class="w-full max-w-md mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug">
+  <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
+  Echo Journal
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const el = document.getElementById("welcome-message");
+  if (el) {
+    requestAnimationFrame(() => {
+      el.style.opacity = 1;
+    });
+  }
+});
+</script>
+{% endblock %}

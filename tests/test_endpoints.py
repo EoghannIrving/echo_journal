@@ -257,3 +257,24 @@ def test_load_entry_empty_date(test_client):
     """Empty entry_date should return a 404 error."""
     resp = test_client.get("/entry", params={"entry_date": ""})
     assert resp.status_code == 404
+
+
+def test_stats_page_counts(test_client):
+    """Stats page aggregates entry and word counts."""
+    (main.DATA_DIR / "2022-01-01.md").write_text(
+        "# Prompt\nP\n\n# Entry\none two",
+        encoding="utf-8",
+    )
+    (main.DATA_DIR / "2022-01-02.md").write_text(
+        "# Prompt\nP\n\n# Entry\nthree",
+        encoding="utf-8",
+    )
+    (main.DATA_DIR / "2022-02-01.md").write_text(
+        "# Prompt\nP\n\n# Entry\nfour five six",
+        encoding="utf-8",
+    )
+
+    resp = test_client.get("/stats")
+    assert resp.status_code == 200
+    assert "Total entries: 3" in resp.text
+    assert "Total words: 6" in resp.text
