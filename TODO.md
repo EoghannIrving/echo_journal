@@ -13,17 +13,18 @@ This list captures planned work from the project roadmap. Completed items from e
 
 - [ ] **Metadata parsing improvements**
   - [C] Unify parsing logic and support frontmatter if needed
-  - [ ] Document YAML frontmatter structure with `location`, `weather` and `photos` keys
+  - [ ] Document YAML frontmatter structure with `location`, `weather` and `photos` as well as other keys
   - [X] Parse this frontmatter in `archive_view` to expose icon flags
-  - [ ] Use `pyyaml` to read the frontmatter delimited by `---` at the top of each entry
+  - [X] Use `pyyaml` to read the frontmatter delimited by `---` at the top of each entry
   - [X] Maintain compatibility with legacy `.md` entries
 
 - [ ] **Enrichment integration prep**
   - [ ] Support Immich photo integration
   - [X] Add geolocation capture
   - [X] Query a weather API for recent conditions
+  - [ ] Pull a "Word of the Day" and add that to the journal
+  - [ ] Pull a "Fact of the Day" and add that to the journal
   - [ ] AI assisted prompts / "Need inspiration?" feature
   - [ ] Optional "New Prompt" link with hover/tap hint
-  - [ ] Remember current prompt via localStorage
   - [ ] Evaluate secure remote access options (auth or VPN/proxy)
 
