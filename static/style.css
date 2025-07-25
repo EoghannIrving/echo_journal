@@ -148,6 +148,28 @@ textarea.journal-textarea:focus {
 .dark .editor-container {
   background-color: #374151;
 }
+
+.paper-card {
+  background-color: #f0f4f8;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  background-image: image-set(
+    url('/static/textures/paper-texture.avif') type('image/avif'),
+    url('/static/textures/paper-texture.webp') type('image/webp')
+  );
+  background-repeat: repeat;
+  background-size: 512px 512px;
+  background-blend-mode: multiply;
+}
+.dark .paper-card {
+  background-color: #374151;
+  color: #f5f5f5;
+  border-color: #4b5563;
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.12);
+  background-blend-mode: multiply;
+}
 .md-btn {
   background: none;
   border: 1px solid #d1d5db;
