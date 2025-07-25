@@ -11,6 +11,7 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 - Backend implemented with FastAPI and Jinja2 templates
 - Archive view to browse past entries
 - Settings page placeholder for future options
+- Stats dashboard showing entry counts, word totals and streaks
 
 ## Project structure
 ```
