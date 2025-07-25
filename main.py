@@ -197,9 +197,17 @@ async def load_entry(entry_date: str):
 
 
 @app.get("/archive", response_class=HTMLResponse)
-async def archive_view(request: Request):
+async def archive_view(
+    request: Request,
+    sort_by: str | None = None,
+    filter: str | None = None,
+):
     """Render an archive of all journal entries grouped by month."""
-    entries_by_month = defaultdict(list)
+
+    sort_by = sort_by or "date"
+    filter_val = filter
+
+    all_entries: list[dict] = []
 
     # Recursively gather markdown files to include any entries stored in
     # subdirectories such as year folders
@@ -209,8 +217,6 @@ async def archive_view(request: Request):
         except ValueError:
             continue  # Skip malformed filenames
 
-        month_key = entry_date.strftime("%Y-%m")
-
         try:
             async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
                 content = await fh.read()
@@ -218,8 +224,32 @@ async def archive_view(request: Request):
             # Skip unreadable files instead of failing the entire request
             continue
 
-        prompt, _ = parse_entry(content)
-        entries_by_month[month_key].append((entry_date.isoformat(), prompt))
+        frontmatter, body = split_frontmatter(content)
+        meta = parse_frontmatter(frontmatter) if frontmatter else {}
+        prompt, _ = parse_entry(body)
+
+        all_entries.append({"date": entry_date, "prompt": prompt, "meta": meta})
+
+    if filter_val == "has_location":
+        all_entries = [e for e in all_entries if e["meta"].get("location")]
+    elif filter_val == "has_weather":
+        all_entries = [e for e in all_entries if e["meta"].get("weather")]
+
+    if sort_by == "date":
+        all_entries.sort(key=lambda e: e["date"], reverse=True)
+    elif sort_by in {"location", "weather", "photos"}:
+        all_entries.sort(key=lambda e: e["meta"].get(sort_by) or "")
+    else:
+        # default to date sorting if unrecognised
+        sort_by = "date"
+        all_entries.sort(key=lambda e: e["date"], reverse=True)
+
+    entries_by_month: dict[str, list[tuple[str, str, dict]]] = defaultdict(list)
+    for entry in all_entries:
+        month_key = entry["date"].strftime("%Y-%m")
+        entries_by_month[month_key].append(
+            (entry["date"].isoformat(), entry["prompt"], entry["meta"])
+        )
 
     # Sort months descending (latest first)
     sorted_entries = dict(sorted(entries_by_month.items(), reverse=True))
@@ -230,6 +260,8 @@ async def archive_view(request: Request):
             "request": request,
             "entries": sorted_entries,
             "active_page": "archive",
+            "sort_by": sort_by,
+            "filter_val": filter_val,
         },
     )
 

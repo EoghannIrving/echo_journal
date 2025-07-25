@@ -92,6 +92,15 @@ running the app in other environments.
 - Text area for daily entry
 - Save writes entry as a Markdown file named after the date
 
+## Archive
+The `/archive` page lists past entries grouped by month.
+
+Query parameters:
+- `sort_by` – ordering of entries: `date` (default), `location`, `weather`, or `photos`.
+- `filter` – limit results to entries containing metadata. Use `has_location` or `has_weather`.
+
+Example: `/archive?sort_by=location&filter=has_location`.
+
 ## Additional notes
 - Markdown files easily readable and portable
 - Designed for ultra-low friction daily journaling:
