@@ -229,9 +229,9 @@ def test_view_entry_no_metadata_hidden(test_client):
     resp = test_client.get("/view/2020-09-10")
     assert resp.status_code == 200
     assert 'id="location-display"' in resp.text
-    assert 'hidden' in resp.text.split('id="location-display"')[1].split('>')[0]
+    assert "hidden" in resp.text.split('id="location-display"')[1].split(">")[0]
     assert 'id="weather-display"' in resp.text
-    assert 'hidden' in resp.text.split('id="weather-display"')[1].split('>')[0]
+    assert "hidden" in resp.text.split('id="weather-display"')[1].split(">")[0]
 
 
 def test_save_entry_invalid_date(test_client):
@@ -291,3 +291,27 @@ def test_stats_page_counts(test_client):
     assert resp.status_code == 200
     assert "Total entries: 3" in resp.text
     assert "Total words: 6" in resp.text
+
+
+def test_stats_page_streaks(test_client):
+    """Stats page reports correct day and week streaks."""
+    dates = [
+        "2022-01-03",
+        "2022-01-04",
+        "2022-01-05",
+        "2022-01-10",
+        "2022-01-17",
+        "2022-01-31",
+    ]
+    for d in dates:
+        (main.DATA_DIR / f"{d}.md").write_text(
+            "# Prompt\nP\n\n# Entry\nE",
+            encoding="utf-8",
+        )
+
+    resp = test_client.get("/stats")
+    assert resp.status_code == 200
+    assert "Current daily streak: 1" in resp.text
+    assert "Longest daily streak: 3" in resp.text
+    assert "Current weekly streak: 1" in resp.text
+    assert "Longest weekly streak: 3" in resp.text

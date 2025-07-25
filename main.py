@@ -4,7 +4,7 @@
 
 import asyncio
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from typing import Dict
@@ -311,11 +311,15 @@ async def stats_page(request: Request):
     total_words = 0
     total_entries = 0
 
+    entry_dates = []
+
     for file in DATA_DIR.rglob("*.md"):
         try:
             entry_date = datetime.strptime(file.stem, "%Y-%m-%d").date()
         except ValueError:
             continue
+
+        entry_dates.append(entry_date)
 
         try:
             async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
@@ -337,15 +341,53 @@ async def stats_page(request: Request):
         total_words += len(entry_text.split())
         total_entries += 1
 
+    # Calculate streaks after all entry dates are collected
+    entry_dates.sort()
+    current_day_streak = 0
+    longest_day_streak = 0
+    prev = None
+    for d in entry_dates:
+        if prev and d == prev + timedelta(days=1):
+            current_day_streak += 1
+        else:
+            current_day_streak = 1 if entry_dates else 0
+        longest_day_streak = max(longest_day_streak, current_day_streak)
+        prev = d
+
+    if not entry_dates:
+        current_day_streak = longest_day_streak = 0
+
+    week_starts = sorted(
+        {
+            date.fromisocalendar(d.isocalendar()[0], d.isocalendar()[1], 1)
+            for d in entry_dates
+        }
+    )
+    current_week_streak = 0
+    longest_week_streak = 0
+    prev_week = None
+    for w in week_starts:
+        if prev_week and (w - prev_week).days == 7:
+            current_week_streak += 1
+        else:
+            current_week_streak = 1 if week_starts else 0
+        longest_week_streak = max(longest_week_streak, current_week_streak)
+        prev_week = w
+
+    if not week_starts:
+        current_week_streak = longest_week_streak = 0
+
     stats: Dict[str, object] = {
         "weeks": sorted(counts["week"].items(), reverse=True),
         "months": sorted(counts["month"].items(), reverse=True),
         "years": sorted(counts["year"].items(), reverse=True),
         "total_entries": total_entries,
         "total_words": total_words,
-        "average_words": round(total_words / total_entries, 1)
-        if total_entries
-        else 0,
+        "average_words": round(total_words / total_entries, 1) if total_entries else 0,
+        "current_day_streak": current_day_streak,
+        "longest_day_streak": longest_day_streak,
+        "current_week_streak": current_week_streak,
+        "longest_week_streak": longest_week_streak,
     }
 
     return templates.TemplateResponse(
