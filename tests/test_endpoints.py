@@ -77,6 +77,7 @@ def test_save_entry_records_time(test_client, monkeypatch):
     """Saving an entry records the time of day in frontmatter."""
 
     monkeypatch.setattr(weather_utils, "time_of_day_label", lambda: "Evening")
+    monkeypatch.setattr(main, "time_of_day_label", lambda: "Evening")
     payload = {"date": "2020-01-03", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
