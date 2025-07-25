@@ -9,3 +9,7 @@ services:
       - ${JOURNALS_DIR:-/mnt/nas/journals}:/journals
     environment:
       - TZ=America/New_York
+      # Optional API keys for extra features
+      - WORDNIK_API_KEY=${WORDNIK_API_KEY:-}
+      - IMMICH_URL=${IMMICH_URL:-}
+      - IMMICH_API_KEY=${IMMICH_API_KEY:-}
