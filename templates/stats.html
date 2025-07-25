@@ -3,23 +3,69 @@
 {% block title %}Stats - Echo Journal{% endblock %}
 
 {% block header_title %}
-  <h1 id="welcome-message" class="font-serif font-bold text-[clamp(1.75rem,2vw+1rem,2.5rem)] text-center mb-2 opacity-0 transition-opacity duration-[2000ms] delay-300">Stats</h1>
+  <h1 id="welcome-message" class="font-serif font-bold text-[clamp(1.75rem,2vw+1rem,2.5rem)] text-center mb-2 opacity-0 animate-fade-in">Stats</h1>
 {% endblock %}
 
 {% block content %}
-<p class="text-sm text-center mb-4 text-gray-500 dark:text-gray-400">
-  Overview of your journaling activity.
-</p>
+<section class="w-full mx-auto space-y-4 text-center bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100 p-4 rounded-xl">
+  <p class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 leading-snug tracking-wide">
+    Overview of your journaling activity.
+  </p>
 
-<div class="space-y-4">
-  <p class="text-lg">Total entries: {{ stats.total_entries }}</p>
-  <p class="text-lg">Total words: {{ stats.total_words }}</p>
-  <p class="text-lg">Average words per entry: {{ stats.average_words }}</p>
-  <p class="text-lg">Current daily streak: {{ stats.current_day_streak }}</p>
-  <p class="text-lg">Longest daily streak: {{ stats.longest_day_streak }}</p>
-  <p class="text-lg">Current weekly streak: {{ stats.current_week_streak }}</p>
-  <p class="text-lg">Longest weekly streak: {{ stats.longest_week_streak }}</p>
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    <div class="p-4 rounded-xl bg-white dark:bg-[#333] shadow text-center">
+      <p class="text-lg">
+        <span class="sr-only">Total entries: {{ stats.total_entries }}</span>
+        <span class="text-[clamp(1.5rem,2vw+1rem,2rem)] font-semibold block">{{ stats.total_entries }}</span>
+        <span class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400">Total entries</span>
+      </p>
+    </div>
+    <div class="p-4 rounded-xl bg-white dark:bg-[#333] shadow text-center">
+      <p class="text-lg">
+        <span class="sr-only">Total words: {{ stats.total_words }}</span>
+        <span class="text-[clamp(1.5rem,2vw+1rem,2rem)] font-semibold block">{{ stats.total_words }}</span>
+        <span class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400">Total words</span>
+      </p>
+    </div>
+    <div class="p-4 rounded-xl bg-white dark:bg-[#333] shadow text-center">
+      <p class="text-lg">
+        <span class="sr-only">Average words per entry: {{ stats.average_words }}</span>
+        <span class="text-[clamp(1.5rem,2vw+1rem,2rem)] font-semibold block">{{ stats.average_words }}</span>
+        <span class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400">Avg words/entry</span>
+      </p>
+    </div>
+    <div class="p-4 rounded-xl bg-white dark:bg-[#333] shadow text-center">
+      <p class="text-lg">
+        <span class="sr-only">Current daily streak: {{ stats.current_day_streak }}</span>
+        <span class="text-[clamp(1.5rem,2vw+1rem,2rem)] font-semibold block">{{ stats.current_day_streak }}</span>
+        <span class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400">Current daily streak</span>
+      </p>
+    </div>
+    <div class="p-4 rounded-xl bg-white dark:bg-[#333] shadow text-center">
+      <p class="text-lg">
+        <span class="sr-only">Longest daily streak: {{ stats.longest_day_streak }}</span>
+        <span class="text-[clamp(1.5rem,2vw+1rem,2rem)] font-semibold block">{{ stats.longest_day_streak }}</span>
+        <span class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400">Longest daily streak</span>
+      </p>
+    </div>
+    <div class="p-4 rounded-xl bg-white dark:bg-[#333] shadow text-center">
+      <p class="text-lg">
+        <span class="sr-only">Current weekly streak: {{ stats.current_week_streak }}</span>
+        <span class="text-[clamp(1.5rem,2vw+1rem,2rem)] font-semibold block">{{ stats.current_week_streak }}</span>
+        <span class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400">Current weekly streak</span>
+      </p>
+    </div>
+    <div class="p-4 rounded-xl bg-white dark:bg-[#333] shadow text-center">
+      <p class="text-lg">
+        <span class="sr-only">Longest weekly streak: {{ stats.longest_week_streak }}</span>
+        <span class="text-[clamp(1.5rem,2vw+1rem,2rem)] font-semibold block">{{ stats.longest_week_streak }}</span>
+        <span class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400">Longest weekly streak</span>
+      </p>
+    </div>
+  </div>
+</section>
 
+<section class="w-full mx-auto space-y-4 bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100 p-4 rounded-xl">
   <details open>
     <summary class="cursor-pointer font-semibold">By Year</summary>
     <ul class="mt-2 pl-4 border-l border-gray-300 dark:border-gray-600 space-y-1">
@@ -46,21 +92,11 @@
       {% endfor %}
     </ul>
   </details>
-</div>
+</section>
 
 <footer class="w-full max-w-md mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug">
   <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
   Echo Journal
 </footer>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const el = document.getElementById("welcome-message");
-  if (el) {
-    requestAnimationFrame(() => {
-      el.style.opacity = 1;
-    });
-  }
-});
-</script>
 {% endblock %}
