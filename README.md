@@ -85,9 +85,27 @@ The application looks for the following optional variables:
 - `PROMPTS_FILE` – location of the prompts JSON file
 - `STATIC_DIR` – directory for static files served under `/static`
 - `WORDNIK_API_KEY` – API key used to fetch the Wordnik word of the day
+- `IMMICH_URL` – base URL of your Immich API endpoint (for example `http://immich.local/api`)
+- `IMMICH_API_KEY` – API key used to authorize requests to Immich
 
 Defaults are suitable for Docker Compose but can be overridden when
 running the app in other environments.
+
+### Immich API setup
+
+To enable photo metadata from [Immich](https://github.com/immich-app/immich),
+create an access token in your Immich account and set the two variables above.
+For a Docker Compose install, add them under the service's `environment` block:
+
+```yaml
+environment:
+  - IMMICH_URL=http://immich.local/api
+  - IMMICH_API_KEY=your_generated_token
+```
+
+With these configured, saving an entry will fetch any photos from Immich that
+match the entry's date and store a companion JSON file alongside the Markdown
+entry.
 
 ## Daily workflow
 - Dynamic prompt rendered server-side via FastAPI + Jinja2 (`echo_journal.html`)
