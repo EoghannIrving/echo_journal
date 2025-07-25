@@ -383,3 +383,33 @@ def test_archive_filter_and_sort(test_client):
     assert resp2.status_code == 200
     # When sorted by location, Atown (2021-07-03) should come before Btown
     assert resp2.text.find("2021-07-03") < resp2.text.find("2021-07-01")
+
+
+def test_view_entry_shows_wotd(test_client):
+    """Word of the day from frontmatter should appear in view page."""
+    content = (
+        "---\n"
+        "wotd: luminous\n"
+        "photos: []\n"
+        "---\n"
+        "# Prompt\nP\n\n# Entry\nE"
+    )
+    (main.DATA_DIR / "2021-08-01.md").write_text(content, encoding="utf-8")
+    resp = test_client.get("/view/2021-08-01")
+    assert resp.status_code == 200
+    assert "luminous" in resp.text
+
+
+def test_archive_shows_wotd_icon(test_client):
+    """Entries with a word of the day show an icon in the archive."""
+    content = (
+        "---\n"
+        "wotd: zephyr\n"
+        "photos: []\n"
+        "---\n"
+        "# Prompt\nP\n\n# Entry\nE"
+    )
+    (main.DATA_DIR / "2021-09-09.md").write_text(content, encoding="utf-8")
+    resp = test_client.get("/archive")
+    assert resp.status_code == 200
+    assert "📖" in resp.text
