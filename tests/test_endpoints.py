@@ -77,6 +77,7 @@ def test_save_entry_and_retrieve(test_client):
 def test_save_entry_records_time(test_client, monkeypatch):
     """Saving an entry records the time of day in frontmatter."""
     monkeypatch.setattr(weather_utils, "time_of_day_label", lambda: "Evening")
+    monkeypatch.setattr(main, "time_of_day_label", lambda: "Evening")
     payload = {"date": "2020-01-03", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
@@ -455,3 +456,21 @@ def test_archive_shows_photo_icon(test_client, monkeypatch):
     resp = test_client.get("/archive")
     assert resp.status_code == 200
     assert "📸" in resp.text
+
+
+def test_view_entry_updates_photo_metadata(test_client, monkeypatch):
+    """Viewing an entry should poll Immich for new photos."""
+    called = {"flag": False}
+
+    async def fake_update(_path):
+        called["flag"] = True
+
+    monkeypatch.setattr(main, "update_photo_metadata", fake_update)
+
+    (main.DATA_DIR / "2023-03-03.md").write_text(
+        "# Prompt\nP\n\n# Entry\nE", encoding="utf-8"
+    )
+
+    resp = test_client.get("/view/2023-03-03")
+    assert resp.status_code == 200
+    assert called["flag"]

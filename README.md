@@ -103,9 +103,9 @@ environment:
   - IMMICH_API_KEY=your_generated_token
 ```
 
-With these configured, saving an entry will fetch any photos from Immich that
-match the entry's date and store a companion JSON file alongside the Markdown
-entry.
+With these configured, saving **or viewing** an entry will fetch any photos
+from Immich that match the entry's date and store a companion JSON file
+alongside the Markdown entry.
 
 ## Daily workflow
 - Dynamic prompt rendered server-side via FastAPI + Jinja2 (`echo_journal.html`)
