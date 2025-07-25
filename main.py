@@ -17,6 +17,7 @@ import bleach
 
 import aiofiles
 import httpx
+import json
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -31,6 +32,7 @@ from file_utils import (
     parse_frontmatter,
     format_weather,
 )
+from immich_utils import update_photo_metadata
 from prompt_utils import generate_prompt
 from weather_utils import build_frontmatter, time_of_day_label
 
@@ -177,6 +179,8 @@ async def save_entry(data: dict):
         async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
             await fh.write(md_text)
 
+    await update_photo_metadata(file_path)
+
     return {"status": "success"}
 
 
@@ -235,6 +239,16 @@ async def _collect_entries() -> list[dict]:
             continue
         frontmatter, body = split_frontmatter(content)
         meta = parse_frontmatter(frontmatter) if frontmatter else {}
+        if meta.get("photos") in (None, "[]"):
+            json_path = file.with_suffix(".photos.json")
+            if json_path.exists():
+                try:
+                    async with aiofiles.open(json_path, "r", encoding=ENCODING) as jh:
+                        photos_text = await jh.read()
+                    if json.loads(photos_text):
+                        meta["photos"] = "1"
+                except (OSError, ValueError):
+                    pass
         prompt, _ = parse_entry(body)
         entries.append({"date": entry_date, "prompt": prompt, "meta": meta})
     return entries
