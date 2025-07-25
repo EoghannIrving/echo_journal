@@ -106,6 +106,8 @@ environment:
 With these configured, saving **or viewing** an entry will fetch any photos
 from Immich that match the entry's date and store a companion JSON file
 alongside the Markdown entry.
+The interactions with Immich are logged using the `ej.immich` logger so you can
+see when requests are made and JSON files written.
 
 ## Daily workflow
 - Dynamic prompt rendered server-side via FastAPI + Jinja2 (`echo_journal.html`)
