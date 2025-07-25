@@ -300,9 +300,8 @@ async def metrics() -> JSONResponse:
     return JSONResponse(content={"timings": app.state.request_timings})
 
 
-@app.get("/stats", response_class=HTMLResponse)
-async def stats_page(request: Request):
-    """Render journal statistics including entry counts and words."""
+async def _gather_entry_stats() -> tuple[dict, int, int, list[date]]:
+    """Return aggregated entry counts, total words and entry dates."""
     counts = {
         "week": defaultdict(int),
         "month": defaultdict(int),
@@ -310,8 +309,7 @@ async def stats_page(request: Request):
     }
     total_words = 0
     total_entries = 0
-
-    entry_dates = []
+    entry_dates: list[date] = []
 
     for file in DATA_DIR.rglob("*.md"):
         try:
@@ -341,7 +339,11 @@ async def stats_page(request: Request):
         total_words += len(entry_text.split())
         total_entries += 1
 
-    # Calculate streaks after all entry dates are collected
+    return counts, total_words, total_entries, entry_dates
+
+
+def _calculate_streaks(entry_dates: list[date]) -> dict[str, int]:
+    """Return current and longest day/week streaks."""
     entry_dates.sort()
     current_day_streak = 0
     longest_day_streak = 0
@@ -377,6 +379,20 @@ async def stats_page(request: Request):
     if not week_starts:
         current_week_streak = longest_week_streak = 0
 
+    return {
+        "current_day_streak": current_day_streak,
+        "longest_day_streak": longest_day_streak,
+        "current_week_streak": current_week_streak,
+        "longest_week_streak": longest_week_streak,
+    }
+
+
+@app.get("/stats", response_class=HTMLResponse)
+async def stats_page(request: Request):
+    """Render journal statistics including entry counts and words."""
+    counts, total_words, total_entries, dates = await _gather_entry_stats()
+    streaks = _calculate_streaks(dates)
+
     stats: Dict[str, object] = {
         "weeks": sorted(counts["week"].items(), reverse=True),
         "months": sorted(counts["month"].items(), reverse=True),
@@ -384,10 +400,7 @@ async def stats_page(request: Request):
         "total_entries": total_entries,
         "total_words": total_words,
         "average_words": round(total_words / total_entries, 1) if total_entries else 0,
-        "current_day_streak": current_day_streak,
-        "longest_day_streak": longest_day_streak,
-        "current_week_streak": current_week_streak,
-        "longest_week_streak": longest_week_streak,
+        **streaks,
     }
 
     return templates.TemplateResponse(
