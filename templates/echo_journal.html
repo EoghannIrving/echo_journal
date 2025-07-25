@@ -39,15 +39,13 @@
     {{ content_html|safe }}</div>
   {% endif %}
 </section>
-<div id="location-display" class="text-sm text-gray-600 dark:text-gray-300 mt-2 italic">
-  {% if readonly and location %}
+<div id="location-display" class="text-sm text-gray-600 dark:text-gray-300 mt-2 italic {% if not (readonly and active_page == 'archive') %}hidden{% endif %}">
+  {% if readonly and active_page == 'archive' and location %}
     📍 {{ location }}
-  {% else %}
-    📍 Trying to detect your location...
   {% endif %}
 </div>
-<div id="weather-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic">
-  {% if readonly and weather %}{{ weather }}{% endif %}
+<div id="weather-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not (readonly and active_page == 'archive') %}hidden{% endif %}">
+  {% if readonly and active_page == 'archive' and weather %}{{ weather }}{% endif %}
 </div>
     {% if not readonly %}
   <section class="w-full mx-auto mt-6 bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100">
