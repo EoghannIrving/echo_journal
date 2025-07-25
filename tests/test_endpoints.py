@@ -315,3 +315,43 @@ def test_stats_page_streaks(test_client):
     assert "Longest daily streak: 3" in resp.text
     assert "Current weekly streak: 1" in resp.text
     assert "Longest weekly streak: 3" in resp.text
+
+
+def test_archive_filter_and_sort(test_client):
+    """Archive endpoint supports filtering and sorting by metadata."""
+    entry1 = (
+        "---\n"
+        "location: Btown\n"
+        "weather: 10\u00b0C code 1\n"
+        "photos: []\n"
+        "---\n"
+        "# Prompt\nP1\n\n# Entry\nE1"
+    )
+    entry2 = (
+        "---\n"
+        "weather: 12\u00b0C code 2\n"
+        "photos: []\n"
+        "---\n"
+        "# Prompt\nP2\n\n# Entry\nE2"
+    )
+    entry3 = (
+        "---\n"
+        "location: Atown\n"
+        "photos: []\n"
+        "---\n"
+        "# Prompt\nP3\n\n# Entry\nE3"
+    )
+    (main.DATA_DIR / "2021-07-01.md").write_text(entry1, encoding="utf-8")
+    (main.DATA_DIR / "2021-07-02.md").write_text(entry2, encoding="utf-8")
+    (main.DATA_DIR / "2021-07-03.md").write_text(entry3, encoding="utf-8")
+
+    resp = test_client.get("/archive", params={"filter": "has_location"})
+    assert resp.status_code == 200
+    assert "2021-07-01" in resp.text
+    assert "2021-07-03" in resp.text
+    assert "2021-07-02" not in resp.text
+
+    resp2 = test_client.get("/archive", params={"sort_by": "location"})
+    assert resp2.status_code == 200
+    # When sorted by location, Atown (2021-07-03) should come before Btown
+    assert resp2.text.find("2021-07-03") < resp2.text.find("2021-07-01")
