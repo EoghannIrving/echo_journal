@@ -17,7 +17,7 @@ import bleach
 
 import aiofiles
 import httpx
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -119,6 +119,20 @@ async def index(request: Request):
     )
 
 
+def _with_updated_save_time(frontmatter: str | None, label: str) -> str | None:
+    """Return frontmatter with the ``save_time`` value inserted or replaced."""
+    if not frontmatter:
+        return f"save_time: {label}"
+    lines = frontmatter.splitlines()
+    for i, line in enumerate(lines):
+        if line.startswith("save_time:"):
+            lines[i] = f"save_time: {label}"
+            break
+    else:
+        lines.append(f"save_time: {label}")
+    return "\n".join(lines)
+
+
 @app.post("/entry")
 async def save_entry(data: dict):
     """Save a journal entry for the provided date."""
@@ -145,18 +159,7 @@ async def save_entry(data: dict):
 
     # Update or add save_time field
     label = time_of_day_label()
-    fm_lines: list[str] = []
-    if frontmatter:
-        fm_lines = frontmatter.splitlines()
-    updated = False
-    for i, line in enumerate(fm_lines):
-        if line.startswith("save_time:"):
-            fm_lines[i] = f"save_time: {label}"
-            updated = True
-            break
-    if not updated:
-        fm_lines.append(f"save_time: {label}")
-    frontmatter = "\n".join(fm_lines) if fm_lines else None
+    frontmatter = _with_updated_save_time(frontmatter, label)
 
     md_body = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
     if frontmatter is not None:
@@ -211,43 +214,42 @@ async def load_entry(entry_date: str):
     return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
 
 
-@app.get("/archive", response_class=HTMLResponse)
-async def archive_view(
-    request: Request,
-    sort_by: str | None = None,
-    filter: str | None = None,
-):
-    """Render an archive of all journal entries grouped by month."""
 
-    sort_by = sort_by or "date"
-    filter_val = filter
-
-    all_entries: list[dict] = []
-
-    # Recursively gather markdown files to include any entries stored in
-    # subdirectories such as year folders
+async def _collect_entries() -> list[dict]:
+    """Return a list of entries found under ``DATA_DIR``."""
+    entries: list[dict] = []
     for file in DATA_DIR.rglob("*.md"):
         try:
             entry_date = datetime.strptime(file.stem, "%Y-%m-%d").date()
         except ValueError:
-            continue  # Skip malformed filenames
-
+            continue
         try:
             async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
                 content = await fh.read()
         except OSError:
-            # Skip unreadable files instead of failing the entire request
             continue
-
         frontmatter, body = split_frontmatter(content)
         meta = parse_frontmatter(frontmatter) if frontmatter else {}
         prompt, _ = parse_entry(body)
+        entries.append({"date": entry_date, "prompt": prompt, "meta": meta})
+    return entries
 
-        all_entries.append({"date": entry_date, "prompt": prompt, "meta": meta})
 
-    if filter_val == "has_location":
+@app.get("/archive", response_class=HTMLResponse)
+async def archive_view(
+    request: Request,
+    sort_by: str | None = None,
+    filter_: str | None = Query(None, alias="filter"),
+):
+    """Render an archive of all journal entries grouped by month."""
+
+    sort_by = sort_by or "date"
+
+    all_entries = await _collect_entries()
+
+    if filter_ == "has_location":
         all_entries = [e for e in all_entries if e["meta"].get("location")]
-    elif filter_val == "has_weather":
+    elif filter_ == "has_weather":
         all_entries = [e for e in all_entries if e["meta"].get("weather")]
 
     if sort_by == "date":
@@ -276,7 +278,7 @@ async def archive_view(
             "entries": sorted_entries,
             "active_page": "archive",
             "sort_by": sort_by,
-            "filter_val": filter_val,
+            "filter_val": filter_,
         },
     )
 

@@ -40,6 +40,7 @@ sys.path.insert(0, str(ROOT))
 
 # Import the application after environment setup
 import main  # type: ignore  # pylint: disable=wrong-import-position
+import weather_utils  # pylint: disable=wrong-import-position
 
 
 @pytest.fixture()
@@ -73,7 +74,6 @@ def test_save_entry_and_retrieve(test_client):
 
 def test_save_entry_records_time(test_client, monkeypatch):
     """Saving an entry records the time of day in frontmatter."""
-    import weather_utils  # import inside to allow monkeypatch
 
     monkeypatch.setattr(weather_utils, "time_of_day_label", lambda: "Evening")
     payload = {"date": "2020-01-03", "content": "entry", "prompt": "prompt"}
