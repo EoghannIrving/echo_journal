@@ -42,6 +42,7 @@ sys.path.insert(0, str(ROOT))
 # Import the application after environment setup
 import main  # type: ignore  # pylint: disable=wrong-import-position
 import weather_utils  # pylint: disable=wrong-import-position
+import immich_utils  # pylint: disable=wrong-import-position
 
 
 @pytest.fixture()
@@ -75,9 +76,7 @@ def test_save_entry_and_retrieve(test_client):
 
 def test_save_entry_records_time(test_client, monkeypatch):
     """Saving an entry records the time of day in frontmatter."""
-
     monkeypatch.setattr(weather_utils, "time_of_day_label", lambda: "Evening")
-    monkeypatch.setattr(main, "time_of_day_label", lambda: "Evening")
     payload = {"date": "2020-01-03", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
@@ -88,8 +87,6 @@ def test_save_entry_records_time(test_client, monkeypatch):
 
 def test_word_of_day_in_frontmatter(test_client, monkeypatch):
     """Wordnik word of the day is saved in frontmatter when available."""
-    import weather_utils
-
     async def fake_word():
         return "serendipity"
 
@@ -419,9 +416,7 @@ def test_archive_shows_wotd_icon(test_client):
 
 def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
     """Saving an entry stores photo metadata from Immich."""
-    import immich_utils
-
-    async def fake_fetch(date_str: str, media_type: str = "IMAGE"):
+    async def fake_fetch(_date_str: str, _media_type: str = "IMAGE"):
         return [
             {
                 "type": "IMAGE",
@@ -443,9 +438,7 @@ def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
 
 def test_archive_shows_photo_icon(test_client, monkeypatch):
     """Entries with a companion photo file show an icon in the archive."""
-    import immich_utils
-
-    async def fake_fetch(date_str: str, media_type: str = "IMAGE"):
+    async def fake_fetch(_date_str: str, _media_type: str = "IMAGE"):
         return [
             {
                 "type": "IMAGE",
