@@ -3,7 +3,7 @@
 This list captures planned work from the project roadmap. Completed items from earlier phases are omitted.
 
 - [ ] **Expanded Archive view**
-  - [ ] Display metadata markers (location, weather, photo indicator)
+  - [X] Display metadata markers (location, weather, photo indicator)
   - [ ] Optional sorting and filtering by available enrichment
 
 - [ ] **Stats dashboard**
@@ -12,16 +12,16 @@ This list captures planned work from the project roadmap. Completed items from e
   - [ ] Optional "streak" tracking for consecutive days or weeks
 
 - [ ] **Metadata parsing improvements**
-  - [ ] Unify parsing logic and support frontmatter if needed
+  - [C] Unify parsing logic and support frontmatter if needed
   - [ ] Document YAML frontmatter structure with `location`, `weather` and `photos` keys
-  - [ ] Parse this frontmatter in `archive_view` to expose icon flags
+  - [X] Parse this frontmatter in `archive_view` to expose icon flags
   - [ ] Use `pyyaml` to read the frontmatter delimited by `---` at the top of each entry
-  - [ ] Maintain compatibility with legacy `.md` entries
+  - [X] Maintain compatibility with legacy `.md` entries
 
 - [ ] **Enrichment integration prep**
   - [ ] Support Immich photo integration
   - [X] Add geolocation capture
-  - [ ] Query a weather API for recent conditions
+  - [X] Query a weather API for recent conditions
   - [ ] AI assisted prompts / "Need inspiration?" feature
   - [ ] Optional "New Prompt" link with hover/tap hint
   - [ ] Remember current prompt via localStorage
