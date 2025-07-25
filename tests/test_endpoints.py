@@ -11,6 +11,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+import json
 import aiofiles  # type: ignore  # pylint: disable=import-error
 
 import pytest  # pylint: disable=import-error
@@ -413,3 +414,50 @@ def test_archive_shows_wotd_icon(test_client):
     resp = test_client.get("/archive")
     assert resp.status_code == 200
     assert "📖" in resp.text
+
+
+def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
+    """Saving an entry stores photo metadata from Immich."""
+    import immich_utils
+
+    async def fake_fetch(date_str: str, media_type: str = "IMAGE"):
+        return [
+            {
+                "type": "IMAGE",
+                "url": "img1.jpg",
+                "thumb": "thumb1.jpg",
+                "caption": "A photo",
+            }
+        ]
+
+    monkeypatch.setattr(immich_utils, "fetch_assets_for_date", fake_fetch)
+    payload = {"date": "2023-01-01", "content": "entry", "prompt": "prompt"}
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    json_path = main.DATA_DIR / "2023-01-01.photos.json"
+    assert json_path.exists()
+    data = json.loads(json_path.read_text(encoding="utf-8"))
+    assert data[0]["url"] == "img1.jpg"
+
+
+def test_archive_shows_photo_icon(test_client, monkeypatch):
+    """Entries with a companion photo file show an icon in the archive."""
+    import immich_utils
+
+    async def fake_fetch(date_str: str, media_type: str = "IMAGE"):
+        return [
+            {
+                "type": "IMAGE",
+                "url": "img1.jpg",
+                "thumb": "thumb1.jpg",
+                "caption": "A photo",
+            }
+        ]
+
+    monkeypatch.setattr(immich_utils, "fetch_assets_for_date", fake_fetch)
+    payload = {"date": "2023-02-02", "content": "e", "prompt": "p"}
+    test_client.post("/entry", json=payload)
+
+    resp = test_client.get("/archive")
+    assert resp.status_code == 200
+    assert "📸" in resp.text

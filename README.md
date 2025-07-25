@@ -109,6 +109,7 @@ Example: `/archive?sort_by=location&filter=has_location`.
   - ≤ 5s load time target
   - ≤ 1s save time target
 - Clean separation of UI, API, and storage logic
+- Optional Immich photo integration via `IMMICH_URL` and `IMMICH_API_KEY` environment variables
 
 ## Monitoring request timings
 
