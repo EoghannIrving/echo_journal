@@ -35,7 +35,7 @@ async def fetch_assets_for_date(
     try:
         async with httpx.AsyncClient() as client:
             resp = await client.post(
-                f"{IMMICH_URL}/api/search/metadata",  # ✅ fixed path
+                f"{IMMICH_URL}/search/metadata",  # ✅ fixed path
                 headers=headers,
                 json=payload,
                 timeout=10,
