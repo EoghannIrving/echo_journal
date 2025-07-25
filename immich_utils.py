@@ -17,17 +17,28 @@ async def fetch_assets_for_date(
     if not IMMICH_URL:
         return []
 
-    params = {"date": date_str, "type": media_type}
+    payload = {
+        "createdAt": {
+            "min": f"{date_str}T00:00:00Z",
+            "max": f"{date_str}T23:59:59Z",
+        },
+        "type": media_type,
+    }
     headers = {"x-api-key": IMMICH_API_KEY} if IMMICH_API_KEY else {}
     try:
         async with httpx.AsyncClient() as client:
-            resp = await client.get(
-                f"{IMMICH_URL}/assets", params=params, headers=headers, timeout=10
+            resp = await client.post(
+                f"{IMMICH_URL}/asset/search",
+                json=payload,
+                headers=headers,
+                timeout=10,
             )
             resp.raise_for_status()
             data = resp.json()
             if isinstance(data, list):
                 return data
+            if isinstance(data, dict) and isinstance(data.get("assets"), list):
+                return data["assets"]
     except (httpx.HTTPError, ValueError):
         return []
     return []
