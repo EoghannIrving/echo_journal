@@ -84,6 +84,7 @@ The application looks for the following optional variables:
 - `APP_DIR` – base directory for static assets and templates
 - `PROMPTS_FILE` – location of the prompts JSON file
 - `STATIC_DIR` – directory for static files served under `/static`
+- `WORDNIK_API_KEY` – API key used to fetch the Wordnik word of the day
 
 Defaults are suitable for Docker Compose but can be overridden when
 running the app in other environments.

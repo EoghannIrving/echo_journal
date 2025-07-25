@@ -5,6 +5,8 @@ from datetime import datetime
 
 import httpx
 
+from wordnik_utils import fetch_word_of_day
+
 
 async def fetch_weather(lat: float, lon: float) -> Optional[str]:
     """Fetch current weather description from Open-Meteo."""
@@ -46,6 +48,7 @@ async def build_frontmatter(location: dict) -> str:
     lon = float(location.get("lon") or 0)
     label = location.get("label") or ""
     weather = await fetch_weather(lat, lon)
+    wotd = await fetch_word_of_day()
 
     lines = []
     if label:
@@ -53,5 +56,7 @@ async def build_frontmatter(location: dict) -> str:
     if weather:
         lines.append(f"weather: {weather}")
     lines.append(f"save_time: {time_of_day_label()}")
+    if wotd:
+        lines.append(f"wotd: {wotd}")
     lines.append("photos: []")
     return "\n".join(lines)

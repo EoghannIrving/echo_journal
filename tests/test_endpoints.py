@@ -84,6 +84,21 @@ def test_save_entry_records_time(test_client, monkeypatch):
     assert "save_time: Evening" in text
 
 
+def test_word_of_day_in_frontmatter(test_client, monkeypatch):
+    """Wordnik word of the day is saved in frontmatter when available."""
+    import weather_utils
+
+    async def fake_word():
+        return "serendipity"
+
+    monkeypatch.setattr(weather_utils, "fetch_word_of_day", fake_word)
+    payload = {"date": "2020-10-10", "content": "entry", "prompt": "prompt"}
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    text = (main.DATA_DIR / "2020-10-10.md").read_text(encoding="utf-8")
+    assert "wotd: serendipity" in text
+
+
 def test_save_entry_missing_fields(test_client):
     """Saving with missing required fields should return an error."""
     resp = test_client.post("/entry", json={"date": "2020-01-02"})
