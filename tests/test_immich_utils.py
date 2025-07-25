@@ -18,16 +18,23 @@ class FakeClient:
         return False
 
     async def post(self, url, json=None, headers=None, timeout=None):
+        """Record POST data and return a simple response object."""
+        _ = headers  # parameters kept for API parity
+        _ = timeout
         self.captured["url"] = url
         self.captured["json"] = json
 
         class Response:
+            """Bare-minimum response object for tests."""
+
             @staticmethod
             def raise_for_status():
-                pass
+                """Pretend the response was successful."""
+                return None
 
             @staticmethod
             def json():
+                """Return an empty payload like ``httpx.Response.json``."""
                 return []
 
         return Response()
