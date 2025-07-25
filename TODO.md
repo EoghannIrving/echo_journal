@@ -25,7 +25,7 @@ This list captures planned work from the project roadmap. Completed items from e
   - [X] Query a weather API for recent conditions
   - [ ] Pull a "Word of the Day" and add that to the journal
   - [ ] Pull a "Fact of the Day" and add that to the journal
-  - [ ] Record save time in front matter
+  - [X] Record save time in front matter
   - [ ] AI assisted prompts / "Need inspiration?" feature
   - [ ] Optional "New Prompt" link with hover/tap hint
   - [ ] Evaluate secure remote access options (auth or VPN/proxy)

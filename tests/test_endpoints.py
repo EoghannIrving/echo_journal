@@ -71,6 +71,19 @@ def test_save_entry_and_retrieve(test_client):
     assert "prompt" in resp2.json()["content"]
 
 
+def test_save_entry_records_time(test_client, monkeypatch):
+    """Saving an entry records the time of day in frontmatter."""
+    import weather_utils  # import inside to allow monkeypatch
+
+    monkeypatch.setattr(weather_utils, "time_of_day_label", lambda: "Evening")
+    payload = {"date": "2020-01-03", "content": "entry", "prompt": "prompt"}
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    file_path = main.DATA_DIR / "2020-01-03.md"
+    text = file_path.read_text(encoding="utf-8")
+    assert "save_time: Evening" in text
+
+
 def test_save_entry_missing_fields(test_client):
     """Saving with missing required fields should return an error."""
     resp = test_client.post("/entry", json={"date": "2020-01-02"})
