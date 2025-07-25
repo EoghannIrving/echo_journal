@@ -7,6 +7,7 @@ from collections import defaultdict
 from datetime import date, datetime
 from pathlib import Path
 
+from typing import Dict
 
 import logging
 import time
@@ -297,6 +298,60 @@ async def settings_page(request: Request):
 async def metrics() -> JSONResponse:
     """Return recent request timing information."""
     return JSONResponse(content={"timings": app.state.request_timings})
+
+
+@app.get("/stats", response_class=HTMLResponse)
+async def stats_page(request: Request):
+    """Render journal statistics including entry counts and words."""
+    counts_week = defaultdict(int)
+    counts_month = defaultdict(int)
+    counts_year = defaultdict(int)
+    total_words = 0
+    total_entries = 0
+
+    for file in DATA_DIR.rglob("*.md"):
+        try:
+            entry_date = datetime.strptime(file.stem, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+
+        try:
+            async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
+                content = await fh.read()
+        except OSError:
+            continue
+
+        _, body = split_frontmatter(content)
+        _, entry = parse_entry(body)
+        if not entry:
+            entry = body.strip()
+
+        word_count = len(entry.split())
+
+        iso = entry_date.isocalendar()
+        week_key = f"{iso[0]}-W{iso[1]:02d}"
+        month_key = entry_date.strftime("%Y-%m")
+        year_key = entry_date.strftime("%Y")
+
+        counts_week[week_key] += 1
+        counts_month[month_key] += 1
+        counts_year[year_key] += 1
+        total_words += word_count
+        total_entries += 1
+
+    stats: Dict[str, object] = {
+        "weeks": sorted(counts_week.items(), reverse=True),
+        "months": sorted(counts_month.items(), reverse=True),
+        "years": sorted(counts_year.items(), reverse=True),
+        "total_entries": total_entries,
+        "total_words": total_words,
+        "average_words": round(total_words / total_entries, 1) if total_entries else 0,
+    }
+
+    return templates.TemplateResponse(
+        "stats.html",
+        {"request": request, "stats": stats, "active_page": "stats"},
+    )
 
 
 @app.get("/api/reverse_geocode")
