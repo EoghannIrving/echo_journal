@@ -15,7 +15,7 @@
 </p>
 <form method="get" class="flex items-center justify-center gap-4 mb-4 text-sm">
   <label>Sort by
-    <select name="sort_by" onchange="this.form.submit()" class="ml-1">
+    <select name="sort_by" onchange="this.form.submit()" class="ml-1 px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600">
       <option value="date" {% if sort_by == 'date' %}selected{% endif %}>Date</option>
       <option value="location" {% if sort_by == 'location' %}selected{% endif %}>Location</option>
       <option value="weather" {% if sort_by == 'weather' %}selected{% endif %}>Weather</option>
@@ -23,7 +23,7 @@
     </select>
   </label>
   <label>Filter
-    <select name="filter" onchange="this.form.submit()" class="ml-1">
+    <select name="filter" onchange="this.form.submit()" class="ml-1 px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600">
       <option value="" {% if not filter_val %}selected{% endif %}>None</option>
       <option value="has_location" {% if filter_val == 'has_location' %}selected{% endif %}>Has location</option>
       <option value="has_weather" {% if filter_val == 'has_weather' %}selected{% endif %}>Has weather</option>
