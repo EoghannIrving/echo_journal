@@ -472,3 +472,20 @@ def test_view_entry_updates_photo_metadata(test_client, monkeypatch):
     resp = test_client.get("/archive/2023-03-03")
     assert resp.status_code == 200
     assert called["flag"]
+
+
+def test_view_entry_shows_photos(test_client):
+    """Thumbnail images from photos.json are displayed on the entry page."""
+    md_path = main.DATA_DIR / "2023-04-04.md"
+    md_path.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+    photos = [
+        {"url": "http://example.com/full1", "thumb": "http://example.com/t1", "caption": "one"},
+        {"url": "http://example.com/full2", "thumb": "http://example.com/t2", "caption": "two"},
+    ]
+    json_path = main.DATA_DIR / "2023-04-04.photos.json"
+    json_path.write_text(json.dumps(photos), encoding="utf-8")
+
+    resp = test_client.get("/archive/2023-04-04")
+    assert resp.status_code == 200
+    assert "http://example.com/t1" in resp.text
+    assert "http://example.com/t2" in resp.text
