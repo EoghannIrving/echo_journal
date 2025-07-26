@@ -1,7 +1,7 @@
 """Tests for Immich API utilities."""
 
 import asyncio
-import json
+import json as jsonlib
 
 import immich_utils
 
@@ -88,7 +88,7 @@ def test_update_photo_metadata_filters_assets(monkeypatch, tmp_path):
     asyncio.run(immich_utils.update_photo_metadata("2025-07-19", md_path))
 
     json_path = md_path.with_suffix(".photos.json")
-    data = json.loads(json_path.read_text(encoding="utf-8"))
+    data = jsonlib.loads(json_path.read_text(encoding="utf-8"))
 
     assert len(data) == 1
     assert data[0]["caption"] == "in-range.jpg"
