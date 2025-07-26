@@ -18,11 +18,11 @@ import bleach
 import httpx
 import markdown
 from fastapi import FastAPI, HTTPException, Request, Query
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from config import DATA_DIR, STATIC_DIR, ENCODING
+from config import DATA_DIR, STATIC_DIR, ENCODING, IMMICH_URL, IMMICH_API_KEY
 from file_utils import (
     safe_entry_path,
     parse_entry,
@@ -505,3 +505,17 @@ async def reverse_geocode(lat: float, lon: float):
         "region": data.get("address", {}).get("state"),
         "country": data.get("address", {}).get("country"),
     }
+
+
+@app.get("/api/thumbnail/{asset_id}")
+async def proxy_thumbnail(asset_id: str, size: str = "medium"):
+    """Fetch an asset thumbnail from Immich using the API key."""
+    if not IMMICH_URL:
+        raise HTTPException(status_code=404, detail="Immich not configured")
+    headers = {"x-api-key": IMMICH_API_KEY} if IMMICH_API_KEY else {}
+    url = f"{IMMICH_URL}/assets/{asset_id}/thumbnail?size={size}"
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(url, headers=headers)
+    if resp.status_code != 200:
+        raise HTTPException(status_code=resp.status_code, detail="Thumbnail fetch failed")
+    return Response(content=resp.content, media_type="image/jpeg")
