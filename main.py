@@ -22,6 +22,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from logging.handlers import RotatingFileHandler
 from config import (
     DATA_DIR,
     STATIC_DIR,
@@ -29,6 +30,9 @@ from config import (
     IMMICH_URL,
     IMMICH_API_KEY,
     LOG_FILE,
+    LOG_LEVEL,
+    LOG_MAX_BYTES,
+    LOG_BACKUP_COUNT,
 )
 from file_utils import (
     safe_entry_path,
@@ -59,17 +63,24 @@ if not hasattr(Path, "is_relative_to"):
 
 app = FastAPI()
 
-# Setup logging to both the console and a file under ``DATA_DIR``
+# Setup logging to both the console and a rotating file under ``DATA_DIR``
 handlers = [logging.StreamHandler()]
 try:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    handlers.append(logging.FileHandler(LOG_FILE, encoding="utf-8"))
+    handlers.append(
+        RotatingFileHandler(
+            LOG_FILE,
+            encoding="utf-8",
+            maxBytes=LOG_MAX_BYTES,
+            backupCount=LOG_BACKUP_COUNT,
+        )
+    )
 except OSError:
     # Fall back to console-only logging if file creation fails
     pass
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=getattr(logging, LOG_LEVEL, logging.DEBUG),
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     handlers=handlers,
 )

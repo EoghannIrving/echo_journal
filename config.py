@@ -20,3 +20,15 @@ JELLYFIN_USER_ID = os.getenv("JELLYFIN_USER_ID")
 # File logging path - defaults to ``DATA_DIR/echo_journal.log`` but can
 # be overridden via the ``LOG_FILE`` environment variable.
 LOG_FILE = Path(os.getenv("LOG_FILE", str(DATA_DIR / "echo_journal.log")))
+
+# Log level for the application. Defaults to ``DEBUG`` so development
+# environments capture detailed output, but can be overridden to
+# ``INFO`` or ``WARNING`` in production.
+LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG").upper()
+
+# Maximum bytes before the log file is rotated. A few megabytes keeps
+# logs manageable while still retaining recent history.
+LOG_MAX_BYTES = int(os.getenv("LOG_MAX_BYTES", str(1_048_576)))
+
+# Number of rotated log files to keep.
+LOG_BACKUP_COUNT = int(os.getenv("LOG_BACKUP_COUNT", "3"))
