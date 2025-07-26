@@ -10,7 +10,12 @@ import os
 
 import httpx
 
-from config import JELLYFIN_URL, JELLYFIN_API_KEY, JELLYFIN_USER_ID
+from config import (
+    JELLYFIN_URL,
+    JELLYFIN_API_KEY,
+    JELLYFIN_USER_ID,
+    JELLYFIN_PLAY_THRESHOLD,
+)
 
 logger = logging.getLogger("ej.jellyfin")
 
@@ -113,10 +118,20 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
             track = item.get("Name", "Unknown Title")
             artist = (
                 " / ".join(
-                    a.get("Name", "Unknown Artist") for a in item.get("ArtistItems", [])
+                    a.get("Name", "Unknown Artist")
+                    for a in item.get("ArtistItems", [])
                 )
                 or "Unknown Artist"
             )
+            played_pct = item.get("UserData", {}).get("PlayedPercentage")
+            if played_pct is not None and played_pct < JELLYFIN_PLAY_THRESHOLD:
+                logger.debug(
+                    "Skipping %s - %s below threshold: %.1f%%",
+                    track,
+                    artist,
+                    played_pct,
+                )
+                continue
             counts[(track, artist)] += 1
             logger.debug("Counted play for %s - %s", track, artist)
     except (httpx.HTTPError, ValueError) as exc:

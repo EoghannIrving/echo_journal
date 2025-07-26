@@ -16,6 +16,7 @@ IMMICH_API_KEY = os.getenv("IMMICH_API_KEY")
 JELLYFIN_URL = os.getenv("JELLYFIN_URL")
 JELLYFIN_API_KEY = os.getenv("JELLYFIN_API_KEY")
 JELLYFIN_USER_ID = os.getenv("JELLYFIN_USER_ID")
+JELLYFIN_PLAY_THRESHOLD = int(os.getenv("JELLYFIN_PLAY_THRESHOLD", "90"))
 
 # File logging path - defaults to ``DATA_DIR/echo_journal.log`` but can
 # be overridden via the ``LOG_FILE`` environment variable.

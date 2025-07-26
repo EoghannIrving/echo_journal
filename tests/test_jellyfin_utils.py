@@ -115,3 +115,35 @@ def test_fetch_top_songs_tiebreak(monkeypatch):
 
     assert songs[0]["track"] == "Alpha"
     assert songs[1]["track"] == "Beta"
+
+
+def test_fetch_top_songs_threshold(monkeypatch):
+    """Songs below the playback threshold should be ignored."""
+    items = [
+        {
+            "Name": "SkipMe",
+            "ArtistItems": [{"Name": "ArtistS"}],
+            "UserData": {
+                "LastPlayedDate": "2025-07-25T10:00:00Z",
+                "PlayedPercentage": 50,
+            },
+        },
+        {
+            "Name": "KeepMe",
+            "ArtistItems": [{"Name": "ArtistK"}],
+            "UserData": {
+                "LastPlayedDate": "2025-07-25T09:00:00Z",
+                "PlayedPercentage": 95,
+            },
+        },
+    ]
+
+    client = FakeClient(items)
+    monkeypatch.setattr(jellyfin_utils.httpx, "AsyncClient", lambda: client)
+    monkeypatch.setattr(jellyfin_utils, "JELLYFIN_URL", "http://example")
+    monkeypatch.setattr(jellyfin_utils, "JELLYFIN_USER_ID", "uid")
+
+    songs = asyncio.run(jellyfin_utils.fetch_top_songs("2025-07-25"))
+
+    assert len(songs) == 1
+    assert songs[0]["track"] == "KeepMe"

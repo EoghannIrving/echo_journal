@@ -97,6 +97,7 @@ The application looks for the following optional variables:
 - `JELLYFIN_API_KEY` – optional API key for Jellyfin requests
 - `JELLYFIN_USER_ID` – Jellyfin user ID whose play history is queried
 - `JELLYFIN_PAGE_SIZE` – items to fetch per request when querying plays (default `200`)
+- `JELLYFIN_PLAY_THRESHOLD` – minimum percent played for a song to count (default `90`)
 - `LOG_LEVEL` – logging verbosity (default `DEBUG`)
 - `LOG_FILE` – path for the log file (default `DATA_DIR/echo_journal.log`)
 - `LOG_MAX_BYTES` – rotate the log after this many bytes (default `1048576`)
@@ -137,6 +138,7 @@ environment:
   - JELLYFIN_API_KEY=your_token
   - JELLYFIN_USER_ID=abcdef123456
   - JELLYFIN_PAGE_SIZE=200
+  - JELLYFIN_PLAY_THRESHOLD=90
 ```
 
 When enabled, saving an entry writes a `<date>.songs.json` file listing up to
