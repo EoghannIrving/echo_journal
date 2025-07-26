@@ -6,12 +6,16 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
+import os
 
 import httpx
 
 from config import JELLYFIN_URL, JELLYFIN_API_KEY, JELLYFIN_USER_ID
 
 logger = logging.getLogger("ej.jellyfin")
+
+# Number of items to request per page when fetching play history.
+JELLYFIN_PAGE_SIZE = int(os.getenv("JELLYFIN_PAGE_SIZE", "200"))
 
 
 async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
@@ -23,31 +27,45 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
     headers = {"X-Emby-Token": JELLYFIN_API_KEY} if JELLYFIN_API_KEY else {}
     url = f"{JELLYFIN_URL}/Users/{JELLYFIN_USER_ID}/Items"
     logger.info("Fetching Jellyfin plays for %s", date_str)
-    logger.debug("Requesting %s with params %s", url, {
+    base_params = {
         "Filters": "IsPlayed",
         "IncludeItemTypes": "Audio",
         "Fields": "DatePlayed,ArtistItems",
         "SortBy": "DatePlayed",
         "SortOrder": "Descending",
         "Recursive": "true",
-        "Limit": "1000",
-    })
-    params = {
-        "Filters": "IsPlayed",
-        "IncludeItemTypes": "Audio",
-        "Fields": "DatePlayed,ArtistItems",
-        "SortBy": "DatePlayed",
-        "SortOrder": "Descending",
-        "Recursive": "true",
-        "Limit": "1000",
     }
+
+    items: List[Dict[str, Any]] = []
+    start_index = 0
 
     try:
         async with httpx.AsyncClient() as client:
-            resp = await client.get(url, headers=headers, params=params, timeout=10)
-            resp.raise_for_status()
-            items = resp.json().get("Items", [])
-            logger.info("Received %d items from Jellyfin", len(items))
+            while True:
+                params = {
+                    **base_params,
+                    "Limit": str(JELLYFIN_PAGE_SIZE),
+                    "StartIndex": str(start_index),
+                }
+                logger.debug("Requesting %s with params %s", url, params)
+                resp = await client.get(url, headers=headers, params=params, timeout=10)
+                resp.raise_for_status()
+                page_items = resp.json().get("Items", [])
+                logger.info("Received %d items from Jellyfin", len(page_items))
+                if not page_items:
+                    break
+                items.extend(page_items)
+                last = page_items[-1]
+                played = last.get("DatePlayed") or last.get("UserData", {}).get("LastPlayedDate")
+                start_index += JELLYFIN_PAGE_SIZE
+                if not played:
+                    continue
+                try:
+                    last_date = datetime.fromisoformat(played.replace("Z", "+00:00")).date().isoformat()
+                except ValueError:
+                    continue
+                if last_date < date_str or len(page_items) < JELLYFIN_PAGE_SIZE:
+                    break
     except (httpx.HTTPError, ValueError) as exc:
         logger.error("Error fetching Jellyfin items: %s", exc)
         return []
