@@ -88,3 +88,4 @@ async def update_photo_metadata_for_entry(date_str: str, journal_path: Path) -> 
             json.dump(photo_metadata, f, indent=2)
         logger.info("Wrote %d photo records to %s", len(photo_metadata), photo_path)
     except Exception as e:
+        logger.error("Failed to write photo metadata file: %s", e)
