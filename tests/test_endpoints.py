@@ -605,6 +605,24 @@ def test_view_entry_shows_photos(test_client):
     assert "http://example.com/t2" in resp.text
 
 
+def test_view_entry_shows_songs(test_client):
+    """Song info from songs.json should appear on the entry page."""
+
+    md_path = main.DATA_DIR / "2023-07-07.md"
+    md_path.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+    songs = [
+        {"track": "s1", "artist": "a1", "plays": 2},
+        {"track": "s2", "artist": "a2", "plays": 1},
+    ]
+    json_path = main.DATA_DIR / "2023-07-07.songs.json"
+    json_path.write_text(json.dumps(songs), encoding="utf-8")
+
+    resp = test_client.get("/archive/2023-07-07")
+    assert resp.status_code == 200
+    assert "s1" in resp.text
+    assert "a1" in resp.text
+
+
 def test_asset_proxy_download(test_client, monkeypatch):
     """Asset proxy endpoint should fetch original file from Immich."""
 

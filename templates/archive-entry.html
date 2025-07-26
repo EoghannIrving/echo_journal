@@ -32,10 +32,18 @@
 <div id="weather-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not weather %}hidden{% endif %}">
   {% if weather %}{{ weather }}{% endif %}
 </div>
-<div id="wotd-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not wotd %}hidden{% endif %}">
-  {% if wotd %}📖 {{ wotd }}{% endif %}
-</div>
-<footer class="w-full mx-auto mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">
+  <div id="wotd-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not wotd %}hidden{% endif %}">
+    {% if wotd %}📖 {{ wotd }}{% endif %}
+  </div>
+  <div id="songs-display" class="text-sm text-gray-600 dark:text-gray-300 mt-3 {% if not songs %}hidden{% endif %}">
+    <p class="font-medium mb-1">Top songs:</p>
+    <ol class="list-decimal list-inside">
+      {% for s in songs %}
+      <li>{{ s.track }} - {{ s.artist }} ({{ s.plays }})</li>
+      {% endfor %}
+    </ol>
+  </div>
+  <footer class="w-full mx-auto mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">
   <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
   Echo Journal
 </footer>
