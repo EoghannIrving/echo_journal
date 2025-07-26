@@ -20,6 +20,7 @@
       <option value="location" {% if sort_by == 'location' %}selected{% endif %}>Location</option>
       <option value="weather" {% if sort_by == 'weather' %}selected{% endif %}>Weather</option>
       <option value="photos" {% if sort_by == 'photos' %}selected{% endif %}>Photos</option>
+      <option value="songs" {% if sort_by == 'songs' %}selected{% endif %}>Songs</option>
     </select>
   </label>
   <label>Filter
@@ -28,6 +29,7 @@
       <option value="has_location" {% if filter_val == 'has_location' %}selected{% endif %}>Has location</option>
       <option value="has_weather" {% if filter_val == 'has_weather' %}selected{% endif %}>Has weather</option>
       <option value="has_photos" {% if filter_val == 'has_photos' %}selected{% endif %}>Has photos</option>
+      <option value="has_songs" {% if filter_val == 'has_songs' %}selected{% endif %}>Has songs</option>
     </select>
   </label>
 </form>
@@ -45,6 +47,7 @@
               {% if meta.location %}<span title="Location">📍</span>{% endif %}
               {% if meta.weather %}<span title="Weather">☁️</span>{% endif %}
               {% if meta.photos and meta.photos != '[]' %}<span title="Photos">📸</span>{% endif %}
+              {% if meta.songs %}<span title="Songs">🎵</span>{% endif %}
               {% if meta.wotd %}<span title="Word of the day">📖</span>{% endif %}
             </div>
           </a>

@@ -281,6 +281,16 @@ async def _collect_entries() -> list[dict]:
                         meta["photos"] = "1"
                 except (OSError, ValueError):
                     pass
+        if not meta.get("songs"):
+            songs_json = file.with_suffix(".songs.json")
+            if songs_json.exists():
+                try:
+                    async with aiofiles.open(songs_json, "r", encoding=ENCODING) as sh:
+                        songs_text = await sh.read()
+                    if json.loads(songs_text):
+                        meta["songs"] = "1"
+                except (OSError, ValueError):
+                    pass
         prompt, _ = parse_entry(body)
         entries.append({"date": entry_date, "prompt": prompt, "meta": meta})
     return entries
@@ -306,10 +316,12 @@ async def archive_view(
         all_entries = [
             e for e in all_entries if e["meta"].get("photos") not in (None, "[]")
         ]
+    elif filter_ == "has_songs":
+        all_entries = [e for e in all_entries if e["meta"].get("songs")]
 
     if sort_by == "date":
         all_entries.sort(key=lambda e: e["date"], reverse=True)
-    elif sort_by in {"location", "weather", "photos"}:
+    elif sort_by in {"location", "weather", "photos", "songs"}:
         all_entries.sort(key=lambda e: e["meta"].get(sort_by) or "")
     else:
         # default to date sorting if unrecognised

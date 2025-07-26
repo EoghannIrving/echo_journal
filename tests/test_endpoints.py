@@ -625,6 +625,54 @@ def test_view_entry_shows_songs(test_client):
     assert "a1" in resp.text
 
 
+def test_archive_shows_song_icon(test_client):
+    """Entries with songs show an icon in the archive."""
+
+    md_path = main.DATA_DIR / "2024-02-02.md"
+    md_path.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+    json_path = main.DATA_DIR / "2024-02-02.songs.json"
+    json_path.write_text(json.dumps([{"track": "t", "artist": "a"}]), encoding="utf-8")
+
+    resp = test_client.get("/archive")
+    assert resp.status_code == 200
+    assert "🎵" in resp.text
+
+
+def test_archive_filter_has_songs(test_client):
+    """Entries can be filtered by those containing songs."""
+
+    md1 = main.DATA_DIR / "2025-01-01.md"
+    md1.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+    songs_path = main.DATA_DIR / "2025-01-01.songs.json"
+    songs_path.write_text(json.dumps([{"track": "t", "artist": "a"}]), encoding="utf-8")
+
+    md2 = main.DATA_DIR / "2025-01-02.md"
+    md2.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+
+    resp = test_client.get("/archive", params={"filter": "has_songs"})
+    assert resp.status_code == 200
+    assert "2025-01-01" in resp.text
+    assert "2025-01-02" not in resp.text
+
+
+def test_archive_sort_by_songs(test_client):
+    """Entries can be sorted by songs metadata."""
+
+    md1 = main.DATA_DIR / "2026-01-01.md"
+    md1.write_text("# Prompt\nP1\n\n# Entry\nE1", encoding="utf-8")
+    path1 = main.DATA_DIR / "2026-01-01.songs.json"
+    path1.write_text(json.dumps([{"track": "b"}]), encoding="utf-8")
+
+    md2 = main.DATA_DIR / "2026-01-02.md"
+    md2.write_text("# Prompt\nP2\n\n# Entry\nE2", encoding="utf-8")
+    path2 = main.DATA_DIR / "2026-01-02.songs.json"
+    path2.write_text(json.dumps([{"track": "a"}]), encoding="utf-8")
+
+    resp = test_client.get("/archive", params={"sort_by": "songs"})
+    assert resp.status_code == 200
+    assert resp.text.find("2026-01-02") < resp.text.find("2026-01-01")
+
+
 def test_asset_proxy_download(test_client, monkeypatch):
     """Asset proxy endpoint should fetch original file from Immich."""
 
