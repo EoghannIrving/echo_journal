@@ -518,7 +518,8 @@ async def proxy_thumbnail(asset_id: str, size: str = "medium"):
         resp = await client.get(url, headers=headers)
     if resp.status_code != 200:
         raise HTTPException(status_code=resp.status_code, detail="Thumbnail fetch failed")
-    return Response(content=resp.content, media_type="image/jpeg")
+    content_type = resp.headers.get("content-type", "image/jpeg")
+    return Response(content=resp.content, media_type=content_type)
 
 
 @app.get("/api/asset/{asset_id}")
