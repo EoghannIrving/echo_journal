@@ -11,6 +11,7 @@ from typing import Dict
 
 import json
 import logging
+from logging.handlers import RotatingFileHandler
 import time
 
 import aiofiles
@@ -22,7 +23,6 @@ from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from logging.handlers import RotatingFileHandler
 from config import (
     DATA_DIR,
     STATIC_DIR,
