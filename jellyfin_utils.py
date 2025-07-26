@@ -47,14 +47,20 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
         if not played:
             continue
         try:
-            played_date = datetime.fromisoformat(played.replace("Z", "+00:00")).date()
+            if (
+                datetime.fromisoformat(played.replace("Z", "+00:00")).date().isoformat()
+                != date_str
+            ):
+                continue
         except ValueError:
             continue
-        if played_date.isoformat() != date_str:
-            continue
         name = item.get("Name", "Unknown Title")
-        artist_items = item.get("ArtistItems", [])
-        artist = " / ".join(a.get("Name", "Unknown Artist") for a in artist_items) or "Unknown Artist"
+        artist = (
+            " / ".join(
+                a.get("Name", "Unknown Artist") for a in item.get("ArtistItems", [])
+            )
+            or "Unknown Artist"
+        )
         todays_tracks.append((name, artist))
 
     counts = Counter(todays_tracks).most_common(5)
