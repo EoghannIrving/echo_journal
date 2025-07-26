@@ -508,7 +508,7 @@ async def reverse_geocode(lat: float, lon: float):
 
 
 @app.get("/api/thumbnail/{asset_id}")
-async def proxy_thumbnail(asset_id: str, size: str = "medium"):
+async def proxy_thumbnail(asset_id: str, size: str = "thumbnail"):
     """Fetch an asset thumbnail from Immich using the API key."""
     if not IMMICH_URL:
         raise HTTPException(status_code=404, detail="Immich not configured")
