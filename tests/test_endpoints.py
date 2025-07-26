@@ -6,15 +6,15 @@
 #
 # pylint: disable=redefined-outer-name
 
+import json
 import os
 import shutil
 import sys
 import tempfile
-from pathlib import Path
-import json
-import aiofiles  # type: ignore  # pylint: disable=import-error
 from datetime import datetime
+from pathlib import Path
 
+import aiofiles  # type: ignore  # pylint: disable=import-error
 import pytest  # pylint: disable=import-error
 from fastapi.testclient import TestClient  # pylint: disable=import-error
 
@@ -366,7 +366,15 @@ def test_archive_filter_and_sort(test_client):
         "# Prompt\nP2\n\n# Entry\nE2"
     )
     entry3 = (
-        "---\n" "location: Atown\n" "photos: []\n" "---\n" "# Prompt\nP3\n\n# Entry\nE3"
+        """---
+location: Atown
+photos: []
+---
+# Prompt
+P3
+
+# Entry
+E3"""
     )
     (main.DATA_DIR / "2021-07-01.md").write_text(entry1, encoding="utf-8")
     (main.DATA_DIR / "2021-07-02.md").write_text(entry2, encoding="utf-8")
@@ -433,7 +441,15 @@ def test_archive_current_month_open(test_client):
 def test_view_entry_shows_wotd(test_client):
     """Word of the day from frontmatter should appear in view page."""
     content = (
-        "---\n" "wotd: luminous\n" "photos: []\n" "---\n" "# Prompt\nP\n\n# Entry\nE"
+        """---
+wotd: luminous
+photos: []
+---
+# Prompt
+P
+
+# Entry
+E"""
     )
     (main.DATA_DIR / "2021-08-01.md").write_text(content, encoding="utf-8")
     resp = test_client.get("/archive/2021-08-01")
@@ -444,7 +460,15 @@ def test_view_entry_shows_wotd(test_client):
 def test_archive_shows_wotd_icon(test_client):
     """Entries with a word of the day show an icon in the archive."""
     content = (
-        "---\n" "wotd: zephyr\n" "photos: []\n" "---\n" "# Prompt\nP\n\n# Entry\nE"
+        """---
+wotd: zephyr
+photos: []
+---
+# Prompt
+P
+
+# Entry
+E"""
     )
     (main.DATA_DIR / "2021-09-09.md").write_text(content, encoding="utf-8")
     resp = test_client.get("/archive")
