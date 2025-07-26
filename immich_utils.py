@@ -79,14 +79,38 @@ async def update_photo_metadata(date_str: str, journal_path: Path) -> None:
 
     photo_metadata = []
     for asset in assets:
+        created = asset.get("fileCreatedAt")
+        if not created:
+            logger.debug("Skipping asset without fileCreatedAt: %s", asset)
+            continue
+        try:
+            created_date = (
+                datetime.fromisoformat(created.replace("Z", "+00:00"))
+                .date()
+                .isoformat()
+            )
+            if created_date != date_str:
+                logger.debug(
+                    "Skipping asset %s with date %s (target %s)",
+                    asset.get("id"),
+                    created_date,
+                    date_str,
+                )
+                continue
+        except ValueError:
+            logger.debug("Could not parse fileCreatedAt: %s", created)
+            continue
+
         asset_id = asset.get("id")
         if not asset_id:
             continue
-        photo_metadata.append({
-            "url": f"/api/asset/{asset_id}",
-            "thumb": f"/api/thumbnail/{asset_id}?size=thumbnail",
-            "caption": asset.get("originalFileName", "")
-        })
+        photo_metadata.append(
+            {
+                "url": f"/api/asset/{asset_id}",
+                "thumb": f"/api/thumbnail/{asset_id}?size=thumbnail",
+                "caption": asset.get("originalFileName", ""),
+            }
+        )
 
     photo_path = journal_path.with_suffix(".photos.json")
     try:
