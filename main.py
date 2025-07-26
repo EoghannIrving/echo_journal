@@ -519,3 +519,17 @@ async def proxy_thumbnail(asset_id: str, size: str = "medium"):
     if resp.status_code != 200:
         raise HTTPException(status_code=resp.status_code, detail="Thumbnail fetch failed")
     return Response(content=resp.content, media_type="image/jpeg")
+
+
+@app.get("/api/asset/{asset_id}")
+async def proxy_asset(asset_id: str):
+    """Fetch a full-size asset from Immich using the API key."""
+    if not IMMICH_URL:
+        raise HTTPException(status_code=404, detail="Immich not configured")
+    headers = {"x-api-key": IMMICH_API_KEY} if IMMICH_API_KEY else {}
+    url = f"{IMMICH_URL}/assets/{asset_id}"
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(url, headers=headers)
+    if resp.status_code != 200:
+        raise HTTPException(status_code=resp.status_code, detail="Asset fetch failed")
+    return Response(content=resp.content, media_type=resp.headers.get("content-type", "application/octet-stream"))
