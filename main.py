@@ -32,6 +32,7 @@ from file_utils import (
     format_weather,
 )
 from immich_utils import update_photo_metadata
+from jellyfin_utils import update_song_metadata
 from prompt_utils import generate_prompt
 from weather_utils import build_frontmatter, time_of_day_label
 
@@ -179,6 +180,7 @@ async def save_entry(data: dict):
             await fh.write(md_text)
 
     await update_photo_metadata(entry_date, file_path)
+    await update_song_metadata(entry_date, file_path)
 
     return {"status": "success"}
 

@@ -44,7 +44,10 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
     Ensure you have Docker and Docker Compose installed. If you intend to run
     the application outside of Docker, Python 3.10 or newer is required.
 
-2. **Journal storage path**
+2. **Create a .env file**
+   Copy `.env.example` to `.env` and fill in any variables you wish to set.
+
+3. **Journal storage path**
    When using Docker Compose, set the `JOURNALS_DIR` environment variable
    to control the host path that is mounted to `/journals` inside the
    container:
@@ -56,10 +59,10 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
    location inside the container, set the `DATA_DIR` environment variable
    to the desired path before starting the app.
 
-3. **Timezone**
+4. **Timezone**
    Adjust the timezone by editing the `TZ` variable in `docker-compose.yml`.
 
-4. **Install frontend dependencies**
+5. **Install frontend dependencies**
    Generate the Tailwind CSS by running:
    ```sh
    npm install
@@ -88,6 +91,9 @@ The application looks for the following optional variables:
 - `IMMICH_URL` – base URL of your Immich API endpoint (for example `http://immich.local/api`)
 - `IMMICH_API_KEY` – API key used to authorize requests to Immich
 - `IMMICH_TIME_BUFFER` – hours to extend photo searches before and after each date (default `15`)
+- `JELLYFIN_URL` – base URL of your Jellyfin server (for example `http://jellyfin.local:8096`)
+- `JELLYFIN_API_KEY` – optional API key for Jellyfin requests
+- `JELLYFIN_USER_ID` – Jellyfin user ID whose play history is queried
 
 Defaults are suitable for Docker Compose but can be overridden when
 running the app in other environments.
@@ -112,6 +118,23 @@ alongside the Markdown entry.
 The interactions with Immich are logged using the `ej.immich` logger so you can
 see when requests are made and JSON files written.
 
+### Jellyfin API setup
+
+To record your most-listened songs for each day, create an API key in your
+Jellyfin account and determine your user ID. Add the variables below to the
+Compose file or `.env`:
+
+```yaml
+environment:
+  - JELLYFIN_URL=http://jellyfin.local:8096
+  - JELLYFIN_API_KEY=your_token
+  - JELLYFIN_USER_ID=abcdef123456
+```
+
+When enabled, saving an entry writes a `<date>.songs.json` file listing up to
+five songs you played that day. Requests are logged with the `ej.jellyfin`
+logger.
+
 ## Daily workflow
 - Dynamic prompt rendered server-side via FastAPI + Jinja2 (`echo_journal.html`)
 - Text area for daily entry
@@ -133,6 +156,7 @@ Example: `/archive?sort_by=location&filter=has_location`.
   - ≤ 1s save time target
 - Clean separation of UI, API, and storage logic
 - Optional Immich photo integration via `IMMICH_URL` and `IMMICH_API_KEY` environment variables
+- Optional Jellyfin track logging via `JELLYFIN_URL` and related variables
 
 ## Monitoring request timings
 
