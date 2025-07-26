@@ -12,7 +12,9 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
 - Archive view to browse past entries
 - Settings page placeholder for future options
 - Stats dashboard showing entry counts, word totals and streaks
-- Optional metadata saved with each entry, including location, weather and time of day
+- Optional metadata saved with each entry, including location, weather,
+  time of day and the Word of the Day. Photo and song metadata can also
+  be captured when Immich or Jellyfin are configured.
 
 ## Project structure
 ```
