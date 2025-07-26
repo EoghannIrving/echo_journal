@@ -532,4 +532,5 @@ async def proxy_asset(asset_id: str):
         resp = await client.get(url, headers=headers)
     if resp.status_code != 200:
         raise HTTPException(status_code=resp.status_code, detail="Asset fetch failed")
-    return Response(content=resp.content, media_type=resp.headers.get("content-type", "application/octet-stream"))
+    content_type = resp.headers.get("content-type", "application/octet-stream")
+    return Response(content=resp.content, media_type=content_type)
