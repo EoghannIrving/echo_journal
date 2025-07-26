@@ -208,3 +208,7 @@ summary::-webkit-details-marker {
 
 
 .hidden { display: none; }
+
+.meta-card {
+  @apply rounded-xl p-4 bg-white dark:bg-[#1f1f1f] shadow-sm border border-gray-200 dark:border-gray-700;
+}
