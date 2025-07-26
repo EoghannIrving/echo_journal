@@ -142,7 +142,7 @@ environment:
 ```
 
 When enabled, saving an entry writes a `<date>.songs.json` file listing up to
-five songs you played that day. Requests are logged with the `ej.jellyfin`
+twenty songs you played that day. Requests are logged with the `ej.jellyfin`
 logger.
 Existing journals can be retroactively populated using the `/api/backfill_songs`
 endpoint.
