@@ -13,6 +13,7 @@ import tempfile
 from pathlib import Path
 import json
 import aiofiles  # type: ignore  # pylint: disable=import-error
+from datetime import datetime
 
 import pytest  # pylint: disable=import-error
 from fastapi.testclient import TestClient  # pylint: disable=import-error
@@ -88,6 +89,7 @@ def test_save_entry_records_time(test_client, monkeypatch):
 
 def test_word_of_day_in_frontmatter(test_client, monkeypatch):
     """Wordnik word of the day is saved in frontmatter when available."""
+
     async def fake_word():
         return "serendipity"
 
@@ -363,11 +365,7 @@ def test_archive_filter_and_sort(test_client):
         "# Prompt\nP2\n\n# Entry\nE2"
     )
     entry3 = (
-        "---\n"
-        "location: Atown\n"
-        "photos: []\n"
-        "---\n"
-        "# Prompt\nP3\n\n# Entry\nE3"
+        "---\n" "location: Atown\n" "photos: []\n" "---\n" "# Prompt\nP3\n\n# Entry\nE3"
     )
     (main.DATA_DIR / "2021-07-01.md").write_text(entry1, encoding="utf-8")
     (main.DATA_DIR / "2021-07-02.md").write_text(entry2, encoding="utf-8")
@@ -390,9 +388,7 @@ def test_archive_filter_has_photos(test_client):
     md1 = main.DATA_DIR / "2024-01-01.md"
     md1.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
     photos_path = main.DATA_DIR / "2024-01-01.photos.json"
-    photos_path.write_text(
-        json.dumps([{"url": "u", "thumb": "t"}]), encoding="utf-8"
-    )
+    photos_path.write_text(json.dumps([{"url": "u", "thumb": "t"}]), encoding="utf-8")
 
     md2 = main.DATA_DIR / "2024-01-02.md"
     md2.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
@@ -403,14 +399,40 @@ def test_archive_filter_has_photos(test_client):
     assert "2024-01-02" not in resp.text
 
 
+def test_archive_current_month_open(test_client):
+    """The current month's details section should be expanded."""
+    today = datetime.now().date()
+    current = today.strftime("%Y-%m-%d")
+    (main.DATA_DIR / f"{current}.md").write_text(
+        "# Prompt\nP\n\n# Entry\nE", encoding="utf-8"
+    )
+    (main.DATA_DIR / "2000-01-01.md").write_text(
+        "# Prompt\nP\n\n# Entry\nE", encoding="utf-8"
+    )
+
+    resp = test_client.get("/archive")
+    assert resp.status_code == 200
+
+    month = today.strftime("%Y-%m")
+    summary = f'<summary class="cursor-pointer text-base font-medium">{month}</summary>'
+    idx = resp.text.find(summary)
+    assert idx != -1
+    snippet = resp.text[max(0, idx - 50) : idx]
+    assert "open" in snippet
+
+    other_summary = (
+        '<summary class="cursor-pointer text-base font-medium">2000-01</summary>'
+    )
+    idx2 = resp.text.find(other_summary)
+    assert idx2 != -1
+    snippet2 = resp.text[max(0, idx2 - 50) : idx2]
+    assert "open" not in snippet2
+
+
 def test_view_entry_shows_wotd(test_client):
     """Word of the day from frontmatter should appear in view page."""
     content = (
-        "---\n"
-        "wotd: luminous\n"
-        "photos: []\n"
-        "---\n"
-        "# Prompt\nP\n\n# Entry\nE"
+        "---\n" "wotd: luminous\n" "photos: []\n" "---\n" "# Prompt\nP\n\n# Entry\nE"
     )
     (main.DATA_DIR / "2021-08-01.md").write_text(content, encoding="utf-8")
     resp = test_client.get("/archive/2021-08-01")
@@ -421,11 +443,7 @@ def test_view_entry_shows_wotd(test_client):
 def test_archive_shows_wotd_icon(test_client):
     """Entries with a word of the day show an icon in the archive."""
     content = (
-        "---\n"
-        "wotd: zephyr\n"
-        "photos: []\n"
-        "---\n"
-        "# Prompt\nP\n\n# Entry\nE"
+        "---\n" "wotd: zephyr\n" "photos: []\n" "---\n" "# Prompt\nP\n\n# Entry\nE"
     )
     (main.DATA_DIR / "2021-09-09.md").write_text(content, encoding="utf-8")
     resp = test_client.get("/archive")
@@ -435,6 +453,7 @@ def test_archive_shows_wotd_icon(test_client):
 
 def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
     """Saving an entry stores photo metadata from Immich."""
+
     async def fake_fetch(_date_str: str, media_type: str = "IMAGE"):
         _ = media_type
         return [
@@ -458,6 +477,7 @@ def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
 
 def test_archive_shows_photo_icon(test_client, monkeypatch):
     """Entries with a companion photo file show an icon in the archive."""
+
     async def fake_fetch(_date_str: str, media_type: str = "IMAGE"):
         _ = media_type
         return [
@@ -499,8 +519,16 @@ def test_view_entry_shows_photos(test_client):
     md_path = main.DATA_DIR / "2023-04-04.md"
     md_path.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
     photos = [
-        {"url": "http://example.com/full1", "thumb": "http://example.com/t1", "caption": "one"},
-        {"url": "http://example.com/full2", "thumb": "http://example.com/t2", "caption": "two"},
+        {
+            "url": "http://example.com/full1",
+            "thumb": "http://example.com/t1",
+            "caption": "one",
+        },
+        {
+            "url": "http://example.com/full2",
+            "thumb": "http://example.com/t2",
+            "caption": "two",
+        },
     ]
     json_path = main.DATA_DIR / "2023-04-04.photos.json"
     json_path.write_text(json.dumps(photos), encoding="utf-8")
