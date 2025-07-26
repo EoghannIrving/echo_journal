@@ -268,6 +268,12 @@ async def archive_view(
         all_entries = [e for e in all_entries if e["meta"].get("location")]
     elif filter_ == "has_weather":
         all_entries = [e for e in all_entries if e["meta"].get("weather")]
+    elif filter_ == "has_photos":
+        all_entries = [
+            e
+            for e in all_entries
+            if e["meta"].get("photos") not in (None, "[]")
+        ]
 
     if sort_by == "date":
         all_entries.sort(key=lambda e: e["date"], reverse=True)

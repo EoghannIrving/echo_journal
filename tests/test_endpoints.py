@@ -385,6 +385,24 @@ def test_archive_filter_and_sort(test_client):
     assert resp2.text.find("2021-07-03") < resp2.text.find("2021-07-01")
 
 
+def test_archive_filter_has_photos(test_client):
+    """Entries can be filtered by those containing photos."""
+    md1 = main.DATA_DIR / "2024-01-01.md"
+    md1.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+    photos_path = main.DATA_DIR / "2024-01-01.photos.json"
+    photos_path.write_text(
+        json.dumps([{"url": "u", "thumb": "t"}]), encoding="utf-8"
+    )
+
+    md2 = main.DATA_DIR / "2024-01-02.md"
+    md2.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+
+    resp = test_client.get("/archive", params={"filter": "has_photos"})
+    assert resp.status_code == 200
+    assert "2024-01-01" in resp.text
+    assert "2024-01-02" not in resp.text
+
+
 def test_view_entry_shows_wotd(test_client):
     """Word of the day from frontmatter should appear in view page."""
     content = (
