@@ -55,7 +55,7 @@ async def fetch_assets_for_date(
 
     return []
 
-async def update_photo_metadata_for_entry(date_str: str, journal_path: Path) -> None:
+async def update_photo_metadata(date_str: str, journal_path: Path) -> None:
     """Fetch photo assets from Immich and save metadata alongside journal entry."""
     logger.info("Updating photo metadata for %s", journal_path)
 
