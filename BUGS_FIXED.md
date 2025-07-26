@@ -365,3 +365,37 @@ The following issues were identified and subsequently resolved.
      ```
      【F:main.py†L178-L182】
 
+30. **Archive page entries unsorted within month** (fixed)
+   - Entries are collected and globally sorted by date before grouping, so each
+     month's list is now in descending order.
+   - Fixed lines:
+     ```python
+     all_entries.sort(key=lambda e: e["date"], reverse=True)
+     ...
+     entries_by_month[month_key].append(
+         (entry["date"].isoformat(), entry["prompt"], entry["meta"])
+     )
+     ```
+     【F:main.py†L278-L296】
+
+42. **`JOURNALS_DIR` docs mismatch code** (fixed)
+   - README now clarifies that `DATA_DIR` controls the in-container path while
+     `JOURNALS_DIR` only affects the Docker volume mount.
+   - Fixed lines:
+     ```markdown
+     When using Docker Compose, set the `JOURNALS_DIR` environment variable
+     ...
+     If you run the application without Docker, or need to override the
+     location inside the container, set the `DATA_DIR` environment variable
+     ```
+     【F:README.md†L50-L60】
+
+43. **Double `.md` extension possible** (fixed)
+   - `safe_entry_path` now uses `with_suffix` so existing `.md` extensions are
+     replaced rather than appended.
+   - Fixed lines:
+     ```python
+     path = (data_dir / sanitized).with_suffix(".md")
+     ```
+     【F:file_utils.py†L7-L13】
+

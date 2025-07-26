@@ -4,7 +4,7 @@ This list captures planned work from the project roadmap. Completed items from e
 
 - [ ] **Expanded Archive view**
   - [X] Display metadata markers (location, weather, photo indicator)
-  - [ ] Optional sorting and filtering by available enrichment
+  - [X] Optional sorting and filtering by available enrichment
   - [X] Rework Archive page layout to be more compact.
 
 - [X] **Stats dashboard**
@@ -20,10 +20,10 @@ This list captures planned work from the project roadmap. Completed items from e
   - [X] Maintain compatibility with legacy `.md` entries
 
 - [ ] **Enrichment integration prep**
-  - [ ] Support Immich photo integration
+  - [X] Support Immich photo integration
   - [X] Add geolocation capture
   - [X] Query a weather API for recent conditions
-  - [ ] Pull a "Word of the Day" and add that to the journal
+  - [X] Pull a "Word of the Day" and add that to the journal
   - [ ] Pull a "Fact of the Day" and add that to the journal
   - [X] Record save time in front matter
   - [ ] AI assisted prompts / "Need inspiration?" feature

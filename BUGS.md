@@ -75,15 +75,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
      ```
      【F:main.py†L263-L272】
 
-43. **Double `.md` extension possible**
-   - `safe_entry_path` appends `.md` even if the input already ends with `.md`, producing filenames like `2020-01-01.md.md`.
-   - Lines:
-     ```python
-     sanitized = Path(entry_date).name
-     sanitized = re.sub(r"[^0-9A-Za-z_-]", "_", sanitized)
-     path = (DATA_DIR / sanitized).with_suffix(".md")
-     ```
-     【F:main.py†L58-L63】
 
 48. **Templates path not configurable**
    - `Jinja2Templates` is created with a hard-coded `"templates"` directory, ignoring `APP_DIR` or other environment settings.
@@ -131,15 +122,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
      ```
      【F:main.py†L109-L118】
 
-30. **Archive page entries unsorted within month**
-   - `archive_view` sorts months but does not sort entries inside each month, so dates can appear out of order.
-   - Lines:
-     ```python
-     entries_by_month[month_key].append((entry_date.isoformat(), content))
-     # ... months sorted only
-     sorted_entries = dict(sorted(entries_by_month.items(), reverse=True))
-     ```
-     【F:main.py†L263-L275】
 
 32. **Other routes still use deprecated TemplateResponse signature**
    - `archive_view`, `view_entry`, and `settings_page` pass the template name first instead of the request.
@@ -191,18 +173,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
      ```
      【F:main.py†L90-L91】
 
-42. **`JOURNALS_DIR` docs mismatch code**
-   - README instructs using `JOURNALS_DIR` but the application reads `DATA_DIR`, so the env var has no effect.
-   - Lines:
-     ```text
-     The NAS location can be configured with the `JOURNALS_DIR` environment
-     variable used in `docker-compose.yml`.
-     ```
-     【F:README.md†L45-L51】
-     ```python
-     DATA_DIR = Path(os.getenv("DATA_DIR", "/journals"))
-     ```
-     【F:main.py†L40-L44】
 
 47. **Formatting toolbar doesn't resize textarea**
    - The markdown toolbar updates the textarea value but never triggers the oninput handler, so the field height stays wrong after applying formatting.
@@ -226,4 +196,65 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
          except ValueError:
              continue  # Skip malformed filenames
      ```
+
+52. **Location may save as 0,0 when saved immediately**
+   - The geolocation script populates coordinates asynchronously, so clicking
+     Save before it finishes stores zeros for latitude and longitude.
+   - Lines:
+     ```javascript
+     navigator.geolocation.getCurrentPosition(async (pos) => {
+       const { latitude, longitude, accuracy } = pos.coords;
+       ...
+     });
+     ...
+     const location = locEl ? {
+       lat: parseFloat(locEl.dataset.lat || 0),
+       lon: parseFloat(locEl.dataset.lon || 0),
+       accuracy: parseFloat(locEl.dataset.accuracy || 0),
+       label: locEl.dataset.locationName || ''
+     } : null;
+     ```
+     【F:templates/echo_journal.html†L166-L188】
+
+53. **Current month uses server time**
+   - `archive_view` expands the section matching the server's current month,
+     which can be wrong for users in other time zones.
+   - Lines:
+     ```python
+     current_month = datetime.now().strftime("%Y-%m")
+     ```
+     【F:main.py†L294-L296】
+
+54. **reverse_geocode unhandled network errors**
+   - Failures from the Nominatim API are not caught, returning a 500 response
+     instead of a graceful error.
+   - Lines:
+     ```python
+     async with httpx.AsyncClient() as client:
+         r = await client.get(url, params=params, headers=headers)
+         r.raise_for_status()
+     ```
+     【F:main.py†L503-L506】
+
+55. **save_time duplication with indented frontmatter**
+   - `_with_updated_save_time` only matches lines starting exactly with
+     `"save_time:"`, so entries with indented keys get a second `save_time`
+     line appended.
+   - Lines:
+     ```python
+     if line.startswith("save_time:"):
+         lines[i] = f"save_time: {label}"
+     ```
+     【F:main.py†L166-L172】
+
+56. **Duplicate dates inflate streak counts**
+   - `_calculate_streaks` iterates each entry file without deduplicating dates,
+     so multiple files for the same day extend streaks incorrectly.
+   - Lines:
+     ```python
+     for d in entry_dates:
+         if prev and d == prev + timedelta(days=1):
+             current_day_streak += 1
+     ```
+     【F:main.py†L430-L435】
 
