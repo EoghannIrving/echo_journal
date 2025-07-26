@@ -34,8 +34,8 @@ async def fetch_assets_for_date(
     end = date + timedelta(days=1, hours=IMMICH_TIME_BUFFER) - timedelta(seconds=1)
 
     payload = {
-        "createdAfter": start.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "createdBefore": end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "takenAfter": start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "takeBefore": end.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "type": media_type,
     }
 
