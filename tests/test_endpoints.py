@@ -497,6 +497,8 @@ def test_asset_proxy_download(test_client, monkeypatch):
     """Asset proxy endpoint should fetch original file from Immich."""
 
     class FakeClient:
+        """Async HTTP client stub used to capture requests."""
+
         def __init__(self):
             self.request_url = None
             self.request_headers = None
@@ -508,10 +510,13 @@ def test_asset_proxy_download(test_client, monkeypatch):
             return False
 
         async def get(self, url, headers=None):
+            """Record request details and return a fake image response."""
             self.request_url = url
             self.request_headers = headers
 
-            class Resp:
+            class Resp:  # pylint: disable=too-few-public-methods
+                """Minimal response stub returned by ``FakeClient``."""
+
                 status_code = 200
                 headers = {"content-type": "image/jpeg"}
                 content = b"img"
