@@ -35,23 +35,19 @@ async def fetch_assets_for_date(
     try:
         async with httpx.AsyncClient() as client:
             resp = await client.post(
-                f"{IMMICH_URL}/search/metadata",  # ✅ fixed path
+                f"{IMMICH_URL}/search/metadata",
                 headers=headers,
                 json=payload,
                 timeout=10,
             )
             resp.raise_for_status()
-            text = resp.text
-            logger.info("Raw response text: %s", text)
             data = resp.json()
-            logger.info("Immich raw response: %s", data)
+            logger.debug("Immich raw response: %s", data)
 
-            if isinstance(data, list):
-                logger.info("Received %d assets", len(data))
-                return data
-            if isinstance(data, dict) and isinstance(data.get("assets"), list):
-                logger.info("Received %d assets", len(data["assets"]))
-                return data["assets"]
+            if isinstance(data, dict) and "assets" in data:
+                assets = data["assets"].get("items", [])
+                logger.info("Received %d assets", len(assets))
+                return assets
 
     except (httpx.HTTPError, ValueError) as exc:
         logger.error("Error fetching assets from Immich: %s", exc)
