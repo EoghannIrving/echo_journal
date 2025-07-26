@@ -270,9 +270,7 @@ async def archive_view(
         all_entries = [e for e in all_entries if e["meta"].get("weather")]
     elif filter_ == "has_photos":
         all_entries = [
-            e
-            for e in all_entries
-            if e["meta"].get("photos") not in (None, "[]")
+            e for e in all_entries if e["meta"].get("photos") not in (None, "[]")
         ]
 
     if sort_by == "date":
@@ -293,6 +291,7 @@ async def archive_view(
 
     # Sort months descending (latest first)
     sorted_entries = dict(sorted(entries_by_month.items(), reverse=True))
+    current_month = datetime.now().strftime("%Y-%m")
 
     return templates.TemplateResponse(
         "archives.html",
@@ -302,6 +301,7 @@ async def archive_view(
             "active_page": "archive",
             "sort_by": sort_by,
             "filter_val": filter_,
+            "current_month": current_month,
         },
     )
 
@@ -523,7 +523,9 @@ async def proxy_thumbnail(asset_id: str, size: str = "thumbnail"):
     async with httpx.AsyncClient() as client:
         resp = await client.get(url, headers=headers)
     if resp.status_code != 200:
-        raise HTTPException(status_code=resp.status_code, detail="Thumbnail fetch failed")
+        raise HTTPException(
+            status_code=resp.status_code, detail="Thumbnail fetch failed"
+        )
     content_type = resp.headers.get("content-type", "image/jpeg")
     return Response(content=resp.content, media_type=content_type)
 
