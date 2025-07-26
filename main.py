@@ -256,6 +256,34 @@ async def load_entry(entry_date: str):
     return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
 
 
+async def _load_extra_meta(md_file: Path, meta: dict) -> None:
+    """Populate ``meta`` with photo and song info if present."""
+    if meta.get("photos") in (None, "[]"):
+        json_path = md_file.with_suffix(".photos.json")
+        if json_path.exists():
+            try:
+                async with aiofiles.open(json_path, "r", encoding=ENCODING) as jh:
+                    photos_text = await jh.read()
+                if json.loads(photos_text):
+                    meta["photos"] = "1"
+            except (OSError, ValueError):
+                pass
+    if not meta.get("songs"):
+        songs_path = md_file.with_suffix(".songs.json")
+        if songs_path.exists():
+            try:
+                async with aiofiles.open(songs_path, "r", encoding=ENCODING) as sh:
+                    songs_text = await sh.read()
+                songs_data = json.loads(songs_text)
+                if songs_data:
+                    if isinstance(songs_data, list) and isinstance(songs_data[0], dict):
+                        meta["songs"] = songs_data[0].get("track") or "1"
+                    else:
+                        meta["songs"] = "1"
+            except (OSError, ValueError):
+                pass
+
+
 async def _collect_entries() -> list[dict]:
     """Return a list of entries found under ``DATA_DIR``."""
     entries: list[dict] = []
@@ -271,30 +299,7 @@ async def _collect_entries() -> list[dict]:
             continue
         frontmatter, body = split_frontmatter(content)
         meta = parse_frontmatter(frontmatter) if frontmatter else {}
-        if meta.get("photos") in (None, "[]"):
-            json_path = file.with_suffix(".photos.json")
-            if json_path.exists():
-                try:
-                    async with aiofiles.open(json_path, "r", encoding=ENCODING) as jh:
-                        photos_text = await jh.read()
-                    if json.loads(photos_text):
-                        meta["photos"] = "1"
-                except (OSError, ValueError):
-                    pass
-        if not meta.get("songs"):
-            songs_json = file.with_suffix(".songs.json")
-            if songs_json.exists():
-                try:
-                    async with aiofiles.open(songs_json, "r", encoding=ENCODING) as sh:
-                        songs_text = await sh.read()
-                    songs_data = json.loads(songs_text)
-                    if songs_data:
-                        if isinstance(songs_data, list) and isinstance(songs_data[0], dict):
-                            meta["songs"] = songs_data[0].get("track") or "1"
-                        else:
-                            meta["songs"] = "1"
-                except (OSError, ValueError):
-                    pass
+        await _load_extra_meta(file, meta)
         prompt, _ = parse_entry(body)
         entries.append({"date": entry_date, "prompt": prompt, "meta": meta})
     return entries
