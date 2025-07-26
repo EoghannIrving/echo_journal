@@ -42,9 +42,9 @@ async def fetch_assets_for_date(
             )
             resp.raise_for_status()
             text = resp.text
-            logger.debug("Raw response text: %s", text)
+            logger.info("Raw response text: %s", text)
             data = resp.json()
-            logger.debug("Immich raw response: %s", data)
+            logger.info("Immich raw response: %s", data)
 
             if isinstance(data, list):
                 logger.info("Received %d assets", len(data))
