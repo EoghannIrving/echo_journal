@@ -145,7 +145,7 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
             item[0][0].lower(),
             item[0][1].lower(),
         ),
-    )[:5]
+    )[:20]
     logger.info("Returning %d track records", len(sorted_counts))
     return [
         {"track": track, "artist": artist, "plays": cnt}
