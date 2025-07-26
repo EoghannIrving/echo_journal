@@ -13,8 +13,9 @@ from config import IMMICH_URL, IMMICH_API_KEY, ENCODING
 import os
 
 # Allow widening the search range so photos close to midnight in other
-# timezones are included. The default of 12 hours covers all time zones.
-IMMICH_TIME_BUFFER = int(os.getenv("IMMICH_TIME_BUFFER", "12"))
+# timezones are included. The default of 15 hours covers even the most
+# extreme differences from UTC.
+IMMICH_TIME_BUFFER = int(os.getenv("IMMICH_TIME_BUFFER", "15"))
 
 logger = logging.getLogger("ej.immich")
 

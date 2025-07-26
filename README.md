@@ -87,7 +87,7 @@ The application looks for the following optional variables:
 - `WORDNIK_API_KEY` – API key used to fetch the Wordnik word of the day
 - `IMMICH_URL` – base URL of your Immich API endpoint (for example `http://immich.local/api`)
 - `IMMICH_API_KEY` – API key used to authorize requests to Immich
-- `IMMICH_TIME_BUFFER` – hours to extend photo searches before and after each date (default `12`)
+- `IMMICH_TIME_BUFFER` – hours to extend photo searches before and after each date (default `15`)
 
 Defaults are suitable for Docker Compose but can be overridden when
 running the app in other environments.
@@ -103,7 +103,7 @@ environment:
   - IMMICH_URL=http://immich.local/api
   - IMMICH_API_KEY=your_generated_token
   # Optional: widen date searches by this many hours on either side
-  - IMMICH_TIME_BUFFER=12
+  - IMMICH_TIME_BUFFER=15
 ```
 
 With these configured, saving **or viewing** an entry will fetch any photos
