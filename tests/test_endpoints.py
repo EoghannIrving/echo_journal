@@ -435,7 +435,7 @@ def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
     data = json.loads(json_path.read_text(encoding="utf-8"))
     assert data[0]["caption"] == "img1.jpg"
     assert data[0]["url"] == "/api/asset/123"
-    assert data[0]["thumb"] == "/api/thumbnail/123?size=medium"
+    assert data[0]["thumb"] == "/api/thumbnail/123?size=thumbnail"
 
 
 def test_archive_shows_photo_icon(test_client, monkeypatch):
