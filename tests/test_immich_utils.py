@@ -49,6 +49,6 @@ def test_fetch_assets_posts_search(monkeypatch):
 
     asyncio.run(immich_utils.fetch_assets_for_date("2025-07-19"))
 
-    assert client.captured["url"] == "http://example/api/asset/search"
+    assert client.captured["url"] == "http://example/api/search/metadata"
     assert client.captured["json"]["createdAt"]["min"] == "2025-07-19T00:00:00Z"
     assert client.captured["json"]["createdAt"]["max"] == "2025-07-19T23:59:59Z"
