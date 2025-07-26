@@ -21,10 +21,8 @@ async def fetch_assets_for_date(
         return []
 
     payload = {
-        "createdAt": {
-            "min": f"{date_str}T00:00:00Z",
-            "max": f"{date_str}T23:59:59Z",
-        },
+        "createdAfter": f"{date_str}T00:00:00Z",
+        "createdBefore": f"{date_str}T23:59:59Z",
         "type": media_type,
     }
 
