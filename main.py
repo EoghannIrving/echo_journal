@@ -545,3 +545,21 @@ async def proxy_asset(asset_id: str):
         raise HTTPException(status_code=resp.status_code, detail="Asset fetch failed")
     content_type = resp.headers.get("content-type", "application/octet-stream")
     return Response(content=resp.content, media_type=content_type)
+
+
+@app.post("/api/backfill_songs")
+async def backfill_song_metadata() -> dict:
+    """Generate missing songs.json files for existing journal entries."""
+    added = 0
+    for md_file in DATA_DIR.rglob("*.md"):
+        songs_path = md_file.with_suffix(".songs.json")
+        if songs_path.exists():
+            continue
+        try:
+            datetime.strptime(md_file.stem, "%Y-%m-%d")
+        except ValueError:
+            continue
+        await update_song_metadata(md_file.stem, md_file)
+        if songs_path.exists():
+            added += 1
+    return {"added": added}
