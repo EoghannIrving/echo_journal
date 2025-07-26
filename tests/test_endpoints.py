@@ -485,6 +485,7 @@ def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
             {
                 "id": "123",
                 "originalFileName": "img1.jpg",
+                "fileCreatedAt": "2023-01-01T12:00:00Z",
             }
         ]
 
@@ -550,6 +551,7 @@ def test_archive_shows_photo_icon(test_client, monkeypatch):
             {
                 "id": "123",
                 "originalFileName": "img1.jpg",
+                "fileCreatedAt": "2023-02-02T08:00:00Z",
             }
         ]
 
