@@ -362,6 +362,15 @@ async def archive_entry(request: Request, entry_date: str):
         except (OSError, ValueError):
             photos = []
 
+    songs: list[dict] = []
+    songs_path = file_path.with_suffix(".songs.json")
+    if songs_path.exists():
+        try:
+            async with aiofiles.open(songs_path, "r", encoding=ENCODING) as jh:
+                songs = json.loads(await jh.read())
+        except (OSError, ValueError):
+            songs = []
+
     return templates.TemplateResponse(
         "archive-entry.html",
         {
@@ -378,6 +387,7 @@ async def archive_entry(request: Request, entry_date: str):
             "weather": format_weather(meta["weather"]) if meta.get("weather") else "",
             "wotd": meta.get("wotd", ""),
             "photos": photos,
+            "songs": songs,
             "readonly": True,  # Read-only mode for archive
             "active_page": "archive",
         },
