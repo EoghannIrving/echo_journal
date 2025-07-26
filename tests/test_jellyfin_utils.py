@@ -6,7 +6,11 @@ import jellyfin_utils
 
 
 class FakeClient:
-    """Simplified httpx.AsyncClient mock for fetch_top_songs."""
+    """Simplified ``httpx.AsyncClient`` mock for ``fetch_top_songs``."""
+
+    def __init__(self) -> None:
+        """Initialize the fake client with a blank ``url`` attribute."""
+        self.url = ""
 
     def __init__(self, items=None):
         self.items = items
@@ -18,22 +22,28 @@ class FakeClient:
         return False
 
     async def get(self, url, headers=None, params=None, timeout=None):
+        """Store request info and return a mock response."""
         _ = headers
         _ = params
         _ = timeout
         self.url = url
 
         class Response:
+            """Minimal ``httpx.Response`` stand-in."""
+
             def __init__(self, items):
                 self._items = items
 
             def raise_for_status(self):
+                """Pretend the request succeeded."""
                 return None
 
             def json(self):
+                """Return the payload in ``httpx`` style."""
                 return {"Items": self._items}
 
         default_items = [
+        items = [
             {
                 "Name": "Song1",
                 "ArtistItems": [{"Name": "Artist1"}],
