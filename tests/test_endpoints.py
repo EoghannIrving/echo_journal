@@ -44,6 +44,7 @@ sys.path.insert(0, str(ROOT))
 import main  # type: ignore  # pylint: disable=wrong-import-position
 import weather_utils  # pylint: disable=wrong-import-position
 import immich_utils  # pylint: disable=wrong-import-position
+import jellyfin_utils  # pylint: disable=wrong-import-position
 
 
 @pytest.fixture()
@@ -473,6 +474,27 @@ def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
     assert data[0]["caption"] == "img1.jpg"
     assert data[0]["url"] == "/api/asset/123"
     assert data[0]["thumb"] == "/api/thumbnail/123?size=thumbnail"
+
+
+def test_save_entry_adds_song_metadata(test_client, monkeypatch):
+    """Saving an entry stores song metadata from Jellyfin."""
+
+    async def fake_fetch(_date_str: str):
+        return [
+            {"track": "t1", "artist": "a1", "plays": 3},
+            {"track": "t2", "artist": "a2", "plays": 2},
+        ]
+
+    monkeypatch.setattr(jellyfin_utils, "fetch_top_songs", fake_fetch)
+    payload = {"date": "2023-05-05", "content": "entry", "prompt": "prompt"}
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    json_path = main.DATA_DIR / "2023-05-05.songs.json"
+    assert json_path.exists()
+    songs = json.loads(json_path.read_text(encoding="utf-8"))
+    assert songs[0]["track"] == "t1"
+    assert songs[0]["artist"] == "a1"
+    assert songs[0]["plays"] == 3
 
 
 def test_archive_shows_photo_icon(test_client, monkeypatch):
