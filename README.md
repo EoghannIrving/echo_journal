@@ -122,7 +122,7 @@ The `/archive` page lists past entries grouped by month.
 
 Query parameters:
 - `sort_by` – ordering of entries: `date` (default), `location`, `weather`, or `photos`.
-- `filter` – limit results to entries containing metadata. Use `has_location` or `has_weather`.
+- `filter` – limit results to entries containing metadata. Use `has_location`, `has_weather`, or `has_photos`.
 
 Example: `/archive?sort_by=location&filter=has_location`.
 
