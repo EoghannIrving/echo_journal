@@ -521,6 +521,26 @@ def test_save_entry_adds_song_metadata(test_client, monkeypatch):
     assert songs[0]["plays"] == 3
 
 
+def test_backfill_song_metadata(test_client, monkeypatch):
+    """Backfill endpoint creates songs.json for existing entries."""
+
+    md_path = main.DATA_DIR / "2023-06-06.md"
+    md_path.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+
+    async def fake_fetch(date_str: str):
+        assert date_str == "2023-06-06"
+        return [{"track": "t", "artist": "a", "plays": 1}]
+
+    monkeypatch.setattr(jellyfin_utils, "fetch_top_songs", fake_fetch)
+
+    resp = test_client.post("/api/backfill_songs")
+
+    assert resp.status_code == 200
+    assert resp.json()["added"] == 1
+    songs_path = main.DATA_DIR / "2023-06-06.songs.json"
+    assert songs_path.exists()
+
+
 def test_archive_shows_photo_icon(test_client, monkeypatch):
     """Entries with a companion photo file show an icon in the archive."""
 
