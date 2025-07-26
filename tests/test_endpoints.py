@@ -491,3 +491,42 @@ def test_view_entry_shows_photos(test_client):
     assert resp.status_code == 200
     assert "http://example.com/t1" in resp.text
     assert "http://example.com/t2" in resp.text
+
+
+def test_asset_proxy_download(test_client, monkeypatch):
+    """Asset proxy endpoint should fetch original file from Immich."""
+
+    class FakeClient:
+        def __init__(self):
+            self.request_url = None
+            self.request_headers = None
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def get(self, url, headers=None):
+            self.request_url = url
+            self.request_headers = headers
+
+            class Resp:
+                status_code = 200
+                headers = {"content-type": "image/jpeg"}
+                content = b"img"
+
+            return Resp()
+
+    client = FakeClient()
+    monkeypatch.setattr(main.httpx, "AsyncClient", lambda: client)
+    monkeypatch.setattr(main, "IMMICH_URL", "http://example/api")
+    monkeypatch.setattr(main, "IMMICH_API_KEY", "secret")
+
+    resp = test_client.get("/api/asset/abc")
+
+    assert resp.status_code == 200
+    assert resp.content == b"img"
+    assert resp.headers["content-type"] == "image/jpeg"
+    assert client.request_url == "http://example/api/assets/abc/original"
+    assert client.request_headers == {"x-api-key": "secret"}

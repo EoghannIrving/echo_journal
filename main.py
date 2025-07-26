@@ -527,7 +527,7 @@ async def proxy_asset(asset_id: str):
     if not IMMICH_URL:
         raise HTTPException(status_code=404, detail="Immich not configured")
     headers = {"x-api-key": IMMICH_API_KEY} if IMMICH_API_KEY else {}
-    url = f"{IMMICH_URL}/assets/{asset_id}"
+    url = f"{IMMICH_URL}/assets/{asset_id}/original"
     async with httpx.AsyncClient() as client:
         resp = await client.get(url, headers=headers)
     if resp.status_code != 200:
