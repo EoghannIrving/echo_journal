@@ -1,8 +1,9 @@
 """Utility functions for reading and parsing journal entries."""
 
 from pathlib import Path
+import json
 import re
-from typing import List, Tuple, Optional, Dict
+from typing import Any, Dict, List, Optional, Tuple
 
 import aiofiles
 
@@ -78,6 +79,17 @@ def parse_frontmatter(frontmatter: str) -> Dict[str, str]:
         key, value = line.split(":", 1)
         result[key.strip()] = value.strip()
     return result
+
+
+async def load_json_file(file_path: Path) -> List[Dict[str, Any]]:
+    """Return parsed JSON data from ``file_path`` or an empty list."""
+    if not file_path.exists():
+        return []
+    try:
+        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+            return json.loads(await fh.read())
+    except (OSError, ValueError):
+        return []
 
 
 WEATHER_ICONS = {
