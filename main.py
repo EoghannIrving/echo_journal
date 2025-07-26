@@ -287,8 +287,12 @@ async def _collect_entries() -> list[dict]:
                 try:
                     async with aiofiles.open(songs_json, "r", encoding=ENCODING) as sh:
                         songs_text = await sh.read()
-                    if json.loads(songs_text):
-                        meta["songs"] = "1"
+                    songs_data = json.loads(songs_text)
+                    if songs_data:
+                        if isinstance(songs_data, list) and isinstance(songs_data[0], dict):
+                            meta["songs"] = songs_data[0].get("track") or "1"
+                        else:
+                            meta["songs"] = "1"
                 except (OSError, ValueError):
                     pass
         prompt, _ = parse_entry(body)
