@@ -222,7 +222,6 @@ async def load_entry(entry_date: str):
     return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
 
 
-
 async def _collect_entries() -> list[dict]:
     """Return a list of entries found under ``DATA_DIR``."""
     entries: list[dict] = []
@@ -326,19 +325,12 @@ async def archive_entry(request: Request, entry_date: str):
     if not prompt and not entry:
         entry = body.strip()
 
-    html_entry = bleach.clean(
-        markdown.markdown(entry),
-        tags=bleach.sanitizer.ALLOWED_TAGS.union({"p", "pre"}),
-        attributes=bleach.sanitizer.ALLOWED_ATTRIBUTES,
-    )
-
     photos: list[dict] = []
     json_path = file_path.with_suffix(".photos.json")
     if json_path.exists():
         try:
             async with aiofiles.open(json_path, "r", encoding=ENCODING) as jh:
-                photos_text = await jh.read()
-            photos = json.loads(photos_text)
+                photos = json.loads(await jh.read())
         except (OSError, ValueError):
             photos = []
 
@@ -347,7 +339,11 @@ async def archive_entry(request: Request, entry_date: str):
         {
             "request": request,
             "content": entry,
-            "content_html": html_entry,
+            "content_html": bleach.clean(
+                markdown.markdown(entry),
+                tags=bleach.sanitizer.ALLOWED_TAGS.union({"p", "pre"}),
+                attributes=bleach.sanitizer.ALLOWED_ATTRIBUTES,
+            ),
             "date": entry_date,
             "prompt": prompt,
             "location": meta.get("location", ""),
