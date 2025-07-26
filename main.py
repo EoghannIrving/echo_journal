@@ -22,7 +22,14 @@ from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from config import DATA_DIR, STATIC_DIR, ENCODING, IMMICH_URL, IMMICH_API_KEY
+from config import (
+    DATA_DIR,
+    STATIC_DIR,
+    ENCODING,
+    IMMICH_URL,
+    IMMICH_API_KEY,
+    LOG_FILE,
+)
 from file_utils import (
     safe_entry_path,
     parse_entry,
@@ -51,9 +58,22 @@ if not hasattr(Path, "is_relative_to"):
 
 app = FastAPI()
 
-# Setup basic logging for timing middleware
-logging.basicConfig(level=logging.INFO)
+# Setup logging to both the console and a file under ``DATA_DIR``
+handlers = [logging.StreamHandler()]
+try:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    handlers.append(logging.FileHandler(LOG_FILE, encoding="utf-8"))
+except OSError:
+    # Fall back to console-only logging if file creation fails
+    pass
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    handlers=handlers,
+)
 logger = logging.getLogger("ej.timing")
+songs_logger = logging.getLogger("ej.jellyfin")
 
 # Store recent request timings on the FastAPI state
 MAX_TIMINGS = 50
@@ -550,16 +570,21 @@ async def proxy_asset(asset_id: str):
 @app.post("/api/backfill_songs")
 async def backfill_song_metadata() -> dict:
     """Generate missing songs.json files for existing journal entries."""
+    songs_logger.info("Starting song metadata backfill")
     added = 0
     for md_file in DATA_DIR.rglob("*.md"):
         songs_path = md_file.with_suffix(".songs.json")
         if songs_path.exists():
+            songs_logger.debug("%s already has songs.json", md_file)
             continue
         try:
             datetime.strptime(md_file.stem, "%Y-%m-%d")
         except ValueError:
+            songs_logger.debug("Skipping non-entry file %s", md_file)
             continue
+        songs_logger.info("Backfilling songs for %s", md_file.stem)
         await update_song_metadata(md_file.stem, md_file)
         if songs_path.exists():
             added += 1
+    songs_logger.info("Backfill complete; added %d files", added)
     return {"added": added}

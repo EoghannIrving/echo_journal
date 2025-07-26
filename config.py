@@ -16,3 +16,7 @@ IMMICH_API_KEY = os.getenv("IMMICH_API_KEY")
 JELLYFIN_URL = os.getenv("JELLYFIN_URL")
 JELLYFIN_API_KEY = os.getenv("JELLYFIN_API_KEY")
 JELLYFIN_USER_ID = os.getenv("JELLYFIN_USER_ID")
+
+# File logging path - defaults to ``DATA_DIR/echo_journal.log`` but can
+# be overridden via the ``LOG_FILE`` environment variable.
+LOG_FILE = Path(os.getenv("LOG_FILE", str(DATA_DIR / "echo_journal.log")))
