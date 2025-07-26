@@ -4,11 +4,17 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, List
+from datetime import datetime, timedelta
 
 import aiofiles
 import httpx
 
 from config import IMMICH_URL, IMMICH_API_KEY, ENCODING
+import os
+
+# Allow widening the search range so photos close to midnight in other
+# timezones are included. The default of 12 hours covers all time zones.
+IMMICH_TIME_BUFFER = int(os.getenv("IMMICH_TIME_BUFFER", "12"))
 
 logger = logging.getLogger("ej.immich")
 
@@ -20,9 +26,15 @@ async def fetch_assets_for_date(
         logger.info("Immich integration disabled; skipping fetch")
         return []
 
+    # Expand the search range on either side of ``date_str`` to compensate
+    # for timezone differences between where photos were taken and UTC.
+    date = datetime.strptime(date_str, "%Y-%m-%d")
+    start = date - timedelta(hours=IMMICH_TIME_BUFFER)
+    end = date + timedelta(days=1, hours=IMMICH_TIME_BUFFER) - timedelta(seconds=1)
+
     payload = {
-        "createdAfter": f"{date_str}T00:00:00Z",
-        "createdBefore": f"{date_str}T23:59:59Z",
+        "createdAfter": start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "createdBefore": end.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "type": media_type,
     }
 
