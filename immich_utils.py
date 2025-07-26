@@ -2,15 +2,14 @@
 
 import json
 import logging
+import os
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List
-from datetime import datetime, timedelta
 
-import aiofiles
 import httpx
 
-from config import IMMICH_URL, IMMICH_API_KEY, ENCODING
-import os
+from config import IMMICH_URL, IMMICH_API_KEY
 
 # Allow widening the search range so photos close to midnight in other
 # timezones are included. The default of 15 hours covers even the most
@@ -70,11 +69,7 @@ async def update_photo_metadata(date_str: str, journal_path: Path) -> None:
     """Fetch photo assets from Immich and save metadata alongside journal entry."""
     logger.info("Updating photo metadata for %s", journal_path)
 
-    try:
-        assets = await fetch_assets_for_date(date_str, media_type="IMAGE")
-    except Exception as e:
-        logger.error("Failed to fetch assets for %s: %s", date_str, e)
-        return
+    assets = await fetch_assets_for_date(date_str, media_type="IMAGE")
 
     if not assets:
         logger.info("No photo assets found for %s", date_str)
@@ -98,5 +93,5 @@ async def update_photo_metadata(date_str: str, journal_path: Path) -> None:
         with open(photo_path, "w", encoding="utf-8") as f:
             json.dump(photo_metadata, f, indent=2)
         logger.info("Wrote %d photo records to %s", len(photo_metadata), photo_path)
-    except Exception as e:
-        logger.error("Failed to write photo metadata file: %s", e)
+    except OSError as exc:
+        logger.error("Failed to write photo metadata file: %s", exc)
