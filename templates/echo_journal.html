@@ -111,6 +111,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const toolbar = document.getElementById('md-toolbar');
   const textarea = document.getElementById('journal-text');
+  if (textarea) {
+    // Ensure the field height matches preloaded content
+    textarea.dispatchEvent(new Event('input'));
+  }
   if (toolbar && textarea) {
     toolbar.addEventListener('click', (e) => {
       const btn = e.target.closest('button[data-action]');
@@ -145,6 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
       else if (action === 'list') prefixLines('- ');
 
       textarea.focus();
+      textarea.dispatchEvent(new Event('input'));
     });
   }
 });
