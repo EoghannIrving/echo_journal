@@ -332,6 +332,16 @@ async def archive_entry(request: Request, entry_date: str):
         attributes=bleach.sanitizer.ALLOWED_ATTRIBUTES,
     )
 
+    photos: list[dict] = []
+    json_path = file_path.with_suffix(".photos.json")
+    if json_path.exists():
+        try:
+            async with aiofiles.open(json_path, "r", encoding=ENCODING) as jh:
+                photos_text = await jh.read()
+            photos = json.loads(photos_text)
+        except (OSError, ValueError):
+            photos = []
+
     return templates.TemplateResponse(
         "archive-entry.html",
         {
@@ -343,6 +353,7 @@ async def archive_entry(request: Request, entry_date: str):
             "location": meta.get("location", ""),
             "weather": format_weather(meta["weather"]) if meta.get("weather") else "",
             "wotd": meta.get("wotd", ""),
+            "photos": photos,
             "readonly": True,  # Read-only mode for archive
             "active_page": "archive",
         },
