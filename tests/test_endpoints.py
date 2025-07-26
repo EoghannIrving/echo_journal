@@ -418,6 +418,7 @@ def test_archive_shows_wotd_icon(test_client):
 def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
     """Saving an entry stores photo metadata from Immich."""
     async def fake_fetch(_date_str: str, media_type: str = "IMAGE"):
+        _ = media_type
         return [
             {
                 "id": "123",
@@ -438,6 +439,7 @@ def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
 def test_archive_shows_photo_icon(test_client, monkeypatch):
     """Entries with a companion photo file show an icon in the archive."""
     async def fake_fetch(_date_str: str, media_type: str = "IMAGE"):
+        _ = media_type
         return [
             {
                 "id": "123",
