@@ -133,7 +133,7 @@ def test_view_entry_existing(test_client):
     (main.DATA_DIR / "2020-03-03.md").write_text(
         "# Prompt\nA\n\n# Entry\nB", encoding="utf-8"
     )
-    resp = test_client.get("/view/2020-03-03")
+    resp = test_client.get("/archive/2020-03-03")
     assert resp.status_code == 200
     assert "B" in resp.text
     assert "journal-html" in resp.text
@@ -143,7 +143,7 @@ def test_view_entry_sanitized(test_client):
     """Malicious HTML in entries should be escaped."""
     content = "# Prompt\nA\n\n# Entry\n<script>alert('X')</script>"
     (main.DATA_DIR / "2020-03-05.md").write_text(content, encoding="utf-8")
-    resp = test_client.get("/view/2020-03-05")
+    resp = test_client.get("/archive/2020-03-05")
     assert resp.status_code == 200
     assert "<script>alert('X')" not in resp.text
     assert "&lt;script&gt;" in resp.text
@@ -153,7 +153,7 @@ def test_view_entry_multiline_prompt(test_client):
     """Prompts spanning multiple lines should render correctly."""
     content = "# Prompt\nLine1\nLine2\n\n# Entry\nBody"
     (main.DATA_DIR / "2020-03-04.md").write_text(content, encoding="utf-8")
-    resp = test_client.get("/view/2020-03-04")
+    resp = test_client.get("/archive/2020-03-04")
     assert resp.status_code == 200
     assert "Line1" in resp.text and "Line2" in resp.text
     assert "Body" in resp.text
@@ -162,14 +162,14 @@ def test_view_entry_multiline_prompt(test_client):
 def test_view_entry_malformed(test_client):
     """Malformed files are displayed as plain text without error."""
     (main.DATA_DIR / "bad.md").write_text("No headings here", encoding="utf-8")
-    resp = test_client.get("/view/bad")
+    resp = test_client.get("/archive/bad")
     assert resp.status_code == 200
     assert "No headings here" in resp.text
 
 
 def test_view_entry_missing(test_client):
     """Requesting a missing entry by date returns 404."""
-    resp = test_client.get("/view/2020-04-04")
+    resp = test_client.get("/archive/2020-04-04")
     assert resp.status_code == 404
 
 
@@ -228,7 +228,7 @@ def test_view_entry_unreadable_file(test_client, monkeypatch):
 
     monkeypatch.setattr(aiofiles, "open", open_mock)
 
-    resp = test_client.get("/view/2020-08-08")
+    resp = test_client.get("/archive/2020-08-08")
     assert resp.status_code == 500
 
 
@@ -243,7 +243,7 @@ def test_view_entry_uses_frontmatter(test_client):
         "# Prompt\nP\n\n# Entry\nE"
     )
     (main.DATA_DIR / "2020-09-09.md").write_text(content, encoding="utf-8")
-    resp = test_client.get("/view/2020-09-09")
+    resp = test_client.get("/archive/2020-09-09")
     assert resp.status_code == 200
     assert "Testville" in resp.text
     assert "12\u00b0C" in resp.text
@@ -254,7 +254,7 @@ def test_view_entry_no_metadata_hidden(test_client):
     (main.DATA_DIR / "2020-09-10.md").write_text(
         "# Prompt\nP\n\n# Entry\nE", encoding="utf-8"
     )
-    resp = test_client.get("/view/2020-09-10")
+    resp = test_client.get("/archive/2020-09-10")
     assert resp.status_code == 200
     assert 'id="location-display"' in resp.text
     assert "hidden" in resp.text.split('id="location-display"')[1].split(">")[0]
@@ -290,7 +290,7 @@ def test_get_entry_invalid_date(test_client):
 
 def test_view_entry_traversal(test_client):
     """Path traversal attempts in view routes should be denied."""
-    resp = test_client.get("/view/../../etc/passwd")
+    resp = test_client.get("/archive/../../etc/passwd")
     assert resp.status_code == 404
 
 
@@ -395,7 +395,7 @@ def test_view_entry_shows_wotd(test_client):
         "# Prompt\nP\n\n# Entry\nE"
     )
     (main.DATA_DIR / "2021-08-01.md").write_text(content, encoding="utf-8")
-    resp = test_client.get("/view/2021-08-01")
+    resp = test_client.get("/archive/2021-08-01")
     assert resp.status_code == 200
     assert "luminous" in resp.text
 
@@ -467,6 +467,6 @@ def test_view_entry_updates_photo_metadata(test_client, monkeypatch):
         "# Prompt\nP\n\n# Entry\nE", encoding="utf-8"
     )
 
-    resp = test_client.get("/view/2023-03-03")
+    resp = test_client.get("/archive/2023-03-03")
     assert resp.status_code == 200
     assert called["flag"]

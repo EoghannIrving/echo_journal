@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Archive Entry - Echo Journal{% endblock %}
+
+{% block header_title %}
+  <h1 id="welcome-message" class="font-serif font-bold text-[clamp(1.75rem,2vw+1rem,2.5rem)] text-center mb-2 opacity-0">
+    {{ date }}
+  </h1>
+{% endblock %}
+
+{% block content %}
+<section class="w-full mx-auto space-y-2 text-center bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100">
+  <div class="p-4 border-b border-gray-300 dark:border-gray-600 mb-6">
+    <p id="daily-prompt" class="font-sans font-medium text-[clamp(1.5rem,2vw+1rem,2rem)] leading-snug mb-2 opacity-0">{{ prompt }}</p>
+  </div>
+</section>
+<section class="w-full mx-auto editor-container bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100">
+  <div class="journal-html mx-auto p-6 font-serif rounded-xl shadow prose dark:prose-invert prose-lg">
+    {{ content_html|safe }}
+  </div>
+</section>
+<div id="location-display" class="text-sm text-gray-600 dark:text-gray-300 mt-2 italic {% if not location %}hidden{% endif %}">
+  {% if location %}📍 {{ location }}{% endif %}
+</div>
+<div id="weather-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not weather %}hidden{% endif %}">
+  {% if weather %}{{ weather }}{% endif %}
+</div>
+<div id="wotd-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not wotd %}hidden{% endif %}">
+  {% if wotd %}📖 {{ wotd }}{% endif %}
+</div>
+<footer class="w-full mx-auto mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">
+  <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
+  Echo Journal
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const animateText = (target, startDelay = 0, letterDelay = 80, wordDelay = 150) => {
+    if (!target) return 0;
+    const text = target.textContent.trim();
+    target.textContent = "";
+
+    let delay = startDelay;
+    const tokens = text.split(/(\s+)/);
+
+    tokens.forEach((token) => {
+      if (/^\s+$/.test(token)) {
+        target.appendChild(document.createTextNode(token));
+        return;
+      }
+
+      const wordSpan = document.createElement('span');
+      wordSpan.style.whiteSpace = 'nowrap';
+      wordSpan.style.display = 'inline-block';
+
+      Array.from(token).forEach((ch) => {
+        const letter = document.createElement('span');
+        letter.textContent = ch;
+        letter.className = 'letter-span inline-block opacity-0 transition-opacity duration-200';
+        letter.style.transitionDelay = `${delay}ms`;
+        delay += letterDelay;
+        wordSpan.appendChild(letter);
+      });
+
+      delay += wordDelay;
+      target.appendChild(wordSpan);
+    });
+
+    target.classList.remove('opacity-0');
+    requestAnimationFrame(() => {
+      target.querySelectorAll('.letter-span').forEach((span) => span.classList.add('opacity-100'));
+    });
+
+    return delay;
+  };
+
+  const welcomeEl = document.getElementById("welcome-message");
+  let delay = 0;
+  if (welcomeEl) {
+    delay = animateText(welcomeEl, 0, 60, 200);
+  }
+
+  const promptEl = document.getElementById("daily-prompt");
+  if (promptEl) {
+    animateText(promptEl, delay + 300, 15, 40);
+  }
+});
+</script>
+
+{% endblock %}
