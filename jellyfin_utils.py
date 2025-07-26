@@ -34,7 +34,11 @@ async def _iter_items(
             resp = await client.get(url, headers=headers, params=params, timeout=10)
             resp.raise_for_status()
             page_items = resp.json().get("Items", [])
-            logger.info("Received %d items from Jellyfin", len(page_items))
+            logger.info(
+                "Received %d items from Jellyfin (start=%d)",
+                len(page_items),
+                start_index,
+            )
             if not page_items:
                 break
             for item in page_items:
@@ -44,6 +48,7 @@ async def _iter_items(
             ).get("LastPlayedDate")
             start_index += JELLYFIN_PAGE_SIZE
             if not last_played:
+                logger.debug("No last played date in page starting %d", start_index)
                 continue
             try:
                 last_date = (
@@ -52,8 +57,14 @@ async def _iter_items(
                     .isoformat()
                 )
             except ValueError:
+                logger.debug("Could not parse last played date: %s", last_played)
                 continue
             if last_date < date_str or len(page_items) < JELLYFIN_PAGE_SIZE:
+                logger.debug(
+                    "Stopping iteration: last_date=%s, page_len=%d",
+                    last_date,
+                    len(page_items),
+                )
                 break
 
 
