@@ -97,6 +97,10 @@ The application looks for the following optional variables:
 - `JELLYFIN_API_KEY` – optional API key for Jellyfin requests
 - `JELLYFIN_USER_ID` – Jellyfin user ID whose play history is queried
 - `JELLYFIN_PAGE_SIZE` – items to fetch per request when querying plays (default `200`)
+- `LOG_LEVEL` – logging verbosity (default `DEBUG`)
+- `LOG_FILE` – path for the log file (default `DATA_DIR/echo_journal.log`)
+- `LOG_MAX_BYTES` – rotate the log after this many bytes (default `1048576`)
+- `LOG_BACKUP_COUNT` – number of rotated log files to keep (default `3`)
 
 Defaults are suitable for Docker Compose but can be overridden when
 running the app in other environments.
