@@ -96,6 +96,7 @@ The application looks for the following optional variables:
 - `JELLYFIN_URL` – base URL of your Jellyfin server (for example `http://jellyfin.local:8096`)
 - `JELLYFIN_API_KEY` – optional API key for Jellyfin requests
 - `JELLYFIN_USER_ID` – Jellyfin user ID whose play history is queried
+- `JELLYFIN_PAGE_SIZE` – items to fetch per request when querying plays (default `200`)
 
 Defaults are suitable for Docker Compose but can be overridden when
 running the app in other environments.
@@ -131,6 +132,7 @@ environment:
   - JELLYFIN_URL=http://jellyfin.local:8096
   - JELLYFIN_API_KEY=your_token
   - JELLYFIN_USER_ID=abcdef123456
+  - JELLYFIN_PAGE_SIZE=200
 ```
 
 When enabled, saving an entry writes a `<date>.songs.json` file listing up to
