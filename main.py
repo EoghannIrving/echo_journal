@@ -178,7 +178,7 @@ async def save_entry(data: dict):
         async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
             await fh.write(md_text)
 
-    await update_photo_metadata(file_path)
+    await update_photo_metadata(entry_date, file_path)
 
     return {"status": "success"}
 
@@ -311,7 +311,7 @@ async def view_entry(request: Request, entry_date: str):
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Entry not found")
 
-    await update_photo_metadata(file_path)
+    await update_photo_metadata(entry_date, file_path)
 
     try:
         async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:

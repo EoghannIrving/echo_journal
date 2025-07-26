@@ -417,13 +417,11 @@ def test_archive_shows_wotd_icon(test_client):
 
 def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
     """Saving an entry stores photo metadata from Immich."""
-    async def fake_fetch(_date_str: str, _media_type: str = "IMAGE"):
+    async def fake_fetch(_date_str: str, media_type: str = "IMAGE"):
         return [
             {
-                "type": "IMAGE",
-                "url": "img1.jpg",
-                "thumb": "thumb1.jpg",
-                "caption": "A photo",
+                "id": "123",
+                "originalFileName": "img1.jpg",
             }
         ]
 
@@ -434,18 +432,16 @@ def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
     json_path = main.DATA_DIR / "2023-01-01.photos.json"
     assert json_path.exists()
     data = json.loads(json_path.read_text(encoding="utf-8"))
-    assert data[0]["url"] == "img1.jpg"
+    assert data[0]["caption"] == "img1.jpg"
 
 
 def test_archive_shows_photo_icon(test_client, monkeypatch):
     """Entries with a companion photo file show an icon in the archive."""
-    async def fake_fetch(_date_str: str, _media_type: str = "IMAGE"):
+    async def fake_fetch(_date_str: str, media_type: str = "IMAGE"):
         return [
             {
-                "type": "IMAGE",
-                "url": "img1.jpg",
-                "thumb": "thumb1.jpg",
-                "caption": "A photo",
+                "id": "123",
+                "originalFileName": "img1.jpg",
             }
         ]
 
@@ -462,7 +458,7 @@ def test_view_entry_updates_photo_metadata(test_client, monkeypatch):
     """Viewing an entry should poll Immich for new photos."""
     called = {"flag": False}
 
-    async def fake_update(_path):
+    async def fake_update(_date, _path):
         called["flag"] = True
 
     monkeypatch.setattr(main, "update_photo_metadata", fake_update)
