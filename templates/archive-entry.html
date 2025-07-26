@@ -36,10 +36,10 @@
     {% if wotd %}📖 {{ wotd }}{% endif %}
   </div>
   <div id="songs-display" class="text-sm text-gray-600 dark:text-gray-300 mt-3 {% if not songs %}hidden{% endif %}">
-    <p class="font-medium mb-1">Top songs:</p>
+    <p class="font-medium mb-1">Today's Songs:</p>
     <ol class="list-decimal list-inside">
       {% for s in songs %}
-      <li>{{ s.track }} - {{ s.artist }} ({{ s.plays }})</li>
+      <li>{{ s.track }} - {{ s.artist }}</li>
       {% endfor %}
     </ol>
   </div>
