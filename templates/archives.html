@@ -37,7 +37,7 @@
       <summary class="cursor-pointer text-base font-medium">{{ period }}</summary>
       <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-gray-800 dark:text-gray-100">
         {% for entry_date, prompt, meta in period_entries %}
-          <a href="/view/{{ entry_date }}" class="block p-4 rounded-xl paper-card hover:shadow-md transition no-underline">
+          <a href="/archive/{{ entry_date }}" class="block p-4 rounded-xl paper-card hover:shadow-md transition no-underline">
             <p class="text-sm font-medium text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300">{{ entry_date }}</p>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ prompt }}</p>
             <div class="text-xs mt-1">

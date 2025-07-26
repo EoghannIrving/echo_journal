@@ -301,8 +301,8 @@ async def archive_view(
     )
 
 
-@app.get("/view/{entry_date}")
-async def view_entry(request: Request, entry_date: str):
+@app.get("/archive/{entry_date}")
+async def archive_entry(request: Request, entry_date: str):
     """Display a previously written journal entry."""
     try:
         file_path = safe_entry_path(entry_date, DATA_DIR)
@@ -333,7 +333,7 @@ async def view_entry(request: Request, entry_date: str):
     )
 
     return templates.TemplateResponse(
-        "echo_journal.html",
+        "archive-entry.html",
         {
             "request": request,
             "content": entry,

@@ -20,7 +20,7 @@
   - Inline helpers for `Bold`, `Italic`, `Heading`, `List`, `Quote`.
   - Minimalist design, simple JS handlers.
 
-- **Markdown rendering for `/view/<date>`: Completed**
+- **Markdown rendering for `/archive/<date>`: Completed**
   - Server-side rendering with Python `markdown`.
   - Styled output for consistent minimalist aesthetic and dark mode support.
 
@@ -28,7 +28,7 @@
   - Typography, spacing, shadow depth, border radii harmonization.
 
 - **Animated letter-by-letter fade-in for `#welcome-message`: Completed**
-  - Smooth staggered reveal on `/` and `/view/<date>`.
+  - Smooth staggered reveal on `/` and `/archive/<date>`.
 
 ## Phase 4: Archive + Stats foundation for enrichment ✅ Completed
 - Expanded Archive view:
