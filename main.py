@@ -37,6 +37,7 @@ from file_utils import (
     split_frontmatter,
     parse_frontmatter,
     format_weather,
+    load_json_file,
 )
 from immich_utils import update_photo_metadata
 from jellyfin_utils import update_song_metadata
@@ -342,34 +343,19 @@ async def archive_entry(request: Request, entry_date: str):
 
     try:
         async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
-            md_content = await fh.read()
+            frontmatter, body = split_frontmatter(await fh.read())
     except OSError as exc:
         raise HTTPException(status_code=500, detail="Could not read entry") from exc
 
-    frontmatter, body = split_frontmatter(md_content)
     meta = parse_frontmatter(frontmatter) if frontmatter else {}
 
     prompt, entry = parse_entry(body)
     if not prompt and not entry:
         entry = body.strip()
 
-    photos: list[dict] = []
-    json_path = file_path.with_suffix(".photos.json")
-    if json_path.exists():
-        try:
-            async with aiofiles.open(json_path, "r", encoding=ENCODING) as jh:
-                photos = json.loads(await jh.read())
-        except (OSError, ValueError):
-            photos = []
+    photos = await load_json_file(file_path.with_suffix(".photos.json"))
 
-    songs: list[dict] = []
-    songs_path = file_path.with_suffix(".songs.json")
-    if songs_path.exists():
-        try:
-            async with aiofiles.open(songs_path, "r", encoding=ENCODING) as jh:
-                songs = json.loads(await jh.read())
-        except (OSError, ValueError):
-            songs = []
+    songs = await load_json_file(file_path.with_suffix(".songs.json"))
 
     return templates.TemplateResponse(
         "archive-entry.html",

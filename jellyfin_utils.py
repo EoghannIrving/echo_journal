@@ -5,7 +5,7 @@ import logging
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, AsyncIterator
 import os
 
 import httpx
@@ -16,6 +16,45 @@ logger = logging.getLogger("ej.jellyfin")
 
 # Number of items to request per page when fetching play history.
 JELLYFIN_PAGE_SIZE = int(os.getenv("JELLYFIN_PAGE_SIZE", "200"))
+
+
+async def _iter_items(
+    date_str: str, headers: Dict[str, str], url: str, base_params: Dict[str, str]
+) -> AsyncIterator[Dict[str, Any]]:
+    """Yield Jellyfin play history items until ``date_str`` is passed."""
+    start_index = 0
+    async with httpx.AsyncClient() as client:
+        while True:
+            params = {
+                **base_params,
+                "Limit": str(JELLYFIN_PAGE_SIZE),
+                "StartIndex": str(start_index),
+            }
+            logger.debug("Requesting %s with params %s", url, params)
+            resp = await client.get(url, headers=headers, params=params, timeout=10)
+            resp.raise_for_status()
+            page_items = resp.json().get("Items", [])
+            logger.info("Received %d items from Jellyfin", len(page_items))
+            if not page_items:
+                break
+            for item in page_items:
+                yield item
+            last_played = page_items[-1].get("DatePlayed") or page_items[-1].get(
+                "UserData", {}
+            ).get("LastPlayedDate")
+            start_index += JELLYFIN_PAGE_SIZE
+            if not last_played:
+                continue
+            try:
+                last_date = (
+                    datetime.fromisoformat(last_played.replace("Z", "+00:00"))
+                    .date()
+                    .isoformat()
+                )
+            except ValueError:
+                continue
+            if last_date < date_str or len(page_items) < JELLYFIN_PAGE_SIZE:
+                break
 
 
 async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
@@ -36,65 +75,36 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
         "Recursive": "true",
     }
 
-    items: List[Dict[str, Any]] = []
-    start_index = 0
+    counts: Counter[tuple[str, str]] = Counter()
 
     try:
-        async with httpx.AsyncClient() as client:
-            while True:
-                params = {
-                    **base_params,
-                    "Limit": str(JELLYFIN_PAGE_SIZE),
-                    "StartIndex": str(start_index),
-                }
-                logger.debug("Requesting %s with params %s", url, params)
-                resp = await client.get(url, headers=headers, params=params, timeout=10)
-                resp.raise_for_status()
-                page_items = resp.json().get("Items", [])
-                logger.info("Received %d items from Jellyfin", len(page_items))
-                if not page_items:
-                    break
-                items.extend(page_items)
-                last = page_items[-1]
-                played = last.get("DatePlayed") or last.get("UserData", {}).get("LastPlayedDate")
-                start_index += JELLYFIN_PAGE_SIZE
-                if not played:
+        async for item in _iter_items(date_str, headers, url, base_params):
+            played = item.get("DatePlayed") or item.get("UserData", {}).get(
+                "LastPlayedDate"
+            )
+            if not played:
+                continue
+            try:
+                if (
+                    datetime.fromisoformat(played.replace("Z", "+00:00"))
+                    .date()
+                    .isoformat()
+                    != date_str
+                ):
                     continue
-                try:
-                    last_date = datetime.fromisoformat(played.replace("Z", "+00:00")).date().isoformat()
-                except ValueError:
-                    continue
-                if last_date < date_str or len(page_items) < JELLYFIN_PAGE_SIZE:
-                    break
+            except ValueError:
+                continue
+            track = item.get("Name", "Unknown Title")
+            artist = (
+                " / ".join(
+                    a.get("Name", "Unknown Artist") for a in item.get("ArtistItems", [])
+                )
+                or "Unknown Artist"
+            )
+            counts[(track, artist)] += 1
     except (httpx.HTTPError, ValueError) as exc:
         logger.error("Error fetching Jellyfin items: %s", exc)
         return []
-
-    todays_tracks: List[tuple[str, str]] = []
-    for item in items:
-        played = item.get("DatePlayed") or item.get("UserData", {}).get(
-            "LastPlayedDate"
-        )
-        if not played:
-            continue
-        try:
-            if (
-                datetime.fromisoformat(played.replace("Z", "+00:00")).date().isoformat()
-                != date_str
-            ):
-                continue
-        except ValueError:
-            continue
-        name = item.get("Name", "Unknown Title")
-        artist = (
-            " / ".join(
-                a.get("Name", "Unknown Artist") for a in item.get("ArtistItems", [])
-            )
-            or "Unknown Artist"
-        )
-        todays_tracks.append((name, artist))
-
-    counts = Counter(todays_tracks)
     sorted_counts = sorted(
         counts.items(),
         key=lambda item: (
