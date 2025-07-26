@@ -14,14 +14,13 @@
 {% endblock %}
 
 {% block content %}
-<section class="w-full mx-auto space-y-2 text-center p-4 rounded-xl paper-card">
+<section class="w-full mx-auto space-y-2 text-center p-4 rounded-xl">
   <div class="p-4 border-b border-gray-300 dark:border-gray-600 mb-6">
     <p id="daily-prompt" class="font-sans font-medium text-[clamp(1.5rem,2vw+1rem,2rem)] leading-snug mb-2 opacity-0">{{ prompt }}</p>
     <p class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
   </div>
 </section>
 <section class="w-full mx-auto editor-container p-4 rounded-xl paper-card">
-  {% if not readonly %}
   <div id="md-toolbar" class="space-x-2 justify-center markdown-toolbar" aria-label="Formatting toolbar">
     <button type="button" class="md-btn text-base md:text-2xl" data-action="bold" title="Bold"><strong>B</strong></button>
     <button type="button" class="md-btn text-base md:text-2xl" data-action="italic" title="Italic"><em>I</em></button>
@@ -32,27 +31,11 @@
   <textarea id="journal-text" class="journal-textarea"
     placeholder="Write freely… describe what happened, how you felt, what you noticed, or anything else that stands out."
     oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px'"
-    rows="4"
-  >{{ content }}</textarea>
-  {% else %}
-    <div class="journal-html mx-auto p-6 font-serif rounded-xl paper-card prose dark:prose-invert prose-lg">
-    {{ content_html|safe }}</div>
-  {% endif %}
+    rows="4">{{ content }}</textarea>
 </section>
-<div id="location-display" class="text-sm text-gray-600 dark:text-gray-300 mt-2 italic {% if not (readonly and active_page == 'archive' and location) %}hidden{% endif %}">
-  {% if readonly and active_page == 'archive' and location %}📍 {{ location }}{% endif %}
-</div>
-<div id="weather-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not (readonly and active_page == 'archive' and weather) %}hidden{% endif %}">
-  {% if readonly and active_page == 'archive' and weather %}{{ weather }}{% endif %}
-</div>
-<div id="wotd-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not wotd %}hidden{% endif %}">
-  {% if wotd %}📖 {{ wotd }}{% endif %}
-</div>
-    {% if not readonly %}
-  <section class="w-full mx-auto mt-6 p-4 rounded-xl paper-card">
+  <section class="w-full mx-auto mt-6 p-4 rounded-xl">
     <button id="save-button" class="block w-[65%] max-w-[15rem] mx-auto mt-3 bg-slate-500 text-white rounded-xl py-3 text-lg font-semibold shadow transition hover:bg-slate-600 hover:brightness-105 hover:shadow-lg dark:bg-gray-400 dark:hover:bg-slate-500" aria-label="Save entry">Save Entry</button>
   </section>
-    {% endif %}
 
   <footer class="w-full mx-auto mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide" id="save-status" aria-live="polite" role="status">
   <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">

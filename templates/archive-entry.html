@@ -4,18 +4,18 @@
 
 {% block header_title %}
   <h1 id="welcome-message" class="font-serif font-bold text-[clamp(1.75rem,2vw+1rem,2.5rem)] text-center mb-2 opacity-0">
-    {{ date }}
+  Welcome back to...  {{ date }}
   </h1>
 {% endblock %}
 
 {% block content %}
-<section class="w-full mx-auto space-y-2 text-center p-4 rounded-xl paper-card">
+<section class="w-full mx-auto space-y-2 text-center p-4 rounded-xl">
   <div class="p-4 border-b border-gray-300 dark:border-gray-600 mb-6">
     <p id="daily-prompt" class="font-sans font-medium text-[clamp(1.5rem,2vw+1rem,2rem)] leading-snug mb-2 opacity-0">{{ prompt }}</p>
   </div>
 </section>
 <section class="w-full mx-auto editor-container p-4 rounded-xl paper-card">
-  <div class="journal-html mx-auto p-6 font-serif rounded-xl paper-card prose dark:prose-invert prose-lg">
+  <div class="journal-html mx-auto p-6 font-serif rounded-xl prose dark:prose-invert prose-lg">
     {{ content_html|safe }}
   </div>
 </section>
