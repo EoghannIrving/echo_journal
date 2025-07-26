@@ -54,7 +54,9 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
 
     todays_tracks: List[tuple[str, str]] = []
     for item in items:
-        played = item.get("DatePlayed")
+        played = item.get("DatePlayed") or item.get("UserData", {}).get(
+            "LastPlayedDate"
+        )
         if not played:
             continue
         try:
