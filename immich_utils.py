@@ -75,8 +75,8 @@ async def update_photo_metadata(date_str: str, journal_path: Path) -> None:
         if not asset_id:
             continue
         photo_metadata.append({
-            "url": f"{IMMICH_URL}/api/assets/{asset_id}",
-            "thumb": f"{IMMICH_URL}/api/assets/{asset_id}/thumbnail?size=medium",
+            "url": f"{IMMICH_URL}/assets/{asset_id}",
+            "thumb": f"{IMMICH_URL}/assets/{asset_id}/thumbnail?size=medium",
             "caption": asset.get("originalFileName", "")
         })
 
