@@ -23,15 +23,19 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
     headers = {"X-Emby-Token": JELLYFIN_API_KEY} if JELLYFIN_API_KEY else {}
     url = f"{JELLYFIN_URL}/Users/{JELLYFIN_USER_ID}/Items"
     logger.info("Fetching Jellyfin plays for %s", date_str)
-    logger.debug("Requesting %s with params %s", url, {
-        "Filters": "IsPlayed",
-        "IncludeItemTypes": "Audio",
-        "Fields": "DatePlayed,ArtistItems",
-        "SortBy": "DatePlayed",
-        "SortOrder": "Descending",
-        "Recursive": "true",
-        "Limit": "1000",
-    })
+    logger.debug(
+        "Requesting %s with params %s",
+        url,
+        {
+            "Filters": "IsPlayed",
+            "IncludeItemTypes": "Audio",
+            "Fields": "DatePlayed,ArtistItems",
+            "SortBy": "DatePlayed",
+            "SortOrder": "Descending",
+            "Recursive": "true",
+            "Limit": "1000",
+        },
+    )
     params = {
         "Filters": "IsPlayed",
         "IncludeItemTypes": "Audio",
@@ -76,11 +80,19 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
         )
         todays_tracks.append((name, artist))
 
-    counts = Counter(todays_tracks).most_common(5)
-    logger.info("Returning %d track records", len(counts))
+    counts = Counter(todays_tracks)
+    sorted_counts = sorted(
+        counts.items(),
+        key=lambda item: (
+            -item[1],
+            item[0][0].lower(),
+            item[0][1].lower(),
+        ),
+    )[:5]
+    logger.info("Returning %d track records", len(sorted_counts))
     return [
         {"track": track, "artist": artist, "plays": cnt}
-        for (track, artist), cnt in counts
+        for (track, artist), cnt in sorted_counts
     ]
 
 

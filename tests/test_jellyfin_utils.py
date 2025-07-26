@@ -8,6 +8,9 @@ import jellyfin_utils
 class FakeClient:
     """Simplified httpx.AsyncClient mock for fetch_top_songs."""
 
+    def __init__(self, items=None):
+        self.items = items
+
     async def __aenter__(self):
         return self
 
@@ -19,14 +22,18 @@ class FakeClient:
         _ = params
         _ = timeout
         self.url = url
+
         class Response:
             def __init__(self, items):
                 self._items = items
+
             def raise_for_status(self):
                 return None
+
             def json(self):
                 return {"Items": self._items}
-        items = [
+
+        default_items = [
             {
                 "Name": "Song1",
                 "ArtistItems": [{"Name": "Artist1"}],
@@ -43,6 +50,7 @@ class FakeClient:
                 "UserData": {"LastPlayedDate": "2025-07-24T11:00:00Z"},
             },
         ]
+        items = self.items or default_items
         return Response(items)
 
 
@@ -58,3 +66,39 @@ def test_fetch_top_songs_lastplayed(monkeypatch):
     assert songs[0]["track"] == "Song1"
     assert songs[0]["artist"] == "Artist1"
     assert songs[0]["plays"] == 2
+
+
+def test_fetch_top_songs_tiebreak(monkeypatch):
+    """Songs with equal plays should sort alphabetically."""
+    items = [
+        {
+            "Name": "Beta",
+            "ArtistItems": [{"Name": "ArtistB"}],
+            "UserData": {"LastPlayedDate": "2025-07-25T14:00:00Z"},
+        },
+        {
+            "Name": "Alpha",
+            "ArtistItems": [{"Name": "ArtistA"}],
+            "UserData": {"LastPlayedDate": "2025-07-25T13:00:00Z"},
+        },
+        {
+            "Name": "Alpha",
+            "ArtistItems": [{"Name": "ArtistA"}],
+            "UserData": {"LastPlayedDate": "2025-07-25T12:00:00Z"},
+        },
+        {
+            "Name": "Beta",
+            "ArtistItems": [{"Name": "ArtistB"}],
+            "UserData": {"LastPlayedDate": "2025-07-25T11:00:00Z"},
+        },
+    ]
+
+    client = FakeClient(items)
+    monkeypatch.setattr(jellyfin_utils.httpx, "AsyncClient", lambda: client)
+    monkeypatch.setattr(jellyfin_utils, "JELLYFIN_URL", "http://example")
+    monkeypatch.setattr(jellyfin_utils, "JELLYFIN_USER_ID", "uid")
+
+    songs = asyncio.run(jellyfin_utils.fetch_top_songs("2025-07-25"))
+
+    assert songs[0]["track"] == "Alpha"
+    assert songs[1]["track"] == "Beta"
