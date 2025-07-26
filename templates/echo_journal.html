@@ -14,13 +14,13 @@
 {% endblock %}
 
 {% block content %}
-<section class="w-full mx-auto space-y-2 text-center bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100">
+<section class="w-full mx-auto space-y-2 text-center p-4 rounded-xl paper-card">
   <div class="p-4 border-b border-gray-300 dark:border-gray-600 mb-6">
     <p id="daily-prompt" class="font-sans font-medium text-[clamp(1.5rem,2vw+1rem,2rem)] leading-snug mb-2 opacity-0">{{ prompt }}</p>
     <p class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
   </div>
 </section>
-<section class="w-full mx-auto editor-container bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100">
+<section class="w-full mx-auto editor-container p-4 rounded-xl paper-card">
   {% if not readonly %}
   <div id="md-toolbar" class="space-x-2 justify-center markdown-toolbar" aria-label="Formatting toolbar">
     <button type="button" class="md-btn text-base md:text-2xl" data-action="bold" title="Bold"><strong>B</strong></button>
@@ -35,7 +35,7 @@
     rows="4"
   >{{ content }}</textarea>
   {% else %}
-    <div class="journal-html mx-auto p-6 font-serif rounded-xl shadow prose dark:prose-invert prose-lg">
+    <div class="journal-html mx-auto p-6 font-serif rounded-xl paper-card prose dark:prose-invert prose-lg">
     {{ content_html|safe }}</div>
   {% endif %}
 </section>
@@ -49,7 +49,7 @@
   {% if wotd %}📖 {{ wotd }}{% endif %}
 </div>
     {% if not readonly %}
-  <section class="w-full mx-auto mt-6 bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100">
+  <section class="w-full mx-auto mt-6 p-4 rounded-xl paper-card">
     <button id="save-button" class="block w-[65%] max-w-[15rem] mx-auto mt-3 bg-slate-500 text-white rounded-xl py-3 text-lg font-semibold shadow transition hover:bg-slate-600 hover:brightness-105 hover:shadow-lg dark:bg-gray-400 dark:hover:bg-slate-500" aria-label="Save entry">Save Entry</button>
   </section>
     {% endif %}
