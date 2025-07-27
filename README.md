@@ -161,14 +161,21 @@ Query parameters:
 
 Example: `/archive?sort_by=location&filter=has_location`.
 
+## Stats
+Visit `/stats` to see aggregated entry information including counts by week,
+month and year, total word counts and your current/longest streaks.
+
 ## Additional notes
 - Markdown files easily readable and portable
+- Each entry is stored as Markdown with a small YAML frontmatter block storing
+  metadata such as location, weather, save time, photos and the Word of the Day
 - Designed for ultra-low friction daily journaling:
   - ≤ 5s load time target
   - ≤ 1s save time target
 - Clean separation of UI, API, and storage logic
 - Optional Immich photo integration via `IMMICH_URL` and `IMMICH_API_KEY` environment variables
 - Optional Jellyfin track logging via `JELLYFIN_URL` and related variables
+- Client-side geolocation calls `/api/reverse_geocode` to label coordinates
 
 ## Monitoring request timings
 
