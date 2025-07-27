@@ -2,7 +2,7 @@
 
 This list captures planned work from the project roadmap. Completed items from earlier phases are omitted.
 
-- [ ] **Expanded Archive view**
+- [X] **Expanded Archive view**
   - [X] Display metadata markers (location, weather, photo indicator)
   - [X] Optional sorting and filtering by available enrichment
   - [X] Rework Archive page layout to be more compact.

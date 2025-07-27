@@ -52,7 +52,14 @@
   - Optional "New Prompt" link to gently refresh the daily suggestion if it doesn't resonate.
     - Subtle secondary text that fades in on hover/tap.
     - Client-side localStorage ensures the prompt stays consistent after saving.
-  - Optional secure remote access (auth, VPN/reverse proxy).
+    - Optional secure remote access (auth, VPN/reverse proxy).
+
+## Phase 5: Enrichment and polish (in progress)
+- Document YAML frontmatter structure in the README
+- Add optional "Fact of the Day" integration
+- Provide an AI-assisted prompt helper
+- Allow refreshing the prompt via a "New Prompt" link
+- Evaluate secure remote access options and toggles for integrations
 
 ## Design Guardrails
 - Prioritize warmth and ultra-low friction above all else.

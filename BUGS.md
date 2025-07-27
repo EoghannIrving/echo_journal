@@ -174,17 +174,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
      【F:main.py†L90-L91】
 
 
-47. **Formatting toolbar doesn't resize textarea**
-   - The markdown toolbar updates the textarea value but never triggers the oninput handler, so the field height stays wrong after applying formatting.
-   - Lines:
-     ```javascript
-     toolbar.addEventListener('click', (e) => {
-       ...
-       textarea.value = before + formatted + after;
-       textarea.selectionStart = start;
-       textarea.selectionEnd = start + formatted.length;
-     });
-     ```
 
 51. **Malformed filenames hidden from archive**
    - Files with names that don't parse as dates are silently skipped, so they never appear in the archive view.
