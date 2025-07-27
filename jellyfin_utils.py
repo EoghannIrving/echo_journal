@@ -92,6 +92,7 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
     }
 
     counts: Counter[tuple[str, str]] = Counter()
+    last_played: Dict[tuple[str, str], datetime] = {}
 
     try:
         async for item in _iter_items(date_str, headers, url, base_params):
@@ -102,11 +103,8 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
                 logger.debug("Skipping item with no play date: %s", item.get("Name"))
                 continue
             try:
-                play_date = (
-                    datetime.fromisoformat(played.replace("Z", "+00:00"))
-                    .date()
-                    .isoformat()
-                )
+                play_dt = datetime.fromisoformat(played.replace("Z", "+00:00"))
+                play_date = play_dt.date().isoformat()
                 if play_date != date_str:
                     logger.debug(
                         "Skipping play dated %s (target %s)", play_date, date_str
@@ -132,7 +130,10 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
                     played_pct,
                 )
                 continue
-            counts[(track, artist)] += 1
+            key = (track, artist)
+            counts[key] += 1
+            if key not in last_played or play_dt > last_played[key]:
+                last_played[key] = play_dt
             logger.debug("Counted play for %s - %s", track, artist)
     except (httpx.HTTPError, ValueError) as exc:
         logger.error("Error fetching Jellyfin items: %s", exc)
@@ -142,8 +143,7 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
         counts.items(),
         key=lambda item: (
             -item[1],
-            item[0][0].lower(),
-            item[0][1].lower(),
+            -last_played[item[0]].timestamp(),
         ),
     )[:20]
     logger.info("Returning %d track records", len(sorted_counts))
