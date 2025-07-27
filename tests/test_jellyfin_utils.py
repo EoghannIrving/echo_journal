@@ -82,7 +82,7 @@ def test_fetch_top_songs_lastplayed(monkeypatch):
 
 
 def test_fetch_top_songs_tiebreak(monkeypatch):
-    """Songs with equal plays should sort alphabetically."""
+    """Songs with equal plays should sort by most recent play."""
     items = [
         {
             "Name": "Beta",
@@ -113,8 +113,8 @@ def test_fetch_top_songs_tiebreak(monkeypatch):
 
     songs = asyncio.run(jellyfin_utils.fetch_top_songs("2025-07-25"))
 
-    assert songs[0]["track"] == "Alpha"
-    assert songs[1]["track"] == "Beta"
+    assert songs[0]["track"] == "Beta"
+    assert songs[1]["track"] == "Alpha"
 
 
 def test_fetch_top_songs_threshold(monkeypatch):
