@@ -104,10 +104,11 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
                 continue
             try:
                 play_dt = datetime.fromisoformat(played.replace("Z", "+00:00"))
-                play_date = play_dt.date().isoformat()
-                if play_date != date_str:
+                if play_dt.date().isoformat() != date_str:
                     logger.debug(
-                        "Skipping play dated %s (target %s)", play_date, date_str
+                        "Skipping play dated %s (target %s)",
+                        play_dt.date().isoformat(),
+                        date_str,
                     )
                     continue
             except ValueError:
