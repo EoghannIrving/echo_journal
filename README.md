@@ -18,11 +18,14 @@ Minimalist, mobile-first journaling webapp designed for personal use with Docker
    uvicorn main:app --reload
    ```
 
-3. If you're not using Docker, build the CSS assets:
+3. If you're not using Docker, **you must** build the CSS assets first:
 
    ```sh
    npm install && npm run build:css
    ```
+
+   Docker users can skip this step—the Dockerfile already installs dependencies
+   and builds the CSS during the image build.
 
 See the [Setup instructions](#setup-instructions) section below for full details.
 
@@ -89,13 +92,12 @@ See the [Setup instructions](#setup-instructions) section below for full details
    Adjust the timezone by editing the `TZ` variable in `docker-compose.yml`.
 
 5. **Install frontend dependencies**
-   Generate the Tailwind CSS by running:
+   For local development you need to generate the Tailwind CSS:
    ```sh
-   npm install
-   npm run build:css
+   npm install && npm run build:css
    ```
-   This step is optional when building with Docker Compose, as the Dockerfile
-   performs it automatically.
+   Docker users do not need this step—the Dockerfile automatically installs
+   dependencies and builds the CSS during the image build.
 
 5. **Build and run**
    ```sh
