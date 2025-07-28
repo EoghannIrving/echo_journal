@@ -2,6 +2,30 @@
 
 Minimalist, mobile-first journaling webapp designed for personal use with Docker, FastAPI, Markdown storage, and a warm minimalist UI.
 
+## Quickstart
+
+1. Copy `.env.example` to `.env`.
+2. Start the app with Docker:
+
+   ```sh
+   docker-compose up --build
+   ```
+
+   Or run locally with Python 3.10+:
+
+   ```sh
+   pip install -r requirements.txt
+   uvicorn main:app --reload
+   ```
+
+3. If you're not using Docker, build the CSS assets:
+
+   ```sh
+   npm install && npm run build:css
+   ```
+
+See the [Setup instructions](#setup-instructions) section below for full details.
+
 ## Features
 - Responsive, mobile-first UI with dark mode support
 - Warm minimalist aesthetic (Nunito + Merriweather fonts, gray-blue accents)
