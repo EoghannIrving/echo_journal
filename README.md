@@ -239,6 +239,12 @@ pylint $(git ls-files '*.py') --fail-under=8
 pytest
 ```
 
+Running the test suite should report `46 passed` along with a few warnings:
+
+```
+46 passed, 24 warnings in 2.0s
+```
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 Known issues are tracked in [BUGS.md](BUGS.md).
