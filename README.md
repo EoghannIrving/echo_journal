@@ -226,5 +226,19 @@ If you need to deploy publicly, consider one of the following approaches:
   handles HTTPS and access control.
 For instructions on reporting security vulnerabilities, see [SECURITY.md](SECURITY.md).
 
+## Contributing
+
+Pull requests are welcome! Before opening one, please run `black`, `pylint` and
+`pytest` locally to make sure the codebase stays clean and all tests pass. One
+way to do this is:
+
+```sh
+black .
+pylint $(git ls-files '*.py') --fail-under=8
+pytest
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+
 
 
