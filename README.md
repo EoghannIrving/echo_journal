@@ -68,6 +68,7 @@ See the [Setup instructions](#setup-instructions) section below for full details
 ├── ROADMAP.md
 └── LICENSE
 ```
+See [BUGS.md](BUGS.md) for the list of known issues.
 
 ## Setup instructions
 
@@ -239,6 +240,8 @@ pytest
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+
+Known issues are tracked in [BUGS.md](BUGS.md).
 
 
 
