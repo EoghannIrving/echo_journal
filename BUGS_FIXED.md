@@ -450,6 +450,35 @@ The following issues were identified and subsequently resolved.
              current_section = "prompt"
          if lowered == "# entry":
              current_section = "entry"
+    ```
+    【F:file_utils.py†L39-L45】
+
+39. **Prompts cache never invalidates** (fixed)
+   - ``load_prompts`` now checks the modification time of ``PROMPTS_FILE`` and reloads
+     the prompts whenever the file changes.
+   - Fixed lines:
+     ```python
+     try:
+         mtime = PROMPTS_FILE.stat().st_mtime
+     except FileNotFoundError:
+         mtime = None
+     if (
+         _prompts_cache["data"] is None
+         or _prompts_cache.get("mtime") != mtime
+     ):
+         async with _prompts_lock:
+             if (
+                 _prompts_cache["data"] is None
+                 or _prompts_cache.get("mtime") != mtime
+             ):
+                 try:
+                     async with aiofiles.open(PROMPTS_FILE, "r", encoding=ENCODING) as fh:
+                         prompts_text = await fh.read()
+                     _prompts_cache["data"] = json.loads(prompts_text)
+                     _prompts_cache["mtime"] = mtime
+                 except (FileNotFoundError, json.JSONDecodeError):
+                     _prompts_cache["data"] = {}
+                     _prompts_cache["mtime"] = mtime
      ```
-     【F:file_utils.py†L39-L45】
+     【F:prompt_utils.py†L16-L42】
 
