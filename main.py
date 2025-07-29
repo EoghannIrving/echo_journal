@@ -300,7 +300,7 @@ async def _collect_entries() -> list[dict]:
             continue
         try:
             async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
-                content = await fh.read()
+                content = await fh.read(8192)
         except OSError:
             continue
         frontmatter, body = split_frontmatter(content)
