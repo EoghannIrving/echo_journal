@@ -9,21 +9,37 @@ import aiofiles
 
 from config import PROMPTS_FILE, ENCODING
 
-_prompts_cache: dict = {"data": None}
+_prompts_cache: dict = {"data": None, "mtime": None}
 _prompts_lock = asyncio.Lock()
 
 
 async def load_prompts() -> dict:
-    """Load and cache journal prompts from ``PROMPTS_FILE``."""
-    if _prompts_cache["data"] is None:
+    """Load and cache journal prompts from ``PROMPTS_FILE``.
+
+    The cache automatically invalidates when ``PROMPTS_FILE`` changes on disk.
+    """
+    try:
+        mtime = PROMPTS_FILE.stat().st_mtime
+    except FileNotFoundError:
+        mtime = None
+
+    if (
+        _prompts_cache["data"] is None
+        or _prompts_cache.get("mtime") != mtime
+    ):
         async with _prompts_lock:
-            if _prompts_cache["data"] is None:
+            if (
+                _prompts_cache["data"] is None
+                or _prompts_cache.get("mtime") != mtime
+            ):
                 try:
                     async with aiofiles.open(PROMPTS_FILE, "r", encoding=ENCODING) as fh:
                         prompts_text = await fh.read()
                     _prompts_cache["data"] = json.loads(prompts_text)
+                    _prompts_cache["mtime"] = mtime
                 except (FileNotFoundError, json.JSONDecodeError):
                     _prompts_cache["data"] = {}
+                    _prompts_cache["mtime"] = mtime
     return _prompts_cache["data"]
 
 

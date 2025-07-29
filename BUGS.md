@@ -9,15 +9,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
 
 
 
-39. **Prompts cache never invalidates**
-   - `load_prompts` stores the prompts in memory forever; changes to `prompts.json` are ignored after startup.
-   - Lines:
-     ```python
-     if app.state.prompts_cache is None:
-         ...
-         app.state.prompts_cache = json.loads(prompts_text)
-     ```
-
 40. **Multiple save clicks send duplicate requests**
    - The Save button is never disabled during the fetch call, so rapid clicks create several `/entry` POSTs.
    - Lines:
