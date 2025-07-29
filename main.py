@@ -181,7 +181,10 @@ async def save_entry(data: dict):
     location = data.get("location") or {}
 
     if not entry_date or not content or not prompt:
-        return {"status": "error", "message": "Missing fields"}
+        return JSONResponse(
+            status_code=400,
+            content={"status": "error", "message": "Missing fields"},
+        )
 
     # Ensure /journals exists before attempting to save
     DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -189,7 +192,10 @@ async def save_entry(data: dict):
     try:
         file_path = safe_entry_path(entry_date, DATA_DIR)
     except ValueError:
-        return {"status": "error", "message": "Invalid date"}
+        return JSONResponse(
+            status_code=400,
+            content={"status": "error", "message": "Invalid date"},
+        )
     first_save = not file_path.exists()
     if first_save:
         frontmatter = await build_frontmatter(location)

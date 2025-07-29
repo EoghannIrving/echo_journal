@@ -6,14 +6,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
 
 
 
-33. **Validation errors return HTTP 200**
-   - `save_entry` returns an error object but still uses status code 200 when required fields are missing.
-   - Lines:
-     ```python
-     if not entry_date or not content or not prompt:
-         return {"status": "error", "message": "Missing fields"}
-     ```
-     【F:main.py†L134-L135】
 
 34. **Invalid dates accepted**
    - `save_entry` only sanitizes the filename so strings like `2020-13-40` are saved without complaint.
