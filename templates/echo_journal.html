@@ -163,6 +163,10 @@ document.addEventListener("DOMContentLoaded", () => {
 const saveButton = document.getElementById('save-button');
 if (saveButton) {
   saveButton.addEventListener('click', async () => {
+    if (saveButton.disabled) {
+      return;
+    }
+    saveButton.disabled = true;
     const content = document.getElementById('journal-text').value;
     const date = "{{ date }}";
     const prompt = {{ prompt | tojson }};
@@ -185,6 +189,7 @@ if (saveButton) {
         if (!response.ok) {
           status.textContent = "Save failed. Server error.";
           status.classList.add('error-text');
+          saveButton.disabled = false;
           return;
         }
 
@@ -200,13 +205,14 @@ if (saveButton) {
         status.textContent = "Save failed. Network error.";
         status.classList.add('error-text');
       }
+      saveButton.disabled = false;
   });
 }
 
 document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key === 's') {
     e.preventDefault();
-    if (saveButton) {
+    if (saveButton && !saveButton.disabled) {
       saveButton.click();
     }
   }

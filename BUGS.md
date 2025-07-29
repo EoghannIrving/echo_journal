@@ -1,24 +1,6 @@
 # Known Bugs
 
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
-
-
-
-
-
-
-
-
-40. **Multiple save clicks send duplicate requests**
-   - The Save button is never disabled during the fetch call, so rapid clicks create several `/entry` POSTs.
-   - Lines:
-     ```javascript
-     saveButton.addEventListener('click', async () => {
-       const response = await fetch("/entry", { ... });
-     });
-     ```
-     【F:templates/echo_journal.html†L161-L174】
-
 41. **Archive view reads entire files into memory**
    - Each entry file is fully loaded even though only a preview is needed, which wastes memory for large archives.
    - Lines:
