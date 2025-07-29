@@ -479,6 +479,20 @@ The following issues were identified and subsequently resolved.
                  except (FileNotFoundError, json.JSONDecodeError):
                      _prompts_cache["data"] = {}
                      _prompts_cache["mtime"] = mtime
+    ```
+    【F:prompt_utils.py†L16-L42】
+
+40. **Multiple save clicks send duplicate requests** (fixed)
+   - The save button is now disabled during the network request to prevent
+     duplicate POSTs when clicked rapidly or triggered via keyboard shortcut.
+   - Fixed lines:
+     ```javascript
+     if (saveButton.disabled) {
+       return;
+     }
+     saveButton.disabled = true;
+     ...
+     saveButton.disabled = false;
      ```
-     【F:prompt_utils.py†L16-L42】
+     【F:templates/echo_journal.html†L163-L216】
 
