@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 import re
 from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime
 
 import aiofiles
 
@@ -16,6 +17,10 @@ def safe_entry_path(entry_date: str, data_dir: Path = DATA_DIR) -> Path:
     sanitized = re.sub(r"[^0-9A-Za-z_-]", "_", sanitized)
     if not sanitized:
         raise ValueError("Invalid entry date")
+    try:
+        datetime.strptime(sanitized, "%Y-%m-%d")
+    except ValueError as exc:
+        raise ValueError("Invalid entry date") from exc
     path = (data_dir / sanitized).with_suffix(".md")
     # Ensure the path cannot escape ``data_dir``
     try:

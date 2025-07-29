@@ -426,5 +426,17 @@ The following issues were identified and subsequently resolved.
              content={"status": "error", "message": "Invalid date"},
          )
      ```
-     【F:main.py†L183-L198】
+    【F:main.py†L183-L198】
+
+46. **Invalid dates accepted** (fixed)
+   - `safe_entry_path` now validates the date string using `datetime.strptime`.
+     Invalid values cause `save_entry` to return HTTP 400 instead of writing a file.
+   - Fixed lines:
+     ```python
+     try:
+         datetime.strptime(sanitized, "%Y-%m-%d")
+     except ValueError as exc:
+         raise ValueError("Invalid entry date") from exc
+     ```
+     【F:file_utils.py†L20-L23】
 

@@ -173,11 +173,10 @@ def test_view_entry_multiline_prompt(test_client):
 
 
 def test_view_entry_malformed(test_client):
-    """Malformed files are displayed as plain text without error."""
+    """Malformed filenames should return 404."""
     (main.DATA_DIR / "bad.md").write_text("No headings here", encoding="utf-8")
     resp = test_client.get("/archive/bad")
-    assert resp.status_code == 200
-    assert "No headings here" in resp.text
+    assert resp.status_code == 404
 
 
 def test_view_entry_missing(test_client):
@@ -276,23 +275,23 @@ def test_view_entry_no_metadata_hidden(test_client):
 
 
 def test_save_entry_invalid_date(test_client):
-    """Entries with malformed date strings are still saved as-is."""
+    """Entries with malformed date strings should return an error."""
     payload = {"date": "2020-13-40", "content": "bad", "prompt": "p"}
     resp = test_client.post("/entry", json=payload)
-    assert resp.status_code == 200
-    assert resp.json()["status"] == "success"
-    assert (main.DATA_DIR / "2020-13-40.md").exists()
+    assert resp.status_code == 400
+    assert resp.json()["status"] == "error"
+    assert not (main.DATA_DIR / "2020-13-40.md").exists()
 
 
 def test_save_entry_path_traversal(test_client):
-    """Attempting directory traversal should only affect paths inside DATA_DIR."""
+    """Directory traversal attempts should be rejected with an error."""
     malicious = "../malicious"
     payload = {"date": malicious, "content": "x", "prompt": "y"}
     resp = test_client.post("/entry", json=payload)
-    assert resp.status_code == 200
+    assert resp.status_code == 400
+    assert resp.json()["status"] == "error"
     expected = main.DATA_DIR / "malicious.md"
-    assert expected.exists()
-    assert expected.resolve().is_relative_to(main.DATA_DIR.resolve())
+    assert not expected.exists()
 
 
 def test_get_entry_invalid_date(test_client):

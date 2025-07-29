@@ -7,17 +7,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
 
 
 
-34. **Invalid dates accepted**
-   - `save_entry` only sanitizes the filename so strings like `2020-13-40` are saved without complaint.
-   - Lines:
-     ```python
-     try:
-         file_path = safe_entry_path(entry_date)
-     except ValueError:
-         return {"status": "error", "message": "Invalid date"}
-     md_text = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
-     ```
-     【F:main.py†L140-L144】
 
 37. **Header parsing is case sensitive**
    - `parse_entry` only recognizes "# Prompt" and "# Entry" exactly; other cases like "# prompt" are ignored.
