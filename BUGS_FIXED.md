@@ -407,5 +407,24 @@ The following issues were identified and subsequently resolved.
      _, body = split_frontmatter(content)
      entry_text = parse_entry(body)[1] or body.strip()
      ```
-     【F:main.py†L250-L255】
+    【F:main.py†L250-L255】
+
+45. **Validation errors return HTTP 200** (fixed)
+   - `save_entry` now returns HTTP 400 when required fields are missing or the
+     provided date is invalid.
+   - Fixed lines:
+     ```python
+     if not entry_date or not content or not prompt:
+         return JSONResponse(
+             status_code=400,
+             content={"status": "error", "message": "Missing fields"},
+         )
+     ...
+     except ValueError:
+         return JSONResponse(
+             status_code=400,
+             content={"status": "error", "message": "Invalid date"},
+         )
+     ```
+     【F:main.py†L183-L198】
 

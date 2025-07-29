@@ -105,7 +105,7 @@ def test_word_of_day_in_frontmatter(test_client, monkeypatch):
 def test_save_entry_missing_fields(test_client):
     """Saving with missing required fields should return an error."""
     resp = test_client.post("/entry", json={"date": "2020-01-02"})
-    assert resp.status_code == 200
+    assert resp.status_code == 400
     assert resp.json()["status"] == "error"
 
 
