@@ -249,9 +249,9 @@ async def load_entry(entry_date: str):
     if file_path.exists():
         async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
             content = await fh.read()
-        # Parse markdown to extract entry text only
-        parts = content.split("# Entry\n", 1)
-        entry_text = parts[1].strip() if len(parts) > 1 else ""
+        # Parse markdown safely to handle different newline styles
+        _, body = split_frontmatter(content)
+        entry_text = parse_entry(body)[1] or body.strip()
         return {"status": "success", "content": entry_text}
     return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
 

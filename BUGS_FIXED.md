@@ -395,7 +395,17 @@ The following issues were identified and subsequently resolved.
      replaced rather than appended.
    - Fixed lines:
      ```python
-     path = (data_dir / sanitized).with_suffix(".md")
+    path = (data_dir / sanitized).with_suffix(".md")
+    ```
+    【F:file_utils.py†L7-L13】
+
+44. **`load_entry` split assumes Unix newline** (fixed)
+   - The endpoint now parses files using `split_frontmatter` and `parse_entry`,
+     handling Windows newlines and missing trailing newlines.
+   - Fixed lines:
+     ```python
+     _, body = split_frontmatter(content)
+     entry_text = parse_entry(body)[1] or body.strip()
      ```
-     【F:file_utils.py†L7-L13】
+     【F:main.py†L250-L255】
 
