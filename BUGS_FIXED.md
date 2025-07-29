@@ -437,6 +437,20 @@ The following issues were identified and subsequently resolved.
          datetime.strptime(sanitized, "%Y-%m-%d")
      except ValueError as exc:
          raise ValueError("Invalid entry date") from exc
+    ```
+    【F:file_utils.py†L20-L23】
+
+37. **Header parsing is case sensitive** (fixed)
+   - `parse_entry` now matches section headers case-insensitively so variations like `# prompt` are recognized.
+   - Fixed lines:
+     ```python
+     header = stripped.lower()
+     if header == "# prompt":
+         current_section = "prompt"
+         continue
+     if header == "# entry":
+         current_section = "entry"
+         continue
      ```
-     【F:file_utils.py†L20-L23】
+     【F:file_utils.py†L38-L46】
 

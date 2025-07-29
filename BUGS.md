@@ -8,17 +8,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
 
 
 
-37. **Header parsing is case sensitive**
-   - `parse_entry` only recognizes "# Prompt" and "# Entry" exactly; other cases like "# prompt" are ignored.
-   - Lines:
-     ```python
-     if stripped == "# Prompt":
-         current_section = "prompt"
-     if stripped == "# Entry":
-         current_section = "entry"
-     ```
-     【F:main.py†L78-L83】
-
 39. **Prompts cache never invalidates**
    - `load_prompts` stores the prompts in memory forever; changes to `prompts.json` are ignored after startup.
    - Lines:

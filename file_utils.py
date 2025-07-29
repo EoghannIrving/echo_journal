@@ -37,10 +37,11 @@ def parse_entry(md_content: str) -> Tuple[str, str]:
     current_section = None
     for line in md_content.splitlines():
         stripped = line.strip()
-        if stripped == "# Prompt":
+        header = stripped.lower()
+        if header == "# prompt":
             current_section = "prompt"
             continue
-        if stripped == "# Entry":
+        if header == "# entry":
             current_section = "entry"
             continue
         if current_section == "prompt":
