@@ -26,6 +26,7 @@ from fastapi.templating import Jinja2Templates
 from config import (
     DATA_DIR,
     STATIC_DIR,
+    TEMPLATES_DIR,
     ENCODING,
     IMMICH_URL,
     IMMICH_API_KEY,
@@ -98,7 +99,7 @@ SAVE_LOCKS = defaultdict(asyncio.Lock)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Setup templates
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
 @app.middleware("http")
