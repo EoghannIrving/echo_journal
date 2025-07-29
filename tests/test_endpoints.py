@@ -135,6 +135,16 @@ def test_load_entry_windows_newlines(test_client):
     assert resp.json()["content"] == "B"
 
 
+def test_load_entry_case_insensitive_headers(test_client):
+    """load_entry accepts lowercase section headers."""
+    (main.DATA_DIR / "2020-02-04.md").write_text(
+        "# prompt\nA\n\n# entry\nB", encoding="utf-8"
+    )
+    resp = test_client.get("/entry", params={"entry_date": "2020-02-04"})
+    assert resp.status_code == 200
+    assert resp.json()["content"] == "B"
+
+
 def test_load_entry_missing(test_client):
     """Loading a missing entry should return 404."""
     resp = test_client.get("/entry", params={"entry_date": "2000-01-01"})

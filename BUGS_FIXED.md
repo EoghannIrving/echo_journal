@@ -438,5 +438,18 @@ The following issues were identified and subsequently resolved.
      except ValueError as exc:
          raise ValueError("Invalid entry date") from exc
      ```
-     【F:file_utils.py†L20-L23】
+    【F:file_utils.py†L20-L23】
+
+47. **Header parsing is case sensitive** (fixed)
+   - `parse_entry` now normalizes header lines to lowercase so variations like "# prompt" are recognized.
+   - Fixed lines:
+     ```python
+         stripped = line.strip()
+         lowered = stripped.lower()
+         if lowered == "# prompt":
+             current_section = "prompt"
+         if lowered == "# entry":
+             current_section = "entry"
+     ```
+     【F:file_utils.py†L39-L45】
 
