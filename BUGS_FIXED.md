@@ -494,5 +494,17 @@ The following issues were identified and subsequently resolved.
      ...
      saveButton.disabled = false;
      ```
-     【F:templates/echo_journal.html†L163-L216】
+    【F:templates/echo_journal.html†L163-L216】
+
+41. **Archive view reads entire files into memory** (fixed)
+   - `_collect_entries` used to read each entry file entirely even though only
+     the frontmatter and prompt are needed for the archive preview. The function
+     now reads at most 8192 bytes to avoid loading large files into memory.
+   - Fixed lines:
+     ```python
+         async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
+-            content = await fh.read()
++            content = await fh.read(8192)
+     ```
+     【F:main.py†L301-L304】
 

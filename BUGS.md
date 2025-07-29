@@ -1,17 +1,6 @@
 # Known Bugs
 
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
-41. **Archive view reads entire files into memory**
-   - Each entry file is fully loaded even though only a preview is needed, which wastes memory for large archives.
-   - Lines:
-     ```python
-     async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
-         content = await fh.read()
-     entries_by_month[month_key].append((entry_date.isoformat(), content))
-     ```
-     【F:main.py†L263-L272】
-
-
 48. **Templates path not configurable**
    - `Jinja2Templates` is created with a hard-coded `"templates"` directory, ignoring `APP_DIR` or other environment settings.
    - Lines:
