@@ -25,10 +25,13 @@ STATIC_DIR = APP_DIR / "static"
 PROMPTS_FILE = APP_DIR / "prompts.json"
 DATA_ROOT = Path(tempfile.gettempdir()) / "ej_journals"
 
+TEMPLATES_DIR = ROOT / "templates"
+
 os.environ["APP_DIR"] = str(APP_DIR)
 os.environ["DATA_DIR"] = str(DATA_ROOT)
 os.environ["STATIC_DIR"] = str(STATIC_DIR)
 os.environ["PROMPTS_FILE"] = str(PROMPTS_FILE)
+os.environ["TEMPLATES_DIR"] = str(TEMPLATES_DIR)
 
 # Ensure directories for the application exist before importing ``main``
 STATIC_DIR.mkdir(parents=True, exist_ok=True)

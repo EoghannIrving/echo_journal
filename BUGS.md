@@ -1,13 +1,6 @@
 # Known Bugs
 
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
-48. **Templates path not configurable**
-   - `Jinja2Templates` is created with a hard-coded `"templates"` directory, ignoring `APP_DIR` or other environment settings.
-   - Lines:
-     ```python
-     templates = Jinja2Templates(directory="templates")
-     ```
-     【F:main.py†L53-L54】
 
 49. **Prompt category never saved**
    - Entries are written without storing the selected prompt category, so the information is lost when reloading.

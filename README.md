@@ -118,6 +118,7 @@ The application looks for the following optional variables:
 - `APP_DIR` – base directory for static assets and templates
 - `PROMPTS_FILE` – location of the prompts JSON file
 - `STATIC_DIR` – directory for static files served under `/static`
+- `TEMPLATES_DIR` – directory containing Jinja2 templates
 - `WORDNIK_API_KEY` – API key used to fetch the Wordnik word of the day
 - `IMMICH_URL` – base URL of your Immich API endpoint (for example `http://immich.local/api`)
 - `IMMICH_API_KEY` – API key used to authorize requests to Immich

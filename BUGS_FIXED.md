@@ -505,6 +505,20 @@ The following issues were identified and subsequently resolved.
          async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
 -            content = await fh.read()
 +            content = await fh.read(8192)
+    ```
+    【F:main.py†L301-L304】
+
+48. **Templates path not configurable** (fixed)
+   - `Jinja2Templates` used a hard-coded `"templates"` directory. The
+     path now comes from `TEMPLATES_DIR` so it can be overridden via an
+     environment variable.
+   - Fixed lines:
+     ```python
+     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
      ```
-     【F:main.py†L301-L304】
+     【F:main.py†L101-L102】
+     ```python
+     TEMPLATES_DIR = Path(os.getenv("TEMPLATES_DIR", str(APP_DIR / "templates")))
+     ```
+     【F:config.py†L11-L12】
 
