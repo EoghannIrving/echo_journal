@@ -6,14 +6,6 @@ The following issues are still unresolved. Fixed bugs have been moved to [BUGS_F
 
 
 
-31. **`load_entry` split assumes Unix newline**
-   - The load_entry endpoint splits file contents using `"# Entry\n"`. Files created with Windows newlines (`\r\n`) or without a trailing newline won't parse correctly.
-   - Lines:
-     ```python
-     parts = content.split("# Entry\n", 1)
-     ```
-     【F:main.py†L181-L182】
-
 33. **Validation errors return HTTP 200**
    - `save_entry` returns an error object but still uses status code 200 when required fields are missing.
    - Lines:

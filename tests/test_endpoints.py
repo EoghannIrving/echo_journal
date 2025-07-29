@@ -125,6 +125,16 @@ def test_load_entry(test_client):
     assert resp.json()["content"] == "B"
 
 
+def test_load_entry_windows_newlines(test_client):
+    """load_entry handles Windows CRLF line endings."""
+    (main.DATA_DIR / "2020-02-03.md").write_text(
+        "# Prompt\r\nA\r\n\r\n# Entry\r\nB", encoding="utf-8"
+    )
+    resp = test_client.get("/entry", params={"entry_date": "2020-02-03"})
+    assert resp.status_code == 200
+    assert resp.json()["content"] == "B"
+
+
 def test_load_entry_missing(test_client):
     """Loading a missing entry should return 404."""
     resp = test_client.get("/entry", params={"entry_date": "2000-01-01"})
@@ -365,8 +375,7 @@ def test_archive_filter_and_sort(test_client):
         "---\n"
         "# Prompt\nP2\n\n# Entry\nE2"
     )
-    entry3 = (
-        """---
+    entry3 = """---
 location: Atown
 photos: []
 ---
@@ -375,7 +384,6 @@ P3
 
 # Entry
 E3"""
-    )
     (main.DATA_DIR / "2021-07-01.md").write_text(entry1, encoding="utf-8")
     (main.DATA_DIR / "2021-07-02.md").write_text(entry2, encoding="utf-8")
     (main.DATA_DIR / "2021-07-03.md").write_text(entry3, encoding="utf-8")
@@ -440,8 +448,7 @@ def test_archive_current_month_open(test_client):
 
 def test_view_entry_shows_wotd(test_client):
     """Word of the day from frontmatter should appear in view page."""
-    content = (
-        """---
+    content = """---
 wotd: luminous
 photos: []
 ---
@@ -450,7 +457,6 @@ P
 
 # Entry
 E"""
-    )
     (main.DATA_DIR / "2021-08-01.md").write_text(content, encoding="utf-8")
     resp = test_client.get("/archive/2021-08-01")
     assert resp.status_code == 200
@@ -459,8 +465,7 @@ E"""
 
 def test_archive_shows_wotd_icon(test_client):
     """Entries with a word of the day show an icon in the archive."""
-    content = (
-        """---
+    content = """---
 wotd: zephyr
 photos: []
 ---
@@ -469,7 +474,6 @@ P
 
 # Entry
 E"""
-    )
     (main.DATA_DIR / "2021-09-09.md").write_text(content, encoding="utf-8")
     resp = test_client.get("/archive")
     assert resp.status_code == 200
