@@ -145,6 +145,7 @@ async def index(request: Request):
         wotd = ""
 
     return templates.TemplateResponse(
+        request,
         "echo_journal.html",
         {
             "request": request,
