@@ -173,12 +173,29 @@ def _with_updated_save_time(frontmatter: str | None, label: str) -> str | None:
     return "\n".join(lines)
 
 
+def _with_updated_category(frontmatter: str | None, category: str | None) -> str | None:
+    """Return frontmatter with the ``category`` value inserted or replaced."""
+    if category is None or category == "":
+        return frontmatter
+    if not frontmatter:
+        return f"category: {category}"
+    lines = frontmatter.splitlines()
+    for i, line in enumerate(lines):
+        if line.startswith("category:"):
+            lines[i] = f"category: {category}"
+            break
+    else:
+        lines.append(f"category: {category}")
+    return "\n".join(lines)
+
+
 @app.post("/entry")
 async def save_entry(data: dict):
     """Save a journal entry for the provided date."""
     entry_date = data.get("date")
     content = data.get("content")
     prompt = data.get("prompt")
+    category = data.get("category")
     location = data.get("location") or {}
 
     if not entry_date or not content or not prompt:
@@ -206,6 +223,7 @@ async def save_entry(data: dict):
     # Update or add save_time field
     label = time_of_day_label()
     frontmatter = _with_updated_save_time(frontmatter, label)
+    frontmatter = _with_updated_category(frontmatter, category)
 
     md_body = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
     if frontmatter is not None:

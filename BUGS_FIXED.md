@@ -518,7 +518,23 @@ The following issues were identified and subsequently resolved.
      ```
      【F:main.py†L101-L102】
      ```python
-     TEMPLATES_DIR = Path(os.getenv("TEMPLATES_DIR", str(APP_DIR / "templates")))
+    TEMPLATES_DIR = Path(os.getenv("TEMPLATES_DIR", str(APP_DIR / "templates")))
+    ```
+    【F:config.py†L11-L12】
+
+49. **Prompt category never saved** (fixed)
+   - Entries were saved without storing the selected prompt category.
+     The save endpoint now persists the category in frontmatter when provided.
+   - Fixed lines:
+     ```python
+     frontmatter = _with_updated_save_time(frontmatter, label)
+     frontmatter = _with_updated_category(frontmatter, category)
      ```
-     【F:config.py†L11-L12】
+     【F:main.py†L224-L227】
+     ```javascript
+     const category = {{ category | tojson }};
+     ...
+     body: JSON.stringify({ date, content, prompt, category, location })
+     ```
+     【F:templates/echo_journal.html†L173-L187】
 
