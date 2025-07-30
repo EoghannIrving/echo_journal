@@ -2,38 +2,6 @@
 
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
 
-32. **Other routes still use deprecated TemplateResponse signature**
-   - `archive_view`, `view_entry`, and `settings_page` pass the template name first instead of the request.
-   - Lines:
-     ```python
-     return templates.TemplateResponse(
-         "archives.html",
-         {
-             "request": request,
-             "entries": sorted_entries,
-             "active_page": "archive",
-         },
-     )
-     ...
-     return templates.TemplateResponse(
-         "echo_journal.html",
-         {
-             "request": request,
-             "content": entry,
-             "content_html": html_entry,
-             "date": entry_date,
-             "prompt": prompt,
-             "readonly": True,
-             "active_page": "archive",
-         },
-     )
-     ...
-     return templates.TemplateResponse(
-         "settings.html",
-         {"request": request, "active_page": "settings"},
-     )
-     ```
-     【F:main.py†L277-L327】
 
 35. **Prompt category never rendered**
    - The journal template lacks any element to show the `category` variable.
