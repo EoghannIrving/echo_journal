@@ -574,5 +574,25 @@ The following issues were identified and subsequently resolved.
          category = meta.get("category", "")
          wotd = meta.get("wotd", "")
      ```
-     【F:main.py†L138-L155】
+    【F:main.py†L138-L155】
+
+52. **Other routes used deprecated TemplateResponse call order** (fixed)
+   - `archive_view`, `archive_entry`, and `settings_page` now pass the
+     request object as the first argument to `TemplateResponse`.
+   - Fixed lines:
+     ```python
+     return templates.TemplateResponse(
+         request,
+         "archives.html",
+         {
+             "request": request,
+             "entries": sorted_entries,
+             "active_page": "archive",
+             "sort_by": sort_by,
+             "filter_val": filter_,
+             "current_month": current_month,
+         },
+     )
+     ```
+     【F:main.py†L379-L389】
 

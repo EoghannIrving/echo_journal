@@ -377,6 +377,7 @@ async def archive_view(
     current_month = datetime.now().strftime("%Y-%m")
 
     return templates.TemplateResponse(
+        request,
         "archives.html",
         {
             "request": request,
@@ -418,6 +419,7 @@ async def archive_entry(request: Request, entry_date: str):
     songs = await load_json_file(file_path.with_suffix(".songs.json"))
 
     return templates.TemplateResponse(
+        request,
         "archive-entry.html",
         {
             "request": request,
@@ -444,6 +446,7 @@ async def archive_entry(request: Request, entry_date: str):
 async def settings_page(request: Request):
     """Render the user settings page."""
     return templates.TemplateResponse(
+        request,
         "settings.html",
         {"request": request, "active_page": "settings"},
     )
