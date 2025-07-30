@@ -105,6 +105,20 @@ def test_word_of_day_in_frontmatter(test_client, monkeypatch):
     assert "wotd: serendipity" in text
 
 
+def test_category_saved_in_frontmatter(test_client):
+    """Prompt category should be stored in frontmatter when provided."""
+    payload = {
+        "date": "2020-12-12",
+        "content": "entry",
+        "prompt": "prompt",
+        "category": "Fun",
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    text = (main.DATA_DIR / "2020-12-12.md").read_text(encoding="utf-8")
+    assert "category: Fun" in text
+
+
 def test_save_entry_missing_fields(test_client):
     """Saving with missing required fields should return an error."""
     resp = test_client.post("/entry", json={"date": "2020-01-02"})

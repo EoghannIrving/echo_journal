@@ -2,14 +2,6 @@
 
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
 
-49. **Prompt category never saved**
-   - Entries are written without storing the selected prompt category, so the information is lost when reloading.
-   - Lines:
-     ```python
-     md_text = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
-     ```
-     【F:main.py†L144-L144】
-
 26. **Deprecated TemplateResponse call order**
    - `templates.TemplateResponse` is still called using the old signature where the template name is first. This triggers a deprecation warning from Starlette.
    - Lines:

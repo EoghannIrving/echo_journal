@@ -170,6 +170,7 @@ if (saveButton) {
     const content = document.getElementById('journal-text').value;
     const date = "{{ date }}";
     const prompt = {{ prompt | tojson }};
+    const category = {{ category | tojson }};
     const locEl = document.getElementById('location-display');
     const location = locEl ? {
       lat: parseFloat(locEl.dataset.lat || 0),
@@ -183,7 +184,7 @@ if (saveButton) {
         const response = await fetch("/entry", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ date, content, prompt, location })
+          body: JSON.stringify({ date, content, prompt, category, location })
         });
 
         if (!response.ok) {
