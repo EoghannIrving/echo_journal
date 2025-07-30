@@ -558,5 +558,21 @@ The following issues were identified and subsequently resolved.
          },
      )
      ```
-     【F:main.py†L147-L160】
+    【F:main.py†L147-L160】
+
+51. **Prompt category never displayed** (fixed)
+   - `generate_prompt` returns a category, but the index route ignored it and
+     sent an empty string to the template. The route now passes the real
+     category and reads it from saved entries.
+   - Fixed lines:
+     ```python
+         prompt_data = await generate_prompt()
+         prompt = prompt_data["prompt"]
+         category = prompt_data.get("category", "")
+     ```
+     ```python
+         category = meta.get("category", "")
+         wotd = meta.get("wotd", "")
+     ```
+     【F:main.py†L138-L155】
 

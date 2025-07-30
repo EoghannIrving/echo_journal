@@ -137,10 +137,12 @@ async def index(request: Request):
         prompt, entry = parse_entry(body)
         if not prompt and not entry:
             entry = body.strip()
+        category = meta.get("category", "")
         wotd = meta.get("wotd", "")
     else:
         prompt_data = await generate_prompt()
         prompt = prompt_data["prompt"]
+        category = prompt_data.get("category", "")
         entry = ""
         wotd = ""
 
@@ -150,7 +152,7 @@ async def index(request: Request):
         {
             "request": request,
             "prompt": prompt,
-            "category": "",  # Optionally store saved category or leave blank for saved entries
+            "category": category,
             "date": date_str,
             "content": entry,
             "readonly": False,  # Explicit

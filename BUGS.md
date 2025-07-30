@@ -2,18 +2,6 @@
 
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
 
-27. **Prompt category never displayed**
-   - `generate_prompt` returns a category but the index route ignores it and passes an empty string to the template.
-   - Lines:
-     ```python
-     prompt_data = await generate_prompt()
-     prompt = prompt_data["prompt"]
-     ...
-     "category": "",
-     ```
-     【F:main.py†L109-L118】
-
-
 32. **Other routes still use deprecated TemplateResponse signature**
    - `archive_view`, `view_entry`, and `settings_page` pass the template name first instead of the request.
    - Lines:
