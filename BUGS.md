@@ -2,25 +2,6 @@
 
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
 
-26. **Deprecated TemplateResponse call order**
-   - `templates.TemplateResponse` is still called using the old signature where the template name is first. This triggers a deprecation warning from Starlette.
-   - Lines:
-     ```python
-     return templates.TemplateResponse(
-         "echo_journal.html",
-         {
-             "request": request,
-             "prompt": prompt,
-             "category": "",
-             "date": date_str,
-             "content": entry,
-             "readonly": False,
-             "active_page": "home",
-         },
-     )
-     ```
-     【F:main.py†L113-L124】
-
 27. **Prompt category never displayed**
    - `generate_prompt` returns a category but the index route ignores it and passes an empty string to the template.
    - Lines:

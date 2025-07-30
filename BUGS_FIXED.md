@@ -534,7 +534,29 @@ The following issues were identified and subsequently resolved.
      ```javascript
      const category = {{ category | tojson }};
      ...
-     body: JSON.stringify({ date, content, prompt, category, location })
+    body: JSON.stringify({ date, content, prompt, category, location })
+    ```
+    【F:templates/echo_journal.html†L173-L187】
+
+50. **Deprecated TemplateResponse call order** (fixed)
+   - The index route now calls `TemplateResponse` with the request object first,
+     following the updated Starlette signature.
+   - Fixed lines:
+     ```python
+     return templates.TemplateResponse(
+         request,
+         "echo_journal.html",
+         {
+             "request": request,
+             "prompt": prompt,
+             "category": "",
+             "date": date_str,
+             "content": entry,
+             "readonly": False,
+             "active_page": "home",
+             "wotd": wotd,
+         },
+     )
      ```
-     【F:templates/echo_journal.html†L173-L187】
+     【F:main.py†L147-L160】
 
