@@ -3,18 +3,6 @@
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
 
 
-
-36. **Trailing newlines stripped from entries**
-   - `parse_entry` removes final blank lines when assembling the prompt and entry sections.
-   - Lines:
-     ```python
-     prompt = "\n".join(prompt_lines).strip()
-     entry  = "\n".join(entry_lines).strip()
-     ```
-     【F:main.py†L90-L91】
-
-
-
 51. **Malformed filenames hidden from archive**
    - Files with names that don't parse as dates are silently skipped, so they never appear in the archive view.
    - Lines:
