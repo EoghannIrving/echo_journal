@@ -699,5 +699,18 @@ The following issues were identified and subsequently resolved.
      except (httpx.HTTPError, ValueError) as exc:
          raise HTTPException(status_code=502, detail="Reverse geocoding failed") from exc
      ```
-     【F:main.py†L596-L602】
+    【F:main.py†L596-L602】
+
+58. **save_time duplication with indented frontmatter** (fixed)
+   - `_with_updated_save_time` now matches and replaces a `save_time` key even
+     when it is indented. This prevents multiple `save_time` lines from being
+     appended.
+   - Fixed lines:
+     ```python
+     stripped = line.lstrip()
+     if stripped.startswith("save_time:"):
+         indent = line[: len(line) - len(stripped)]
+         lines[i] = f"{indent}save_time: {label}"
+     ```
+     【F:main.py†L169-L175】
 
