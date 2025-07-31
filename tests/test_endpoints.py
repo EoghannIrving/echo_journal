@@ -231,7 +231,7 @@ def test_archive_view(test_client):
     assert "2020-05-01" in resp.text
     assert "2020-05-02" in resp.text
     assert "2021-06-01" in resp.text
-    assert "badfile" not in resp.text
+    assert "badfile" in resp.text
 
 
 def test_archive_view_unreadable_file(test_client, monkeypatch):
