@@ -594,5 +594,15 @@ The following issues were identified and subsequently resolved.
          },
      )
      ```
-     【F:main.py†L379-L389】
+    【F:main.py†L379-L389】
+
+53. **Prompt category never rendered** (fixed)
+   - The journal page now shows the prompt's category beneath the prompt text.
+   - Fixed lines:
+     ```html
+     {% if category %}
+     <p id="prompt-category" class="text-sm italic text-gray-600 dark:text-gray-400 mb-1">{{ category }}</p>
+     {% endif %}
+     ```
+     【F:templates/echo_journal.html†L20-L22】
 
