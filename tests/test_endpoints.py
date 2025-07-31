@@ -752,16 +752,21 @@ def test_reverse_geocode_network_error(test_client, monkeypatch):
     """Network failures should return a 502 error instead of crashing."""
 
     class BadClient:
+        """Minimal async client that always raises a connection error."""
+
         async def __aenter__(self):
             return self
 
         async def __aexit__(self, exc_type, exc, tb):
             return False
 
-        async def get(self, url, params=None, headers=None, timeout=None):  # pylint: disable=unused-argument
+        async def get(
+            self, url, params=None, headers=None, timeout=None
+        ):  # pylint: disable=unused-argument
+            """Simulate a failed request."""
             raise httpx.ConnectError("boom", request=httpx.Request("GET", url))
 
-    monkeypatch.setattr(main.httpx, "AsyncClient", lambda: BadClient())
+    monkeypatch.setattr(main.httpx, "AsyncClient", BadClient)
 
     resp = test_client.get("/api/reverse_geocode", params={"lat": 1.0, "lon": 2.0})
 
