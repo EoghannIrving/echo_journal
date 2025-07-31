@@ -3,17 +3,6 @@
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
 
 
-51. **Malformed filenames hidden from archive**
-   - Files with names that don't parse as dates are silently skipped, so they never appear in the archive view.
-   - Lines:
-     ```python
-     for file in DATA_DIR.rglob("*.md"):
-         try:
-             entry_date = datetime.strptime(file.stem, "%Y-%m-%d").date()
-         except ValueError:
-             continue  # Skip malformed filenames
-     ```
-
 52. **Location may save as 0,0 when saved immediately**
    - The geolocation script populates coordinates asynchronously, so clicking
      Save before it finishes stores zeros for latitude and longitude.

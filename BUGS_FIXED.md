@@ -615,3 +615,41 @@ The following issues were identified and subsequently resolved.
      entry = "\n".join(entry_lines)
      ```
      【F:file_utils.py†L52-L53】
+54. **Malformed filenames hidden from archive** (fixed)
+   - `_collect_entries` previously skipped files whose names did not parse as dates.
+     These entries now appear in an "Unknown" month section of the archive.
+   - Fixed lines:
+     ```python
+     for file in DATA_DIR.rglob("*.md"):
+         name = file.stem
+         try:
+             entry_date = datetime.strptime(name, "%Y-%m-%d").date()
+         except ValueError:
+             entry_date = None
+         try:
+             async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
+                 content = await fh.read(8192)
+         except OSError:
+             continue
+         frontmatter, body = split_frontmatter(content)
+         meta = parse_frontmatter(frontmatter) if frontmatter else {}
+         await _load_extra_meta(file, meta)
+         prompt, _ = parse_entry(body)
+         entries.append(
+             {"date": entry_date, "name": name, "prompt": prompt, "meta": meta}
+         )
+     ```
+     【F:main.py†L316-L335】
+     ```python
+         if entry["date"]:
+             month_key = entry["date"].strftime("%Y-%m")
+             date_str = entry["date"].isoformat()
+         else:
+             month_key = "Unknown"
+             date_str = entry["name"]
+         entries_by_month[month_key].append(
+             (date_str, entry["prompt"], entry["meta"])
+         )
+     ```
+     【F:main.py†L374-L383】
+

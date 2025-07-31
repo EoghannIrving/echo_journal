@@ -316,10 +316,11 @@ async def _collect_entries() -> list[dict]:
     """Return a list of entries found under ``DATA_DIR``."""
     entries: list[dict] = []
     for file in DATA_DIR.rglob("*.md"):
+        name = file.stem
         try:
-            entry_date = datetime.strptime(file.stem, "%Y-%m-%d").date()
+            entry_date = datetime.strptime(name, "%Y-%m-%d").date()
         except ValueError:
-            continue
+            entry_date = None
         try:
             async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
                 content = await fh.read(8192)
@@ -329,7 +330,9 @@ async def _collect_entries() -> list[dict]:
         meta = parse_frontmatter(frontmatter) if frontmatter else {}
         await _load_extra_meta(file, meta)
         prompt, _ = parse_entry(body)
-        entries.append({"date": entry_date, "prompt": prompt, "meta": meta})
+        entries.append(
+            {"date": entry_date, "name": name, "prompt": prompt, "meta": meta}
+        )
     return entries
 
 
@@ -357,19 +360,27 @@ async def archive_view(
         all_entries = [e for e in all_entries if e["meta"].get("songs")]
 
     if sort_by == "date":
-        all_entries.sort(key=lambda e: e["date"], reverse=True)
+        def _sort_key(e: dict) -> date:
+            return e["date"] or date.min
+
+        all_entries.sort(key=_sort_key, reverse=True)
     elif sort_by in {"location", "weather", "photos", "songs"}:
         all_entries.sort(key=lambda e: e["meta"].get(sort_by) or "")
     else:
         # default to date sorting if unrecognised
         sort_by = "date"
-        all_entries.sort(key=lambda e: e["date"], reverse=True)
+        all_entries.sort(key=_sort_key, reverse=True)
 
     entries_by_month: dict[str, list[tuple[str, str, dict]]] = defaultdict(list)
     for entry in all_entries:
-        month_key = entry["date"].strftime("%Y-%m")
+        if entry["date"]:
+            month_key = entry["date"].strftime("%Y-%m")
+            date_str = entry["date"].isoformat()
+        else:
+            month_key = "Unknown"
+            date_str = entry["name"]
         entries_by_month[month_key].append(
-            (entry["date"].isoformat(), entry["prompt"], entry["meta"])
+            (date_str, entry["prompt"], entry["meta"])
         )
 
     # Sort months descending (latest first)
