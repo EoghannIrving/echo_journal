@@ -168,8 +168,10 @@ def _with_updated_save_time(frontmatter: str | None, label: str) -> str | None:
         return f"save_time: {label}"
     lines = frontmatter.splitlines()
     for i, line in enumerate(lines):
-        if line.startswith("save_time:"):
-            lines[i] = f"save_time: {label}"
+        stripped = line.lstrip()
+        if stripped.startswith("save_time:"):
+            indent = line[: len(line) - len(stripped)]
+            lines[i] = f"{indent}save_time: {label}"
             break
     else:
         lines.append(f"save_time: {label}")
