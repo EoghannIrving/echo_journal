@@ -669,6 +669,20 @@ The following issues were identified and subsequently resolved.
          label: locEl.dataset.locationName || ''
        };
      }
+    ```
+    【F:templates/echo_journal.html†L177-L186】
+
+56. **Current month uses server time** (fixed)
+   - `archive_view` previously expanded the section matching the server's
+     current month, which could be incorrect for users in other time zones.
+     It now opens the most recent month that actually contains entries.
+   - Fixed lines:
+     ```python
+     sorted_entries = dict(sorted(entries_by_month.items(), reverse=True))
+     if sorted_entries:
+         current_month = next(iter(sorted_entries))
+     else:
+         current_month = datetime.now().strftime("%Y-%m")
      ```
-     【F:templates/echo_journal.html†L177-L186】
+     【F:main.py†L386-L391】
 

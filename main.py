@@ -385,7 +385,10 @@ async def archive_view(
 
     # Sort months descending (latest first)
     sorted_entries = dict(sorted(entries_by_month.items(), reverse=True))
-    current_month = datetime.now().strftime("%Y-%m")
+    if sorted_entries:
+        current_month = next(iter(sorted_entries))
+    else:
+        current_month = datetime.now().strftime("%Y-%m")
 
     return templates.TemplateResponse(
         request,
