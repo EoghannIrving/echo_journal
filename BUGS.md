@@ -3,25 +3,6 @@
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
 
 
-52. **Location may save as 0,0 when saved immediately**
-   - The geolocation script populates coordinates asynchronously, so clicking
-     Save before it finishes stores zeros for latitude and longitude.
-   - Lines:
-     ```javascript
-     navigator.geolocation.getCurrentPosition(async (pos) => {
-       const { latitude, longitude, accuracy } = pos.coords;
-       ...
-     });
-     ...
-     const location = locEl ? {
-       lat: parseFloat(locEl.dataset.lat || 0),
-       lon: parseFloat(locEl.dataset.lon || 0),
-       accuracy: parseFloat(locEl.dataset.accuracy || 0),
-       label: locEl.dataset.locationName || ''
-     } : null;
-     ```
-     【F:templates/echo_journal.html†L166-L188】
-
 53. **Current month uses server time**
    - `archive_view` expands the section matching the server's current month,
      which can be wrong for users in other time zones.
