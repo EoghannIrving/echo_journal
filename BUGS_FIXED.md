@@ -684,5 +684,20 @@ The following issues were identified and subsequently resolved.
      else:
          current_month = datetime.now().strftime("%Y-%m")
      ```
-     【F:main.py†L386-L391】
+    【F:main.py†L386-L391】
+
+57. **reverse_geocode unhandled network errors** (fixed)
+   - The endpoint now catches HTTP failures from the Nominatim API and returns
+     a 502 status instead of crashing.
+   - Fixed lines:
+     ```python
+     try:
+         async with httpx.AsyncClient() as client:
+             r = await client.get(url, params=params, headers=headers, timeout=10)
+             r.raise_for_status()
+             data = r.json()
+     except (httpx.HTTPError, ValueError) as exc:
+         raise HTTPException(status_code=502, detail="Reverse geocoding failed") from exc
+     ```
+     【F:main.py†L596-L602】
 
