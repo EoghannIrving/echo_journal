@@ -3,13 +3,6 @@
 The following issues are still unresolved. Fixed bugs have been moved to [BUGS_FIXED.md](BUGS_FIXED.md).
 
 
-35. **Prompt category never rendered**
-   - The journal template lacks any element to show the `category` variable.
-   - Lines:
-     ```html
-     <p id="daily-prompt" class="font-sans font-medium ...">{{ prompt }}</p>
-     ```
-     【F:templates/echo_journal.html†L18-L21】
 
 36. **Trailing newlines stripped from entries**
    - `parse_entry` removes final blank lines when assembling the prompt and entry sections.
