@@ -49,8 +49,8 @@ def parse_entry(md_content: str) -> Tuple[str, str]:
         elif current_section == "entry":
             entry_lines.append(line.rstrip())
 
-    prompt = "\n".join(prompt_lines).strip()
-    entry = "\n".join(entry_lines).strip()
+    prompt = "\n".join(prompt_lines)
+    entry = "\n".join(entry_lines)
     return prompt, entry
 
 

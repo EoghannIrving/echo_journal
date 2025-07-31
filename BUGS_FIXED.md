@@ -606,3 +606,12 @@ The following issues were identified and subsequently resolved.
      ```
      【F:templates/echo_journal.html†L20-L22】
 
+
+36. **Trailing newlines stripped from entries** (fixed)
+   - `parse_entry` removed final blank lines when assembling the prompt and entry sections.
+   - Fixed lines:
+     ```python
+     prompt = "\n".join(prompt_lines)
+     entry = "\n".join(entry_lines)
+     ```
+     【F:file_utils.py†L52-L53】
