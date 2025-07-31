@@ -650,6 +650,25 @@ The following issues were identified and subsequently resolved.
          entries_by_month[month_key].append(
              (date_str, entry["prompt"], entry["meta"])
          )
+    ```
+    【F:main.py†L374-L383】
+
+55. **Location may save as 0,0 when saved immediately** (fixed)
+   - The geolocation script populates coordinates asynchronously, so clicking
+     Save before it finished would store zeros for latitude and longitude.
+     The save handler now checks that coordinates exist before sending them.
+   - Fixed lines:
+     ```javascript
+     const locEl = document.getElementById('location-display');
+     let location = null;
+     if (locEl && locEl.dataset.lat && locEl.dataset.lon) {
+       location = {
+         lat: parseFloat(locEl.dataset.lat),
+         lon: parseFloat(locEl.dataset.lon),
+         accuracy: parseFloat(locEl.dataset.accuracy || 0),
+         label: locEl.dataset.locationName || ''
+       };
+     }
      ```
-     【F:main.py†L374-L383】
+     【F:templates/echo_journal.html†L177-L186】
 

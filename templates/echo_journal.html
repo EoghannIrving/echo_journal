@@ -175,12 +175,15 @@ if (saveButton) {
     const prompt = {{ prompt | tojson }};
     const category = {{ category | tojson }};
     const locEl = document.getElementById('location-display');
-    const location = locEl ? {
-      lat: parseFloat(locEl.dataset.lat || 0),
-      lon: parseFloat(locEl.dataset.lon || 0),
-      accuracy: parseFloat(locEl.dataset.accuracy || 0),
-      label: locEl.dataset.locationName || ''
-    } : null;
+    let location = null;
+    if (locEl && locEl.dataset.lat && locEl.dataset.lon) {
+      location = {
+        lat: parseFloat(locEl.dataset.lat),
+        lon: parseFloat(locEl.dataset.lon),
+        accuracy: parseFloat(locEl.dataset.accuracy || 0),
+        label: locEl.dataset.locationName || ''
+      };
+    }
 
       const status = document.getElementById('save-status');
       try {
