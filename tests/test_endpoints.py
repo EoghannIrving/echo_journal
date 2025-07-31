@@ -13,6 +13,7 @@ import sys
 import tempfile
 from datetime import datetime
 from pathlib import Path
+import httpx  # pylint: disable=import-error
 
 import aiofiles  # type: ignore  # pylint: disable=import-error
 import pytest  # pylint: disable=import-error
@@ -745,3 +746,24 @@ def test_asset_proxy_download(test_client, monkeypatch):
     assert resp.headers["content-type"] == "image/jpeg"
     assert client.request_url == "http://example/api/assets/abc/original"
     assert client.request_headers == {"x-api-key": "secret"}
+
+
+def test_reverse_geocode_network_error(test_client, monkeypatch):
+    """Network failures should return a 502 error instead of crashing."""
+
+    class BadClient:
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def get(self, url, params=None, headers=None, timeout=None):  # pylint: disable=unused-argument
+            raise httpx.ConnectError("boom", request=httpx.Request("GET", url))
+
+    monkeypatch.setattr(main.httpx, "AsyncClient", lambda: BadClient())
+
+    resp = test_client.get("/api/reverse_geocode", params={"lat": 1.0, "lon": 2.0})
+
+    assert resp.status_code == 502
+    assert resp.json()["detail"] == "Reverse geocoding failed"

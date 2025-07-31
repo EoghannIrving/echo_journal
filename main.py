@@ -593,10 +593,13 @@ async def reverse_geocode(lat: float, lon: float):
     }
     headers = {"User-Agent": "EchoJournal/1.0 (you@example.com)"}
 
-    async with httpx.AsyncClient() as client:
-        r = await client.get(url, params=params, headers=headers)
-        r.raise_for_status()
-        data = r.json()
+    try:
+        async with httpx.AsyncClient() as client:
+            r = await client.get(url, params=params, headers=headers, timeout=10)
+            r.raise_for_status()
+            data = r.json()
+    except (httpx.HTTPError, ValueError) as exc:
+        raise HTTPException(status_code=502, detail="Reverse geocoding failed") from exc
 
     return {
         "display_name": data.get("display_name"),
