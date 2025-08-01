@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from datetime import datetime
 
 import aiofiles
+import yaml
 
 from config import DATA_DIR, ENCODING
 
@@ -76,15 +77,15 @@ async def read_existing_frontmatter(file_path: Path) -> Optional[str]:
         return None
 
 
-def parse_frontmatter(frontmatter: str) -> Dict[str, str]:
-    """Return a dict of key/value pairs from a simple YAML frontmatter string."""
-    result: Dict[str, str] = {}
-    for line in frontmatter.splitlines():
-        if ":" not in line:
-            continue
-        key, value = line.split(":", 1)
-        result[key.strip()] = value.strip()
-    return result
+def parse_frontmatter(frontmatter: str) -> Dict[str, Any]:
+    """Return a dictionary parsed from YAML frontmatter."""
+    try:
+        data = yaml.safe_load(frontmatter) or {}
+    except yaml.YAMLError:
+        return {}
+    if isinstance(data, dict):
+        return data
+    return {}
 
 
 async def load_json_file(file_path: Path) -> List[Dict[str, Any]]:

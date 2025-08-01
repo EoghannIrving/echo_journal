@@ -170,6 +170,7 @@ This builds the CSS and starts the app on <http://localhost:8510>.
 
    ```bash
    pip install -r requirements.txt
+   # requirements.txt installs PyYAML for YAML frontmatter parsing
    npm install
    npm run build:css
    ```

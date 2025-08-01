@@ -5,3 +5,4 @@ aiofiles
 markdown
 bleach
 httpx
+pyyaml
