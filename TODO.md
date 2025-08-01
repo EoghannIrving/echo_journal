@@ -1,31 +1,12 @@
 # TODO
 
-This list captures planned work from the project roadmap. Completed items from earlier phases are omitted.
-
-- [X] **Expanded Archive view**
-  - [X] Display metadata markers (location, weather, photo indicator)
-  - [X] Optional sorting and filtering by available enrichment
-  - [X] Rework Archive page layout to be more compact.
-
-- [X] **Stats dashboard**
-  - [X] Show entry counts by week, month and year
-  - [X] Provide word count statistics
-  - [X] Optional "streak" tracking for consecutive days or weeks
+This list only tracks outstanding items from the roadmap.
 
 - [ ] **Metadata parsing improvements**
-  - [X] Unify parsing logic and support frontmatter if needed
-  - [X] Document YAML frontmatter structure with `location`, `weather` and `photos` as well as other keys
-  - [X] Parse this frontmatter in `archive_view` to expose icon flags
   - [ ] Use `pyyaml` to read the frontmatter delimited by `---` at the top of each entry
-  - [X] Maintain compatibility with legacy `.md` entries
 
 - [ ] **Enrichment integration prep**
-  - [X] Support Immich photo integration
-  - [X] Add geolocation capture
-  - [X] Query a weather API for recent conditions
-  - [X] Pull a "Word of the Day" and add that to the journal
   - [ ] Pull a "Fact of the Day" and add that to the journal
-  - [X] Record save time in front matter
   - [ ] AI assisted prompts / "Need inspiration?" feature
   - [ ] Optional "New Prompt" link with hover/tap hint
   - [ ] Evaluate secure remote access options (auth or VPN/proxy)
