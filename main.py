@@ -52,6 +52,7 @@ from immich_utils import update_photo_metadata
 from jellyfin_utils import update_song_metadata, update_media_metadata
 from prompt_utils import generate_prompt
 from weather_utils import build_frontmatter, time_of_day_label
+from activation_engine_utils import fetch_tags
 
 
 # Provide pathlib.Path.is_relative_to on Python < 3.9
@@ -229,6 +230,38 @@ def _with_updated_category(frontmatter: str | None, category: str | None) -> str
     return "\n".join(lines)
 
 
+def _update_field(frontmatter: str | None, key: str, value) -> str | None:
+    """Generic helper to update or insert a frontmatter field."""
+    if value is None or value == "" or value == []:
+        return frontmatter
+    if isinstance(value, list):
+        value_str = "[" + ", ".join(map(str, value)) + "]"
+    else:
+        value_str = str(value)
+    if not frontmatter:
+        return f"{key}: {value_str}"
+    lines = frontmatter.splitlines()
+    for i, line in enumerate(lines):
+        if line.startswith(f"{key}:"):
+            lines[i] = f"{key}: {value_str}"
+            break
+    else:
+        lines.append(f"{key}: {value_str}")
+    return "\n".join(lines)
+
+
+def _with_updated_mood(frontmatter: str | None, mood: str | None) -> str | None:
+    return _update_field(frontmatter, "mood", mood)
+
+
+def _with_updated_energy(frontmatter: str | None, energy: str | None) -> str | None:
+    return _update_field(frontmatter, "energy", energy)
+
+
+def _with_updated_tags(frontmatter: str | None, tags: list[str]) -> str | None:
+    return _update_field(frontmatter, "tags", tags)
+
+
 @app.post("/entry")
 async def save_entry(data: dict):
     """Save a journal entry for the provided date."""
@@ -237,6 +270,8 @@ async def save_entry(data: dict):
     prompt = data.get("prompt")
     category = data.get("category")
     location = data.get("location") or {}
+    mood = data.get("mood")
+    energy = data.get("energy")
 
     if not entry_date or not content or not prompt:
         return JSONResponse(
@@ -264,6 +299,11 @@ async def save_entry(data: dict):
     label = time_of_day_label()
     frontmatter = _with_updated_save_time(frontmatter, label)
     frontmatter = _with_updated_category(frontmatter, category)
+    frontmatter = _with_updated_mood(frontmatter, mood)
+    frontmatter = _with_updated_energy(frontmatter, energy)
+
+    tags = await fetch_tags(mood or "", energy or "", content)
+    frontmatter = _with_updated_tags(frontmatter, tags)
 
     md_body = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
     if frontmatter is not None:

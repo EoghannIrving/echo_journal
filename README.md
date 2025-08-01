@@ -164,6 +164,21 @@ docker-compose up --build
 
 This builds the CSS and starts the app on <http://localhost:8510>.
 
+### ActivationEngine companion
+
+Clone the [ActivationEngine](https://github.com/EoghannIrving/ActivationEngine)
+repository next to Echo Journal and run it on port `8000`:
+
+```bash
+git clone https://github.com/EoghannIrving/ActivationEngine.git
+cd ActivationEngine
+pip install -r requirements.txt
+uvicorn main:app --port 8000
+```
+
+Set `ACTIVATION_ENGINE_URL` in your `.env` if running on a different port or
+host.
+
 ### Running directly with Python
 
 1. Install dependencies:
@@ -194,8 +209,10 @@ The `.env` file configures optional integrations and runtime paths:
 - `JELLYFIN_URL`, `JELLYFIN_API_KEY`, and `JELLYFIN_USER_ID` – pull
   recently watched shows from Jellyfin. `JELLYFIN_PAGE_SIZE` and
   `JELLYFIN_PLAY_THRESHOLD` control pagination and play percentage.
-- Logging options: `LOG_LEVEL`, `LOG_FILE`, `LOG_MAX_BYTES`,
-  `LOG_BACKUP_COUNT`.
+- `ACTIVATION_ENGINE_URL` – base URL of the local ActivationEngine service used
+  for tagging and prompt ranking.
+  - Logging options: `LOG_LEVEL`, `LOG_FILE`, `LOG_MAX_BYTES`,
+    `LOG_BACKUP_COUNT`.
 - `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` – enable optional HTTP Basic
   authentication for the web UI. When both are set, all requests must include a
   matching `Authorization` header.
