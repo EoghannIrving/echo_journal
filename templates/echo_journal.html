@@ -85,6 +85,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const animateText = (target, startDelay = 0, letterDelay = 80, wordDelay = 150) => {
     if (!target) return 0;
     const text = target.textContent.trim();
+
+    // Respect user's reduced motion preference by skipping animation
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      target.textContent = text;
+      target.classList.remove('opacity-0');
+      return startDelay;
+    }
+
     target.textContent = "";
 
     let delay = startDelay;
