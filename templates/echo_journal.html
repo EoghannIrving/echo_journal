@@ -19,7 +19,10 @@
     <p id="daily-prompt" class="font-sans font-medium text-[clamp(1.5rem,2vw+1rem,2rem)] leading-snug mb-2 opacity-0">{{ prompt }}</p>
     {% if category %}
     <p id="prompt-category" class="text-sm italic text-gray-600 dark:text-gray-400 mb-1">{{ category }}</p>
+    {% else %}
+    <p id="prompt-category" class="text-sm italic text-gray-600 dark:text-gray-400 mb-1 hidden"></p>
     {% endif %}
+    <a href="#" id="new-prompt" class="text-xs text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 hover:underline">New Prompt</a>
     <p class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
   </div>
 </section>
@@ -51,6 +54,11 @@
   </footer>
 
   <script>
+
+const entryDate = "{{ date }}";
+let currentPrompt = {{ prompt | tojson }};
+let currentCategory = {{ category | tojson }};
+const promptKey = `ej-prompt-${entryDate}`;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -113,8 +121,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const promptEl = document.getElementById("daily-prompt");
+  const catEl = document.getElementById("prompt-category");
+  const stored = localStorage.getItem(promptKey);
+  if (stored) {
+    try {
+      const data = JSON.parse(stored);
+      currentPrompt = data.prompt || currentPrompt;
+      currentCategory = data.category || currentCategory;
+    } catch (_) {}
+  }
   if (promptEl) {
+    promptEl.textContent = currentPrompt;
     animateText(promptEl, delay + 300, 15, 40);
+  }
+  if (catEl) {
+    catEl.textContent = currentCategory || '';
+    catEl.classList.toggle('hidden', !currentCategory);
   }
 
   const toolbar = document.getElementById('md-toolbar');
@@ -160,6 +182,27 @@ document.addEventListener("DOMContentLoaded", () => {
       textarea.dispatchEvent(new Event('input'));
     });
   }
+
+  const newBtn = document.getElementById('new-prompt');
+  if (newBtn && promptEl) {
+    newBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        const res = await fetch('/api/new_prompt');
+        if (res.ok) {
+          const data = await res.json();
+          currentPrompt = data.prompt;
+          currentCategory = data.category || '';
+          promptEl.textContent = currentPrompt;
+          if (catEl) {
+            catEl.textContent = currentCategory;
+            catEl.classList.toggle('hidden', !currentCategory);
+          }
+          localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
+        }
+      } catch (_) {}
+    });
+  }
 });
 
 
@@ -171,9 +214,9 @@ if (saveButton) {
     }
     saveButton.disabled = true;
     const content = document.getElementById('journal-text').value;
-    const date = "{{ date }}";
-    const prompt = {{ prompt | tojson }};
-    const category = {{ category | tojson }};
+    const date = entryDate;
+    const prompt = currentPrompt;
+    const category = currentCategory;
     const locEl = document.getElementById('location-display');
     let location = null;
     if (locEl && locEl.dataset.lat && locEl.dataset.lon) {
