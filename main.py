@@ -288,7 +288,7 @@ async def load_entry(entry_date: str):
 
 async def _load_extra_meta(md_file: Path, meta: dict) -> None:
     """Populate ``meta`` with photo and song info if present."""
-    if meta.get("photos") in (None, "[]"):
+    if meta.get("photos") in (None, [], "[]"):
         json_path = md_file.with_suffix(".photos.json")
         if json_path.exists():
             try:
@@ -356,7 +356,9 @@ async def archive_view(
         all_entries = [e for e in all_entries if e["meta"].get("weather")]
     elif filter_ == "has_photos":
         all_entries = [
-            e for e in all_entries if e["meta"].get("photos") not in (None, "[]")
+            e
+            for e in all_entries
+            if e["meta"].get("photos") not in (None, "[]", [])
         ]
     elif filter_ == "has_songs":
         all_entries = [e for e in all_entries if e["meta"].get("songs")]
