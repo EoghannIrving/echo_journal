@@ -553,6 +553,22 @@ def test_save_entry_adds_song_metadata(test_client, monkeypatch):
     assert songs[0]["plays"] == 3
 
 
+def test_save_entry_adds_media_metadata(test_client, monkeypatch):
+    """Saving an entry stores movie/TV metadata from Jellyfin."""
+
+    async def fake_fetch(_date_str: str):
+        return [{"title": "Movie", "series": ""}]
+
+    monkeypatch.setattr(jellyfin_utils, "fetch_daily_media", fake_fetch)
+    payload = {"date": "2023-05-06", "content": "entry", "prompt": "prompt"}
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    json_path = main.DATA_DIR / "2023-05-06.media.json"
+    assert json_path.exists()
+    media = json.loads(json_path.read_text(encoding="utf-8"))
+    assert media[0]["title"] == "Movie"
+
+
 def test_backfill_song_metadata(test_client, monkeypatch):
     """Backfill endpoint creates songs.json for existing entries."""
 
@@ -702,6 +718,41 @@ def test_archive_sort_by_songs(test_client):
     resp = test_client.get("/archive", params={"sort_by": "songs"})
     assert resp.status_code == 200
     assert resp.text.find("2026-01-02") < resp.text.find("2026-01-01")
+
+
+def test_view_entry_shows_media(test_client):
+    """Media info from media.json should appear on the entry page."""
+
+    md_path = main.DATA_DIR / "2027-01-01.md"
+    md_path.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+    media_items = [
+        {"title": "Ep1", "series": "Show"},
+        {"title": "Movie", "series": ""},
+    ]
+    json_path = main.DATA_DIR / "2027-01-01.media.json"
+    json_path.write_text(json.dumps(media_items), encoding="utf-8")
+
+    resp = test_client.get("/archive/2027-01-01")
+    assert resp.status_code == 200
+    assert "Show - Ep1" in resp.text
+    assert "Movie" in resp.text
+
+
+def test_archive_filter_has_media(test_client):
+    """Entries can be filtered by those containing movies/TV."""
+
+    md1 = main.DATA_DIR / "2028-01-01.md"
+    md1.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+    media_path = main.DATA_DIR / "2028-01-01.media.json"
+    media_path.write_text(json.dumps([{"title": "M"}]), encoding="utf-8")
+
+    md2 = main.DATA_DIR / "2028-01-02.md"
+    md2.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+
+    resp = test_client.get("/archive", params={"filter": "has_media"})
+    assert resp.status_code == 200
+    assert "2028-01-01" in resp.text
+    assert "2028-01-02" not in resp.text
 
 
 def test_asset_proxy_download(test_client, monkeypatch):

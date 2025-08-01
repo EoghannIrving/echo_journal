@@ -45,7 +45,7 @@ from file_utils import (
     load_json_file,
 )
 from immich_utils import update_photo_metadata
-from jellyfin_utils import update_song_metadata
+from jellyfin_utils import update_song_metadata, update_media_metadata
 from prompt_utils import generate_prompt
 from weather_utils import build_frontmatter, time_of_day_label
 
@@ -243,6 +243,7 @@ async def save_entry(data: dict):
 
     await update_photo_metadata(entry_date, file_path)
     await update_song_metadata(entry_date, file_path)
+    await update_media_metadata(entry_date, file_path)
 
     return {"status": "success"}
 
@@ -287,7 +288,7 @@ async def load_entry(entry_date: str):
 
 
 async def _load_extra_meta(md_file: Path, meta: dict) -> None:
-    """Populate ``meta`` with photo and song info if present."""
+    """Populate ``meta`` with photo, song and media info if present."""
     if meta.get("photos") in (None, [], "[]"):
         json_path = md_file.with_suffix(".photos.json")
         if json_path.exists():
@@ -310,6 +311,17 @@ async def _load_extra_meta(md_file: Path, meta: dict) -> None:
                         meta["songs"] = songs_data[0].get("track") or "1"
                     else:
                         meta["songs"] = "1"
+            except (OSError, ValueError):
+                pass
+    if not meta.get("media"):
+        media_path = md_file.with_suffix(".media.json")
+        if media_path.exists():
+            try:
+                async with aiofiles.open(media_path, "r", encoding=ENCODING) as mh:
+                    media_text = await mh.read()
+                media_data = json.loads(media_text)
+                if media_data:
+                    meta["media"] = "1"
             except (OSError, ValueError):
                 pass
 
@@ -362,13 +374,15 @@ async def archive_view(
         ]
     elif filter_ == "has_songs":
         all_entries = [e for e in all_entries if e["meta"].get("songs")]
+    elif filter_ == "has_media":
+        all_entries = [e for e in all_entries if e["meta"].get("media")]
 
     if sort_by == "date":
         def _sort_key(e: dict) -> date:
             return e["date"] or date.min
 
         all_entries.sort(key=_sort_key, reverse=True)
-    elif sort_by in {"location", "weather", "photos", "songs"}:
+    elif sort_by in {"location", "weather", "photos", "songs", "media"}:
         all_entries.sort(key=lambda e: e["meta"].get(sort_by) or "")
     else:
         # default to date sorting if unrecognised
@@ -436,6 +450,8 @@ async def archive_entry(request: Request, entry_date: str):
 
     songs = await load_json_file(file_path.with_suffix(".songs.json"))
 
+    media = await load_json_file(file_path.with_suffix(".media.json"))
+
     return templates.TemplateResponse(
         request,
         "archive-entry.html",
@@ -454,6 +470,7 @@ async def archive_entry(request: Request, entry_date: str):
             "wotd": meta.get("wotd", ""),
             "photos": photos,
             "songs": songs,
+            "media": media,
             "readonly": True,  # Read-only mode for archive
             "active_page": "archive",
         },

@@ -169,3 +169,66 @@ async def update_song_metadata(date_str: str, journal_path: Path) -> None:
         logger.info("Wrote %d song records to %s", len(songs), song_path)
     except OSError as exc:
         logger.error("Failed to write song metadata file: %s", exc)
+
+async def fetch_daily_media(date_str: str) -> List[Dict[str, Any]]:
+    """Return watched movies and episodes for the given date."""
+    if not JELLYFIN_URL or not JELLYFIN_USER_ID:
+        logger.info("Jellyfin integration disabled; skipping fetch")
+        return []
+
+    headers = {"X-Emby-Token": JELLYFIN_API_KEY} if JELLYFIN_API_KEY else {}
+    url = f"{JELLYFIN_URL}/Users/{JELLYFIN_USER_ID}/Items"
+    logger.info("Fetching Jellyfin media for %s", date_str)
+    base_params = {
+        "Filters": "IsPlayed",
+        "IncludeItemTypes": "Episode,Movie",
+        "Fields": "DatePlayed,SeriesName",
+        "SortBy": "DatePlayed",
+        "SortOrder": "Descending",
+        "Recursive": "true",
+    }
+
+    records: List[Dict[str, str]] = []
+    try:
+        async for item in _iter_items(date_str, headers, url, base_params):
+            played = item.get("DatePlayed") or item.get("UserData", {}).get(
+                "LastPlayedDate"
+            )
+            if not played:
+                continue
+            try:
+                play_dt = datetime.fromisoformat(played.replace("Z", "+00:00"))
+                if play_dt.date().isoformat() != date_str:
+                    continue
+            except ValueError:
+                continue
+            played_pct = item.get("UserData", {}).get("PlayedPercentage")
+            if played_pct is not None and played_pct < JELLYFIN_PLAY_THRESHOLD:
+                continue
+            title = item.get("Name", "Unknown")
+            series = item.get("SeriesName") or ""
+            records.append({"title": title, "series": series})
+    except (httpx.HTTPError, ValueError) as exc:
+        logger.error("Error fetching Jellyfin items: %s", exc)
+        return []
+
+    logger.info("Returning %d media records", len(records))
+    return records
+
+
+async def update_media_metadata(date_str: str, journal_path: Path) -> None:
+    """Fetch movies/TV watched for the date and save to ``.media.json``."""
+    logger.info("Updating media metadata for %s", journal_path)
+    media = await fetch_daily_media(date_str)
+    if not media:
+        logger.info("No media data for %s", date_str)
+        return
+
+    media_path = journal_path.with_suffix(".media.json")
+    try:
+        with open(media_path, "w", encoding="utf-8") as f:
+            json.dump(media, f, indent=2)
+        logger.info("Wrote %d media records to %s", len(media), media_path)
+    except OSError as exc:
+        logger.error("Failed to write media metadata file: %s", exc)
+
