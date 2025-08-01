@@ -5,6 +5,8 @@ import json
 import random
 from datetime import date
 
+from activation_engine_utils import rank_prompts
+
 import aiofiles
 
 from config import PROMPTS_FILE, ENCODING
@@ -60,7 +62,7 @@ def get_season(target_date: date) -> str:
     return "Winter"
 
 
-async def generate_prompt() -> dict:
+async def generate_prompt(tags: list[str] | None = None) -> dict:
     """Select and return a prompt for the current day."""
     today = date.today()
     weekday = today.strftime("%A")
@@ -78,10 +80,23 @@ async def generate_prompt() -> dict:
     if not categories:
         return {"category": None, "prompt": "No categories found"}
 
+    if tags:
+        filtered = [c for c in categories if c.lower() in [t.lower() for t in tags]]
+        if filtered:
+            categories = filtered
+
     category = random.choice(categories)
     candidates = categories_dict.get(category, [])
+    if tags:
+        tag_set = {t.lower() for t in tags}
+        candidates = [c for c in candidates if any(t in c.lower() for t in tag_set)] or candidates
     if not candidates:
         return {"category": category.capitalize(), "prompt": "No prompts in this category"}
+
+    if tags:
+        ranked = await rank_prompts(candidates, tags)
+        if ranked:
+            candidates = ranked
 
     prompt_template = random.choice(candidates)
     prompt = prompt_template.replace("{{weekday}}", weekday).replace("{{season}}", season)

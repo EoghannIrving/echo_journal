@@ -24,6 +24,24 @@
     {% endif %}
     <a href="#" id="new-prompt" class="text-xs text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 hover:underline">New Prompt</a>
     <p class="text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
+    <div id="mood-energy" class="mt-4 flex flex-wrap justify-center gap-4">
+      <label for="mood-select" class="sr-only">Mood</label>
+      <select id="mood-select" class="border rounded px-2 py-1 text-sm">
+        <option value="">Mood</option>
+        <option value="sad">😔 Sad</option>
+        <option value="meh">😐 Meh</option>
+        <option value="okay">😊 Okay</option>
+        <option value="joyful">😍 Joyful</option>
+      </select>
+      <label for="energy-select" class="sr-only">Energy</label>
+      <select id="energy-select" class="border rounded px-2 py-1 text-sm">
+        <option value="">Energy</option>
+        <option value="drained">🪫 Drained</option>
+        <option value="low">😴 Low</option>
+        <option value="ok">🙂 OK</option>
+        <option value="energized">⚡ Energized</option>
+      </select>
+    </div>
   </div>
 </section>
 <section class="w-full mx-auto editor-container p-4 rounded-xl paper-card">
@@ -227,13 +245,15 @@ if (saveButton) {
         label: locEl.dataset.locationName || ''
       };
     }
+    const mood = document.getElementById('mood-select').value;
+    const energy = document.getElementById('energy-select').value;
 
       const status = document.getElementById('save-status');
       try {
         const response = await fetch("/entry", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ date, content, prompt, category, location })
+          body: JSON.stringify({ date, content, prompt, category, location, mood, energy })
         });
 
         if (!response.ok) {
