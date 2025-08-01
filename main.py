@@ -18,6 +18,8 @@ import aiofiles
 import bleach
 import httpx
 import markdown
+import base64
+import hmac
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -34,6 +36,8 @@ from config import (
     LOG_LEVEL,
     LOG_MAX_BYTES,
     LOG_BACKUP_COUNT,
+    BASIC_AUTH_USERNAME,
+    BASIC_AUTH_PASSWORD,
 )
 from file_utils import (
     safe_entry_path,
@@ -63,6 +67,16 @@ if not hasattr(Path, "is_relative_to"):
     Path.is_relative_to = _is_relative_to  # type: ignore[attr-defined]
 
 app = FastAPI()
+
+# Determine whether Basic Auth should be enforced.
+AUTH_ENABLED = False
+if BASIC_AUTH_USERNAME and BASIC_AUTH_PASSWORD:
+    AUTH_ENABLED = True
+elif BASIC_AUTH_USERNAME or BASIC_AUTH_PASSWORD:
+    logging.warning(
+        "Both BASIC_AUTH_USERNAME and BASIC_AUTH_PASSWORD must be set; disabling auth"
+    )
+
 
 # Setup logging to both the console and a rotating file under ``DATA_DIR``
 handlers = [logging.StreamHandler()]
@@ -100,6 +114,27 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Setup templates
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+
+
+@app.middleware("http")
+async def basic_auth_middleware(request: Request, call_next):
+    """Enforce optional HTTP Basic authentication."""
+    if AUTH_ENABLED:
+        auth_header = request.headers.get("Authorization")
+        if not auth_header or not auth_header.startswith("Basic "):
+            return Response(status_code=401, headers={"WWW-Authenticate": "Basic"})
+        try:
+            encoded = auth_header.split(" ", 1)[1]
+            decoded = base64.b64decode(encoded).decode("utf-8")
+            username, password = decoded.split(":", 1)
+        except Exception:  # pylint: disable=broad-except
+            return Response(status_code=401, headers={"WWW-Authenticate": "Basic"})
+        if not (
+            hmac.compare_digest(username, BASIC_AUTH_USERNAME)
+            and hmac.compare_digest(password, BASIC_AUTH_PASSWORD)
+        ):
+            return Response(status_code=401, headers={"WWW-Authenticate": "Basic"})
+    return await call_next(request)
 
 
 @app.middleware("http")

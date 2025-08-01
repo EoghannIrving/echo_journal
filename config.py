@@ -34,3 +34,9 @@ LOG_MAX_BYTES = int(os.getenv("LOG_MAX_BYTES", str(1_048_576)))
 
 # Number of rotated log files to keep.
 LOG_BACKUP_COUNT = int(os.getenv("LOG_BACKUP_COUNT", "3"))
+
+# Optional HTTP Basic auth credentials. If both are set, requests must
+# include matching Authorization headers. When unset, authentication is
+# disabled.
+BASIC_AUTH_USERNAME = os.getenv("BASIC_AUTH_USERNAME")
+BASIC_AUTH_PASSWORD = os.getenv("BASIC_AUTH_PASSWORD")
