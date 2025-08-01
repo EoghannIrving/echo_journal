@@ -122,3 +122,27 @@
 - Markdown format for longevity and openness  
 - Support single-action journaling: open → type → save  
 - Clear UI/API separation using FastAPI + Jinja2
+
+## YAML Frontmatter Structure
+
+Each journal entry begins with a YAML frontmatter block. The application uses this metadata when rendering pages.
+
+```yaml
+location: Example Place
+weather: 18°C code 1
+save_time: Evening
+wotd: luminous
+category: Gratitude
+photos: []
+```
+
+**Field descriptions**
+
+- `location` – text label of your current location when saving.
+- `weather` – raw weather string from the API used by `format_weather`.
+- `save_time` – time of day label (Morning/Afternoon/Evening/Night).
+- `wotd` – Wordnik "word of the day" if available.
+- `category` – prompt category chosen when saving.
+- `photos` – placeholder list updated when photos are linked.
+
+Additional keys may be added as new enrichment features are implemented.

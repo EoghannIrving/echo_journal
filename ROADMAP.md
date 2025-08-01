@@ -49,7 +49,7 @@
   - Optional secure remote access (auth, VPN/reverse proxy).
 
 ## Phase 5: Enrichment and polish (in progress)
-- Document YAML frontmatter structure in the README
+- Document YAML frontmatter structure in the README ✅ Completed
 - Add optional "Fact of the Day" integration
 - Provide an AI-assisted prompt helper
 - Allow refreshing the prompt via a "New Prompt" link
