@@ -36,6 +36,16 @@
           {% endfor %}
         </ul>
       </details>
+      <details id="media-display" class="text-xs text-gray-600 dark:text-gray-300 mt-3 {% if not media %}hidden{% endif %}">
+        <summary class="cursor-pointer font-medium">🎬 Watched</summary>
+        <ul class="list-disc list-inside pl-4 mt-1">
+          {% for m in media %}
+          <li>
+            {% if m.series %}{{ m.series }} - {{ m.title }}{% else %}{{ m.title }}{% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </details>
     </div>
   </details>
 

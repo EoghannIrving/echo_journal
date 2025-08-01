@@ -147,3 +147,35 @@ def test_fetch_top_songs_threshold(monkeypatch):
 
     assert len(songs) == 1
     assert songs[0]["track"] == "KeepMe"
+
+
+def test_fetch_daily_media(monkeypatch):
+    """Movies/Episodes outside the date or below threshold are skipped."""
+
+    items = [
+        {
+            "Name": "Movie",
+            "SeriesName": None,
+            "UserData": {"LastPlayedDate": "2025-07-25T10:00:00Z", "PlayedPercentage": 95},
+        },
+        {
+            "Name": "Old",
+            "SeriesName": None,
+            "UserData": {"LastPlayedDate": "2025-07-24T10:00:00Z"},
+        },
+        {
+            "Name": "Skip",
+            "SeriesName": "Show",
+            "UserData": {"LastPlayedDate": "2025-07-25T12:00:00Z", "PlayedPercentage": 20},
+        },
+    ]
+
+    client = FakeClient(items)
+    monkeypatch.setattr(jellyfin_utils.httpx, "AsyncClient", lambda: client)
+    monkeypatch.setattr(jellyfin_utils, "JELLYFIN_URL", "http://example")
+    monkeypatch.setattr(jellyfin_utils, "JELLYFIN_USER_ID", "uid")
+
+    media = asyncio.run(jellyfin_utils.fetch_daily_media("2025-07-25"))
+
+    assert len(media) == 1
+    assert media[0]["title"] == "Movie"
