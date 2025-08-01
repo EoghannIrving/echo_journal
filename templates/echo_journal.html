@@ -36,7 +36,7 @@
     <button type="button" class="md-btn text-base md:text-2xl" data-action="list" title="List" aria-label="List">&#8226;</button>
   </div>
   <label for="journal-text" class="sr-only">Journal entry</label>
-  <textarea id="journal-text" class="journal-textarea"
+  <textarea id="journal-text" class="journal-textarea" autofocus
     placeholder="Write freely… describe what happened, how you felt, what you noticed, or anything else that stands out."
     oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px'"
     rows="4">{{ content }}</textarea>
