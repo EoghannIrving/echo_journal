@@ -46,11 +46,6 @@
   - Immich (photos).  
   - Geolocation.  
   - Weather API.  
-  - AI-assisted prompts (“Need inspiration?” feature).  
-  - Optional "New Prompt" link to gently refresh the daily suggestion if it doesn't resonate.  
-    - Subtle secondary text that fades in on hover/tap.  
-    - Client-side localStorage ensures the prompt stays consistent after saving.  
-  - Optional secure remote access (auth, VPN/reverse proxy).  
 
 ## Phase 5: Enrichment and polish (in progress)
 
@@ -69,9 +64,15 @@
 ### Enrichment and UX Enhancements
 
 - **Auto-generated prompt selection**  
+  - Add What you watched (from Jellyfin) to the metadata
   - Uses contextual signals (Jellyfin, Immich, Last.fm, local time, weather)  
   - Backend rules or scoring engine selects from `prompts.json`  
-  - Contextual input logged into `.meta.json` or frontmatter  
+  - Contextual input logged into `.meta.json` or frontmatter
+  - AI-assisted prompts (“Need inspiration?” feature).  
+  - Optional "New Prompt" link to gently refresh the daily suggestion if it doesn't resonate.  
+    - Subtle secondary text that fades in on hover/tap.  
+    - Client-side localStorage ensures the prompt stays consistent after saving.  
+  - Optional secure remote access (auth, VPN/reverse proxy).  
 
 - **Minimalist journal screen mode**  
   - One visible prompt only  
