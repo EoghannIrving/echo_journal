@@ -123,9 +123,11 @@
 - Support single-action journaling: open → type → save  
 - Clear UI/API separation using FastAPI + Jinja2
 
-## YAML Frontmatter Structure
+## YAML Frontmatter Reference
 
-Each journal entry begins with a YAML frontmatter block. The application uses this metadata when rendering pages.
+Each journal entry begins with a YAML block. These fields are parsed whenever an entry is saved or displayed.
+
+### Example
 
 ```yaml
 location: Example Place
@@ -136,16 +138,18 @@ category: Gratitude
 photos: []
 ```
 
-**Field descriptions**
+### Field details
 
-- `location` – text label of your current location when saving.
-- `weather` – raw weather string from the API used by `format_weather`.
-- `save_time` – time of day label (Morning/Afternoon/Evening/Night).
-- `wotd` – Wordnik "word of the day" if available.
-- `category` – prompt category chosen when saving.
-- `photos` – placeholder list updated when photos are linked.
+| Field | Purpose | Application usage |
+| ----- | ------- | ----------------- |
+| `location` | Human readable label from browser geolocation. | Shown with a 📍 icon in archive and entry views. |
+| `weather` | Temperature and weather code from Open‑Meteo. | Parsed by `format_weather` to show an icon and temperature. |
+| `save_time` | Morning/Afternoon/Evening/Night recorded at save time. | Provides context for when the entry was written. |
+| `wotd` | Wordnik word of the day. | Displayed in the entry sidebar and as an icon in the archive list. |
+| `category` | Prompt category selected when saving. | Stored for filtering and prompt history. |
+| `photos` | List of photo objects from Immich, initially empty. | Adds a 📸 icon in the archive and shows thumbnails under the entry. |
 
-Additional keys may be added as new enrichment features are implemented.
+Additional keys may be introduced in future integrations (e.g., facts, mood tracking). Unknown keys are ignored.
 
 ## Setup
 
