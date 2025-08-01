@@ -518,25 +518,25 @@ async def _gather_entry_stats() -> tuple[dict, int, int, list[date]]:
 
 def _calculate_streaks(entry_dates: list[date]) -> dict[str, int]:
     """Return current and longest day/week streaks."""
-    entry_dates.sort()
+    unique_dates = sorted(set(entry_dates))
     current_day_streak = 0
     longest_day_streak = 0
     prev = None
-    for d in entry_dates:
+    for d in unique_dates:
         if prev and d == prev + timedelta(days=1):
             current_day_streak += 1
         else:
-            current_day_streak = 1 if entry_dates else 0
+            current_day_streak = 1 if unique_dates else 0
         longest_day_streak = max(longest_day_streak, current_day_streak)
         prev = d
 
-    if not entry_dates:
+    if not unique_dates:
         current_day_streak = longest_day_streak = 0
 
     week_starts = sorted(
         {
             date.fromisocalendar(d.isocalendar()[0], d.isocalendar()[1], 1)
-            for d in entry_dates
+            for d in unique_dates
         }
     )
     current_week_streak = 0

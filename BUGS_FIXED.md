@@ -707,10 +707,24 @@ The following issues were identified and subsequently resolved.
      appended.
    - Fixed lines:
      ```python
-     stripped = line.lstrip()
-     if stripped.startswith("save_time:"):
-         indent = line[: len(line) - len(stripped)]
-         lines[i] = f"{indent}save_time: {label}"
+    stripped = line.lstrip()
+    if stripped.startswith("save_time:"):
+        indent = line[: len(line) - len(stripped)]
+        lines[i] = f"{indent}save_time: {label}"
+    ```
+    【F:main.py†L169-L175】
+
+59. **Duplicate dates inflate streak counts** (fixed)
+   - `_calculate_streaks` now deduplicates dates before computing streaks so
+     multiple files for the same day no longer affect the counts.
+   - Fixed lines:
+     ```python
+     unique_dates = sorted(set(entry_dates))
+     for d in unique_dates:
+         if prev and d == prev + timedelta(days=1):
+             current_day_streak += 1
+         else:
+             current_day_streak = 1 if unique_dates else 0
      ```
-     【F:main.py†L169-L175】
+     【F:main.py†L521-L531】
 
