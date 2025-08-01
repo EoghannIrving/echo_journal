@@ -368,9 +368,7 @@ async def archive_view(
         all_entries = [e for e in all_entries if e["meta"].get("weather")]
     elif filter_ == "has_photos":
         all_entries = [
-            e
-            for e in all_entries
-            if e["meta"].get("photos") not in (None, "[]", [])
+            e for e in all_entries if e["meta"].get("photos") not in (None, "[]", [])
         ]
     elif filter_ == "has_songs":
         all_entries = [e for e in all_entries if e["meta"].get("songs")]
@@ -378,6 +376,7 @@ async def archive_view(
         all_entries = [e for e in all_entries if e["meta"].get("media")]
 
     if sort_by == "date":
+
         def _sort_key(e: dict) -> date:
             return e["date"] or date.min
 
@@ -397,9 +396,7 @@ async def archive_view(
         else:
             month_key = "Unknown"
             date_str = entry["name"]
-        entries_by_month[month_key].append(
-            (date_str, entry["prompt"], entry["meta"])
-        )
+        entries_by_month[month_key].append((date_str, entry["prompt"], entry["meta"]))
 
     # Sort months descending (latest first)
     sorted_entries = dict(sorted(entries_by_month.items(), reverse=True))
@@ -600,6 +597,12 @@ async def stats_page(request: Request):
         "stats.html",
         {"request": request, "stats": stats, "active_page": "stats"},
     )
+
+
+@app.get("/api/new_prompt")
+async def new_prompt() -> dict:
+    """Return a freshly generated journal prompt."""
+    return await generate_prompt()
 
 
 @app.get("/api/reverse_geocode")
