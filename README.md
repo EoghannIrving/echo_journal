@@ -146,3 +146,51 @@ photos: []
 - `photos` – placeholder list updated when photos are linked.
 
 Additional keys may be added as new enrichment features are implemented.
+
+## Setup
+
+Echo Journal runs as a small FastAPI application. Copy `.env.example` to
+`.env` and edit paths or API keys before launching the server.
+
+### Docker Compose quick start
+
+```bash
+docker-compose up --build
+```
+
+This builds the CSS and starts the app on <http://localhost:8510>.
+
+### Running directly with Python
+
+1. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   npm install
+   npm run build:css
+   ```
+
+2. Launch the development server:
+
+   ```bash
+   uvicorn main:app --reload
+   ```
+
+### Environment variables
+
+The `.env` file configures optional integrations and runtime paths:
+
+- `JOURNALS_DIR` – host directory for your Markdown entries.
+- `DATA_DIR`, `APP_DIR`, `PROMPTS_FILE`, `STATIC_DIR`, `TEMPLATES_DIR` –
+  internal paths used by the application.
+- `WORDNIK_API_KEY` – enables the Wordnik "word of the day" prompt.
+- `IMMICH_URL` and `IMMICH_API_KEY` – fetch photos from your Immich server
+  within the `IMMICH_TIME_BUFFER` hour window.
+- `JELLYFIN_URL`, `JELLYFIN_API_KEY`, and `JELLYFIN_USER_ID` – pull
+  recently watched shows from Jellyfin. `JELLYFIN_PAGE_SIZE` and
+  `JELLYFIN_PLAY_THRESHOLD` control pagination and play percentage.
+- Logging options: `LOG_LEVEL`, `LOG_FILE`, `LOG_MAX_BYTES`,
+  `LOG_BACKUP_COUNT`.
+
+Set any of these variables in `.env` or your environment to tailor the app to
+your setup.
