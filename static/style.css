@@ -234,11 +234,16 @@ summary::-webkit-details-marker {
 
 /* Emphasize journaling flow */
 .welcome-message {
-  font-size: clamp(1rem, 1vw + 0.75rem, 1.5rem);
+  font-size: clamp(1.5rem, 2vw + 1rem, 2.5rem);
   font-weight: 700;
 }
 
 #daily-prompt {
-  font-size: clamp(1.4rem, 2.5vw + 1rem, 2.25rem);
+  font-size: clamp(1.75rem, 3vw + 1.2rem, 2.75rem);
   font-weight: 600;
+}
+
+#prompt-category,
+#intro-tagline {
+  font-size: clamp(0.75rem, 0.6vw + 0.6rem, 0.875rem);
 }
