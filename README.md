@@ -1,8 +1,9 @@
 # Echo Journal
 
+*“A time capsule of a day in your life—anchored by how it felt, looked, sounded, and moved."*
+
 Minimalist, mobile-first journaling webapp designed for personal use with Docker, FastAPI, Markdown storage, and a warm minimalist UI.
 **Run Echo Journal only on a trusted local network (LAN). Do not expose it to the public internet.**
-
 
 ## Quickstart
 
