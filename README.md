@@ -196,6 +196,17 @@ The `.env` file configures optional integrations and runtime paths:
   `JELLYFIN_PLAY_THRESHOLD` control pagination and play percentage.
 - Logging options: `LOG_LEVEL`, `LOG_FILE`, `LOG_MAX_BYTES`,
   `LOG_BACKUP_COUNT`.
+- `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` – enable optional HTTP Basic
+  authentication for the web UI. When both are set, all requests must include a
+  matching `Authorization` header.
 
 Set any of these variables in `.env` or your environment to tailor the app to
 your setup.
+
+### Serving behind a VPN or reverse proxy
+
+For secure remote access, run Echo Journal behind your VPN (e.g. WireGuard) or a
+reverse proxy such as Nginx or Caddy. The proxy can handle TLS termination and
+restrict access to known networks. When exposing the app publicly, enable Basic
+Auth by setting `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` so unauthenticated
+requests are rejected with a `401` response.

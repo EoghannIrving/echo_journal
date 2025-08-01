@@ -13,6 +13,7 @@ import sys
 import tempfile
 from datetime import datetime
 from pathlib import Path
+import base64
 import httpx  # pylint: disable=import-error
 
 import aiofiles  # type: ignore  # pylint: disable=import-error
@@ -862,3 +863,22 @@ def test_save_entry_after_refresh(test_client, monkeypatch):
     assert resp2.status_code == 200
     text = (main.DATA_DIR / "2030-01-01.md").read_text(encoding="utf-8")
     assert "New" in text
+
+
+def test_basic_auth_required(monkeypatch):
+    """Requests without credentials should be rejected when auth is enabled."""
+    monkeypatch.setenv("BASIC_AUTH_USERNAME", "user")
+    monkeypatch.setenv("BASIC_AUTH_PASSWORD", "pass")
+    import importlib
+    import config
+
+    importlib.reload(config)
+    mod = importlib.reload(main)
+    client = TestClient(mod.app)
+
+    resp = client.get("/")
+    assert resp.status_code == 401
+
+    token = base64.b64encode(b"user:pass").decode()
+    resp2 = client.get("/", headers={"Authorization": f"Basic {token}"})
+    assert resp2.status_code == 200
