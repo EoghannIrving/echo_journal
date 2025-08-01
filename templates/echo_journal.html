@@ -18,7 +18,7 @@
   <div class="p-4 border-b border-gray-300 dark:border-gray-600 mb-2 space-y-1">
     <div class="flex items-center justify-center gap-2">
       <p id="daily-prompt" class="font-sans leading-snug opacity-0">{{ prompt }}</p>
-      <a href="#" id="new-prompt" class="text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 text-lg" aria-label="New Prompt">🔄</a>
+      <button type="button" id="new-prompt" class="text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 text-lg" aria-label="New Prompt">Refresh prompt</button>
     </div>
     {% if category %}
     <p id="prompt-category" class="italic text-gray-600 dark:text-gray-400">{{ category }}</p>
