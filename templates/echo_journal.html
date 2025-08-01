@@ -3,7 +3,7 @@
 {% block title %}Echo Journal{% endblock %}
 
 {% block header_title %}
-  <h1 id="welcome-message" class="font-serif font-bold text-[clamp(1.75rem,2vw+1rem,2.5rem)] text-center mb-2 opacity-0"
+  <h1 id="welcome-message" class="welcome-message font-serif text-center mb-2 opacity-0"
       {% if not readonly %} data-dynamic-greeting="true"{% endif %}>
     {% if readonly %}
       Welcome back to {{ date }}
@@ -16,7 +16,7 @@
 {% block content %}
 <section class="w-full mx-auto space-y-2 text-center p-4 rounded-xl">
   <div class="p-4 border-b border-gray-300 dark:border-gray-600 mb-2">
-    <p id="daily-prompt" class="font-sans font-medium text-[clamp(1.5rem,2vw+1rem,2rem)] leading-snug mb-2 opacity-0">{{ prompt }}</p>
+    <p id="daily-prompt" class="font-sans leading-snug mb-2 opacity-0">{{ prompt }}</p>
     {% if category %}
     <p id="prompt-category" class="text-sm italic text-gray-600 dark:text-gray-400 mb-1">{{ category }}</p>
     {% else %}
