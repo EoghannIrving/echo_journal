@@ -216,6 +216,11 @@
       const energy = getEnergyValue(energyStr);
       // Only fetch when both fields are chosen
       if (!mood || !energy) return;
+      // Hide any existing prompt to avoid flashing stale content
+      if (promptSection) promptSection.classList.add('hidden');
+      if (promptEl) promptEl.textContent = '';
+      if (editorSection) editorSection.classList.add('hidden');
+      [newBtn, focusToggle].filter(Boolean).forEach(btn => btn.classList.add('hidden'));
       try {
         const params = new URLSearchParams({ mood, energy });
         const res = await fetch(`/api/new_prompt?${params.toString()}`);
