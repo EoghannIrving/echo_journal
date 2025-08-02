@@ -203,7 +203,9 @@
       if (energySelect) energySelect.disabled = true;
       moodEnergyLocked = true;
     }
-    if (currentPrompt) {
+    const initialMood = moodSelect ? moodSelect.value : '';
+    const initialEnergy = energySelect ? energySelect.value : '';
+    if (currentPrompt && (hasEntryContent || (initialMood && initialEnergy))) {
       revealPrompt();
       promptShown = true;
     }
@@ -237,7 +239,6 @@
       energySelect.addEventListener('change', maybeFetchPrompt);
       energySelect.addEventListener('blur', maybeFetchPrompt);
     }
-    maybeFetchPrompt();
     const params = new URLSearchParams(window.location.search);
     if (params.get('focus') === '1') {
       document.body.classList.add('focus-mode');
