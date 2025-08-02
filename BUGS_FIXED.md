@@ -16,7 +16,7 @@ The following issues were identified and subsequently resolved.
      definition has been removed so the constant appears only once.
    - Current definition:
      ```python
-     PROMPTS_FILE = Path("/app/prompts.json")
+     PROMPTS_FILE = Path("/app/prompts.yaml")
      ```
      【F:main.py†L18-L20】
 
@@ -76,16 +76,16 @@ The following issues were identified and subsequently resolved.
      【F:main.py†L80-L86】
 
 8. **`generate_prompt` lacks error handling** (fixed)
-   - The function now catches `FileNotFoundError` and `JSONDecodeError` when
-     loading `prompts.json`.
+   - The function now catches `FileNotFoundError` and `YAMLError` when
+     loading `prompts.yaml`.
    - Updated lines:
      ```python
      try:
          prompts_text = PROMPTS_FILE.read_text(encoding="utf-8")
-         prompts = json.loads(prompts_text)
+         prompts = yaml.safe_load(prompts_text)
      except FileNotFoundError:
          return {"category": None, "prompt": "Prompts file not found"}
-     except json.JSONDecodeError:
+     except yaml.YAMLError:
          return {"category": None, "prompt": "Invalid prompts file"}
      ```
      【F:main.py†L106-L112】
@@ -231,7 +231,7 @@ The following issues were identified and subsequently resolved.
      【F:main.py†L87-L95】
 
 22. **`generate_prompt` assumes `categories` key exists** (fixed)
-   - If `prompts.json` lacked the `categories` key, `generate_prompt` raised a `KeyError` when accessing `prompts["categories"].keys()`.
+   - If `prompts.yaml` lacked the `categories` key, `generate_prompt` raised a `KeyError` when accessing `prompts["categories"].keys()`.
    - The function now safely retrieves the dictionary and handles missing or invalid values.
    - Updated lines:
      ```python

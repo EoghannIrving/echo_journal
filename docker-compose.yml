@@ -5,7 +5,7 @@ services:
       - "8510:8000"
     volumes:
       - ./static:/app/static
-      - ./prompts.json:/app/prompts.json
+      - ./prompts.yaml:/app/prompts.yaml
       - ${JOURNALS_DIR:-/mnt/nas/journals}:/journals
     environment:
       - TZ=America/New_York

@@ -26,7 +26,7 @@ def test_calculate_streaks_deduplicates_dates(tmp_path, monkeypatch):
     monkeypatch.setenv("STATIC_DIR", str(tmp_path / "static"))
     monkeypatch.setenv("DATA_DIR", str(tmp_path))
     monkeypatch.setenv("TEMPLATES_DIR", str(tmp_path))
-    monkeypatch.setenv("PROMPTS_FILE", str(tmp_path / "prompts.json"))
+    monkeypatch.setenv("PROMPTS_FILE", str(tmp_path / "prompts.yaml"))
 
     mod = importlib.reload(main)
 

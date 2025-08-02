@@ -24,7 +24,7 @@ from fastapi.testclient import TestClient  # pylint: disable=import-error
 ROOT = Path(__file__).resolve().parents[1]
 APP_DIR = Path(tempfile.gettempdir()) / "ej_app"
 STATIC_DIR = APP_DIR / "static"
-PROMPTS_FILE = APP_DIR / "prompts.json"
+PROMPTS_FILE = APP_DIR / "prompts.yaml"
 DATA_ROOT = Path(tempfile.gettempdir()) / "ej_journals"
 
 TEMPLATES_DIR = ROOT / "templates"
@@ -40,7 +40,7 @@ STATIC_DIR.mkdir(parents=True, exist_ok=True)
 DATA_ROOT.mkdir(parents=True, exist_ok=True)
 # copy prompts file if not already
 if not PROMPTS_FILE.exists():
-    shutil.copy(ROOT / "prompts.json", PROMPTS_FILE)
+    shutil.copy(ROOT / "prompts.yaml", PROMPTS_FILE)
 
 # Make sure the repository root is on ``sys.path`` so ``main`` can be imported
 sys.path.insert(0, str(ROOT))
