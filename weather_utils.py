@@ -1,6 +1,6 @@
 """Helpers for building frontmatter with optional weather data."""
 
-from typing import Optional
+from typing import Optional, Dict
 from datetime import datetime
 
 import httpx
@@ -42,19 +42,22 @@ def time_of_day_label(now: datetime | None = None) -> str:
     return "Night"
 
 
-async def build_frontmatter(location: dict) -> str:
-    """Return a YAML frontmatter string based on the provided location."""
+async def build_frontmatter(location: dict, weather: Optional[Dict[str, float]] = None) -> str:
+    """Return a YAML frontmatter string based on the provided location and weather."""
     lat = float(location.get("lat") or 0)
     lon = float(location.get("lon") or 0)
     label = location.get("label") or ""
-    weather = await fetch_weather(lat, lon)
+    if weather and "temperature" in weather and "code" in weather:
+        weather_str = f"{weather['temperature']}°C code {int(weather['code'])}"
+    else:
+        weather_str = await fetch_weather(lat, lon)
     wotd = await fetch_word_of_day()
 
     lines = []
     if label:
         lines.append(f"location: {label}")
-    if weather:
-        lines.append(f"weather: {weather}")
+    if weather_str:
+        lines.append(f"weather: {weather_str}")
     lines.append(f"save_time: {time_of_day_label()}")
     if wotd:
         lines.append(f"wotd: {wotd}")
