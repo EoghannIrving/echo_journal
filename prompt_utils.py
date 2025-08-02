@@ -5,8 +5,6 @@ import yaml
 import random
 from datetime import date
 
-from activation_engine_utils import rank_prompts
-
 import aiofiles
 
 from config import PROMPTS_FILE, ENCODING
@@ -63,13 +61,13 @@ def get_season(target_date: date) -> str:
     return "Winter"
 
 
-async def generate_prompt(tags: list[str] | None = None) -> dict:
+async def generate_prompt(mood: str | None = None, energy: int | None = None) -> dict:
     """Select and return a prompt for the current day.
 
-    ``prompts.yaml`` now stores a list of prompt dictionaries with fields like
-    ``id``, ``prompt`` and ``tags``.  This function chooses a prompt at random,
-    optionally filtering by ``tags`` and using ActivationEngine to rank
-    candidates when available.
+    Prompts are chosen at random, optionally filtered by ``mood`` and
+    ``energy``. ``mood`` matches prompts whose mood equals the supplied value or
+    contains it when a list is provided. ``energy`` filters for prompts
+    requiring less than or equal to the given level.
     """
     today = date.today()
     weekday = today.strftime("%A")
@@ -80,21 +78,35 @@ async def generate_prompt(tags: list[str] | None = None) -> dict:
         return {"category": None, "prompt": "Prompts file not found"}
 
     candidates = prompts
-    if tags:
-        tag_set = {t.lower() for t in tags}
-        candidates = [
-            p
-            for p in prompts
-            if any(tag.lower() in tag_set for tag in p.get("tags", []))
-        ] or prompts
+
+    if mood:
+        m = mood.lower()
+
+        def mood_matches(val):
+            if val is None:
+                return True
+            if isinstance(val, str):
+                return val.lower() == "any" or val.lower() == m
+            if isinstance(val, list):
+                lowered = [str(v).lower() for v in val]
+                return "any" in lowered or m in lowered
+            return False
+
+        candidates = [p for p in candidates if mood_matches(p.get("mood"))]
+
+    if energy is not None:
+        def energy_matches(val):
+            if val is None:
+                return True
+            try:
+                return int(val) <= energy
+            except (TypeError, ValueError):
+                return False
+
+        candidates = [p for p in candidates if energy_matches(p.get("energy"))]
 
     if not candidates:
         return {"category": None, "prompt": "No prompts available"}
-
-    if tags:
-        ranked_strings = await rank_prompts([p.get("prompt", "") for p in candidates], tags)
-        lookup = {p.get("prompt", ""): p for p in candidates}
-        candidates = [lookup[s] for s in ranked_strings if s in lookup] or candidates
 
     chosen = random.choice(candidates)
     prompt_text = chosen.get("prompt", "")
