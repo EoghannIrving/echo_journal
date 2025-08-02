@@ -62,7 +62,7 @@
         console.warn('Reverse geocoding failed:', e);
       }
 
-      // Display it somewhere (optional)
+      const detailsEl = document.getElementById('meta-details');
       const el = document.getElementById('location-display');
       if (el) {
         el.textContent = `📍 ${locationLabel} (±${Math.round(accuracy)}m)`;
@@ -70,6 +70,8 @@
         el.dataset.lon = longitude;
         el.dataset.accuracy = accuracy;
         el.dataset.locationName = locationLabel;
+        el.classList.remove('hidden');
+        detailsEl?.classList.remove('hidden');
       }
 
       const weatherEl = document.getElementById('weather-display');
@@ -78,6 +80,8 @@
         if (weather) {
           const icon = weatherIcons[weather.code] || '';
           weatherEl.textContent = `${icon} ${weather.temperature}\u00B0C`.trim();
+          weatherEl.classList.remove('hidden');
+          detailsEl?.classList.remove('hidden');
         }
       }
     },
