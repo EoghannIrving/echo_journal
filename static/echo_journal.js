@@ -219,6 +219,7 @@
       // Hide any existing prompt to avoid flashing stale content
       if (promptSection) promptSection.classList.add('hidden');
       if (promptEl) promptEl.textContent = '';
+      if (promptEl) promptEl.classList.add('opacity-0');
       if (editorSection) editorSection.classList.add('hidden');
       [newBtn, focusToggle].filter(Boolean).forEach(btn => btn.classList.add('hidden'));
       try {
