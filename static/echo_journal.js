@@ -350,8 +350,8 @@
             code: parseInt(weatherEl.dataset.code, 10)
           };
         }
-        const mood = document.getElementById('mood-select').value;
-        const energy = document.getElementById('energy-select').value;
+        const mood = moodSelect ? moodSelect.value : '';
+        const energy = energySelect ? energySelect.value : '';
 
         const status = document.getElementById('save-status');
         try {

@@ -270,8 +270,8 @@ async def save_entry(data: dict):
     category = data.get("category")
     location = data.get("location") or {}
     weather = data.get("weather")
-    mood = data.get("mood")
-    energy = data.get("energy")
+    mood = bleach.clean(data.get("mood") or "").strip() or None
+    energy = bleach.clean(data.get("energy") or "").strip() or None
 
     if not entry_date or not content or not prompt:
         return JSONResponse(

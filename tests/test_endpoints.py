@@ -136,6 +136,22 @@ def test_weather_saved_when_provided(test_client):
     assert "weather: 20°C code 1" in text
 
 
+def test_mood_and_energy_saved(test_client):
+    """Selected mood and energy values are stored in frontmatter."""
+    payload = {
+        "date": "2021-04-01",
+        "content": "entry",
+        "prompt": "prompt",
+        "mood": "joyful",
+        "energy": "energized",
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    text = (main.DATA_DIR / "2021-04-01.md").read_text(encoding="utf-8")
+    assert "mood: joyful" in text
+    assert "energy: energized" in text
+
+
 def test_save_entry_missing_fields(test_client):
     """Saving with missing required fields should return an error."""
     resp = test_client.post("/entry", json={"date": "2020-01-02"})
