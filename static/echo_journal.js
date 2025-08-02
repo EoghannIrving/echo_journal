@@ -163,6 +163,7 @@
 
     const promptEl = document.getElementById('daily-prompt');
     const catEl = document.getElementById('prompt-category');
+    const textarea = document.getElementById('journal-text');
     const stored = localStorage.getItem(promptKey);
     if (stored) {
       try {
@@ -171,9 +172,13 @@
         currentCategory = data.category || currentCategory;
       } catch (_) {}
     }
-    if (currentPrompt) {
+    const revealPrompt = () => {
+      if (!currentPrompt) return;
       if (promptSection) promptSection.classList.remove('hidden');
-      if (editorSection) editorSection.classList.remove('hidden');
+      if (editorSection) {
+        editorSection.classList.remove('hidden');
+        if (textarea) textarea.dispatchEvent(new Event('input'));
+      }
       if (promptEl) {
         promptEl.textContent = currentPrompt;
         const promptDelay = animateText(promptEl, delay + 300, 15, 40);
@@ -186,7 +191,25 @@
         catEl.textContent = currentCategory || '';
         catEl.classList.toggle('hidden', !currentCategory);
       }
+    };
+
+    const hasEntryContent = textarea && textarea.value.trim() !== '';
+    let promptShown = false;
+    if (currentPrompt && hasEntryContent) {
+      revealPrompt();
+      promptShown = true;
     }
+
+    const maybeRevealStoredPrompt = () => {
+      if (!promptShown && currentPrompt && moodSelect && energySelect && moodSelect.value && energySelect.value) {
+        revealPrompt();
+        promptShown = true;
+      }
+    };
+
+    if (moodSelect) moodSelect.addEventListener('change', maybeRevealStoredPrompt);
+    if (energySelect) energySelect.addEventListener('change', maybeRevealStoredPrompt);
+    maybeRevealStoredPrompt();
     const params = new URLSearchParams(window.location.search);
     if (params.get('focus') === '1') {
       document.body.classList.add('focus-mode');
@@ -205,7 +228,6 @@
     }
 
     const toolbar = document.getElementById('md-toolbar');
-    const textarea = document.getElementById('journal-text');
     const saveButton = document.getElementById('save-button');
     if (textarea) {
       // Ensure the field height matches preloaded content
@@ -269,18 +291,8 @@
             const data = await res.json();
             currentPrompt = data.prompt;
             currentCategory = data.category || '';
-            if (promptSection) promptSection.classList.remove('hidden');
-            if (editorSection) {
-              editorSection.classList.remove('hidden');
-              if (textarea) textarea.dispatchEvent(new Event('input'));
-            }
-            promptEl.textContent = currentPrompt;
-            animateText(promptEl, 0, 15, 40);
-            if (catEl) {
-              catEl.textContent = currentCategory;
-              catEl.classList.toggle('hidden', !currentCategory);
-            }
-            [newBtn, focusToggle].forEach(btn => btn && btn.classList.remove('hidden'));
+            revealPrompt();
+            promptShown = true;
             localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
           }
         } catch (_) {}
