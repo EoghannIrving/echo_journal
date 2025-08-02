@@ -138,7 +138,6 @@
     const welcomeEl = document.getElementById('welcome-message');
     const focusToggle = document.getElementById('focus-toggle');
     const newBtn = document.getElementById('new-prompt');
-    const getPromptBtn = document.getElementById('get-prompt');
     const promptSection = document.getElementById('prompt-section');
     const editorSection = document.getElementById('editor-section');
     const moodSelect = document.getElementById('mood-select');
@@ -200,16 +199,28 @@
       promptShown = true;
     }
 
-    const maybeRevealStoredPrompt = () => {
-      if (!promptShown && currentPrompt && moodSelect && energySelect && moodSelect.value && energySelect.value) {
-        revealPrompt();
-        promptShown = true;
-      }
+    const maybeFetchPrompt = async () => {
+      const mood = moodSelect ? moodSelect.value : '';
+      const energyStr = energySelect ? energySelect.value : '';
+      const energy = getEnergyValue(energyStr);
+      if (!mood || !energy) return;
+      try {
+        const params = new URLSearchParams({ mood, energy });
+        const res = await fetch(`/api/new_prompt?${params.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          currentPrompt = data.prompt;
+          currentCategory = data.category || '';
+          revealPrompt();
+          promptShown = true;
+          localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
+        }
+      } catch (_) {}
     };
 
-    if (moodSelect) moodSelect.addEventListener('change', maybeRevealStoredPrompt);
-    if (energySelect) energySelect.addEventListener('change', maybeRevealStoredPrompt);
-    maybeRevealStoredPrompt();
+    if (moodSelect) moodSelect.addEventListener('change', maybeFetchPrompt);
+    if (energySelect) energySelect.addEventListener('change', maybeFetchPrompt);
+    maybeFetchPrompt();
     const params = new URLSearchParams(window.location.search);
     if (params.get('focus') === '1') {
       document.body.classList.add('focus-mode');
@@ -275,27 +286,6 @@
 
         textarea.focus();
         textarea.dispatchEvent(new Event('input'));
-      });
-    }
-
-    if (getPromptBtn && promptEl) {
-      getPromptBtn.addEventListener('click', async () => {
-        const mood = moodSelect ? moodSelect.value : '';
-        const energyStr = energySelect ? energySelect.value : '';
-        const energy = getEnergyValue(energyStr);
-        if (!mood || !energy) return;
-        const params = new URLSearchParams({ mood, energy });
-        try {
-          const res = await fetch(`/api/new_prompt?${params.toString()}`);
-          if (res.ok) {
-            const data = await res.json();
-            currentPrompt = data.prompt;
-            currentCategory = data.category || '';
-            revealPrompt();
-            promptShown = true;
-            localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
-          }
-        } catch (_) {}
       });
     }
 
