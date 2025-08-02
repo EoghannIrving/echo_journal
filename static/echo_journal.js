@@ -177,7 +177,7 @@
       if (promptSection) promptSection.classList.remove('hidden');
       if (promptEl) {
         promptEl.textContent = currentPrompt;
-        animateText(promptEl, startDelay, 15, 40);
+        const totalDelay = animateText(promptEl, startDelay, 15, 40);
         const showEditor = () => {
           if (editorSection) {
             editorSection.classList.remove('hidden');
@@ -186,10 +186,7 @@
           const buttons = [newBtn, focusToggle].filter(Boolean);
           buttons.forEach(btn => btn.classList.remove('hidden'));
         };
-        const letters = promptEl.querySelectorAll('.letter-span');
-        const lastLetter = letters[letters.length - 1];
-        if (lastLetter) lastLetter.addEventListener('transitionend', showEditor, { once: true });
-        else showEditor();
+        setTimeout(showEditor, totalDelay + 200);
       }
       if (catEl) {
         catEl.textContent = currentCategory || '';
