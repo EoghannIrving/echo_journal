@@ -203,7 +203,7 @@
       if (energySelect) energySelect.disabled = true;
       moodEnergyLocked = true;
     }
-    if (currentPrompt && hasEntryContent) {
+    if (currentPrompt) {
       revealPrompt();
       promptShown = true;
     }
