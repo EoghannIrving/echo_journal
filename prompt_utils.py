@@ -61,13 +61,19 @@ def get_season(target_date: date) -> str:
     return "Winter"
 
 
-async def generate_prompt(mood: str | None = None, energy: int | None = None) -> dict:
+async def generate_prompt(
+    mood: str | None = None,
+    energy: int | None = None,
+    debug: bool = False,
+) -> dict:
     """Select and return a prompt for the current day.
 
     Prompts are chosen at random, optionally filtered by ``mood`` and
     ``energy``. ``mood`` matches prompts whose mood equals the supplied value or
     contains it when a list is provided. ``energy`` filters for prompts
-    requiring less than or equal to the given level.
+    requiring less than or equal to the given level. If ``debug`` is ``True``,
+    additional information about the selection process is returned under a
+    ``debug`` key.
     """
     today = date.today()
     weekday = today.strftime("%A")
@@ -75,9 +81,15 @@ async def generate_prompt(mood: str | None = None, energy: int | None = None) ->
 
     prompts = await load_prompts()
     if not isinstance(prompts, list) or not prompts:
-        return {"category": None, "prompt": "Prompts file not found"}
+        result = {"category": None, "prompt": "Prompts file not found"}
+        if debug:
+            result["debug"] = {"initial": [], "after_mood": [], "after_energy": [], "chosen": None}
+        return result
 
     candidates = prompts
+    debug_info: dict[str, object] = {}
+    if debug:
+        debug_info["initial"] = [p.get("id") for p in candidates]
 
     if mood:
         m = mood.lower()
@@ -93,6 +105,10 @@ async def generate_prompt(mood: str | None = None, energy: int | None = None) ->
             return False
 
         candidates = [p for p in candidates if mood_matches(p.get("mood"))]
+        if debug:
+            debug_info["after_mood"] = [p.get("id") for p in candidates]
+    elif debug:
+        debug_info["after_mood"] = [p.get("id") for p in candidates]
 
     if energy is not None:
         def energy_matches(val):
@@ -104,9 +120,17 @@ async def generate_prompt(mood: str | None = None, energy: int | None = None) ->
                 return False
 
         candidates = [p for p in candidates if energy_matches(p.get("energy"))]
+        if debug:
+            debug_info["after_energy"] = [p.get("id") for p in candidates]
+    elif debug:
+        debug_info["after_energy"] = [p.get("id") for p in candidates]
 
     if not candidates:
-        return {"category": None, "prompt": "No prompts available"}
+        result = {"category": None, "prompt": "No prompts available"}
+        if debug:
+            debug_info["chosen"] = None
+            result["debug"] = debug_info
+        return result
 
     chosen = random.choice(candidates)
     prompt_text = chosen.get("prompt", "")
@@ -135,4 +159,7 @@ async def generate_prompt(mood: str | None = None, energy: int | None = None) ->
     }
     if "anchor" in chosen:
         result["anchor"] = chosen["anchor"]
+    if debug:
+        debug_info["chosen"] = pid
+        result["debug"] = debug_info
     return result

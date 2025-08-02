@@ -675,9 +675,13 @@ async def stats_page(request: Request):
 
 
 @app.get("/api/new_prompt")
-async def new_prompt(mood: str | None = None, energy: int | None = None) -> dict:
+async def new_prompt(
+    mood: str | None = None,
+    energy: int | None = None,
+    debug: bool = False,
+) -> dict:
     """Return a freshly generated journal prompt."""
-    return await generate_prompt(mood=mood, energy=energy)
+    return await generate_prompt(mood=mood, energy=energy, debug=debug)
 
 
 @app.get("/api/reverse_geocode")
