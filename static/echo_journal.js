@@ -172,20 +172,24 @@
         currentCategory = data.category || currentCategory;
       } catch (_) {}
     }
-    const revealPrompt = () => {
+    const revealPrompt = (startDelay = delay + 300) => {
       if (!currentPrompt) return;
       if (promptSection) promptSection.classList.remove('hidden');
       if (promptEl) {
         promptEl.textContent = currentPrompt;
-        const promptDelay = animateText(promptEl, delay + 300, 15, 40);
-        setTimeout(() => {
+        animateText(promptEl, startDelay, 15, 40);
+        const showEditor = () => {
           if (editorSection) {
             editorSection.classList.remove('hidden');
             if (textarea) textarea.dispatchEvent(new Event('input'));
           }
           const buttons = [newBtn, focusToggle].filter(Boolean);
           buttons.forEach(btn => btn.classList.remove('hidden'));
-        }, promptDelay + 200);
+        };
+        const letters = promptEl.querySelectorAll('.letter-span');
+        const lastLetter = letters[letters.length - 1];
+        if (lastLetter) lastLetter.addEventListener('transitionend', showEditor, { once: true });
+        else showEditor();
       }
       if (catEl) {
         catEl.textContent = currentCategory || '';
@@ -217,7 +221,7 @@
           const data = await res.json();
           currentPrompt = data.prompt;
           currentCategory = data.category || '';
-          revealPrompt();
+          revealPrompt(0);
           promptShown = true;
           localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
         }
