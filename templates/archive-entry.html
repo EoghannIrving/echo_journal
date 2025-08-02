@@ -26,7 +26,7 @@
       {% if weather %}{{ weather }}{% endif %}
       </div>
       <div id="wotd-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not wotd %}hidden{% endif %}">
-        {% if wotd %}📖 {{ wotd }}{% endif %}
+        {% if wotd %}📖 {{ wotd }}{% if wotd_def %} — {{ wotd_def }}{% endif %}{% endif %}
       </div>
       <details id="songs-display" class="text-xs text-gray-600 dark:text-gray-300 mt-3 {% if not songs %}hidden{% endif %}">
         <summary class="cursor-pointer font-medium">🎵 Today's Songs</summary>

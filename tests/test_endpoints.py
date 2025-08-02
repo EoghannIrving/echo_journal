@@ -114,7 +114,7 @@ def test_word_of_day_in_frontmatter(test_client, monkeypatch):
     """Wordnik word of the day is saved in frontmatter when available."""
 
     async def fake_word():
-        return "serendipity"
+        return "serendipity", "fortunate discovery"
 
     monkeypatch.setattr(weather_utils, "fetch_word_of_day", fake_word)
     payload = {"date": "2020-10-10", "content": "entry", "prompt": "prompt"}
@@ -122,13 +122,14 @@ def test_word_of_day_in_frontmatter(test_client, monkeypatch):
     assert resp.status_code == 200
     text = (main.DATA_DIR / "2020-10-10.md").read_text(encoding="utf-8")
     assert "wotd: serendipity" in text
+    assert "wotd_def: fortunate discovery" in text
 
 
 def test_wordnik_disabled_in_frontmatter(test_client, monkeypatch):
     """Wordnik data should be omitted when integration is disabled."""
 
     async def fake_word():
-        return "serendipity"
+        return "serendipity", "fortunate discovery"
 
     monkeypatch.setattr(weather_utils, "fetch_word_of_day", fake_word)
     payload = {
@@ -141,6 +142,7 @@ def test_wordnik_disabled_in_frontmatter(test_client, monkeypatch):
     assert resp.status_code == 200
     text = (main.DATA_DIR / "2020-10-11.md").read_text(encoding="utf-8")
     assert "wotd:" not in text
+    assert "wotd_def:" not in text
 
 
 def test_category_saved_in_frontmatter(test_client):
@@ -545,6 +547,7 @@ def test_view_entry_shows_wotd(test_client):
     """Word of the day from frontmatter should appear in view page."""
     content = """---
 wotd: luminous
+wotd_def: emitting light
 photos: []
 ---
 # Prompt
@@ -556,12 +559,14 @@ E"""
     resp = test_client.get("/archive/2021-08-01")
     assert resp.status_code == 200
     assert "luminous" in resp.text
+    assert "emitting light" in resp.text
 
 
 def test_archive_shows_wotd_icon(test_client):
     """Entries with a word of the day show an icon in the archive."""
     content = """---
 wotd: zephyr
+wotd_def: gentle breeze
 photos: []
 ---
 # Prompt

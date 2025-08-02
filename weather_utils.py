@@ -4,6 +4,7 @@ from typing import Optional, Dict
 from datetime import datetime
 
 import httpx
+import yaml
 
 from wordnik_utils import fetch_word_of_day
 
@@ -59,9 +60,11 @@ async def build_frontmatter(
         weather_str = f"{weather['temperature']}°C code {int(weather['code'])}"
     else:
         weather_str = await fetch_weather(lat, lon)
-    wotd = None
+    wotd_word = wotd_def = None
     if integrations.get("wordnik", True):
         wotd = await fetch_word_of_day()
+        if wotd:
+            wotd_word, wotd_def = wotd
 
     lines = []
     if label:
@@ -69,8 +72,11 @@ async def build_frontmatter(
     if weather_str:
         lines.append(f"weather: {weather_str}")
     lines.append(f"save_time: {time_of_day_label()}")
-    if wotd:
-        lines.append(f"wotd: {wotd}")
+    if wotd_word:
+        lines.append(f"wotd: {wotd_word}")
+        if wotd_def:
+            dumped = yaml.safe_dump(wotd_def, explicit_end=False).strip().splitlines()[0]
+            lines.append(f"wotd_def: {dumped}")
     if integrations.get("immich", True):
         lines.append("photos: []")
     return "\n".join(lines)
