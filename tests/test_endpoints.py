@@ -11,7 +11,7 @@ import os
 import shutil
 import sys
 import tempfile
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from pathlib import Path
 import base64
 import httpx  # pylint: disable=import-error
@@ -66,6 +66,22 @@ def test_index_returns_page(test_client):
     resp = test_client.get("/")
     assert resp.status_code == 200
     assert "Echo Journal" in resp.text
+
+
+def test_restart_notice_shown_when_yesterday_missing(test_client):
+    """Index shows restart message when there's no entry for yesterday."""
+    two_days_ago = (date.today() - timedelta(days=2)).isoformat()
+    (main.DATA_DIR / f"{two_days_ago}.md").write_text("entry", encoding="utf-8")
+    resp = test_client.get("/")
+    assert "Restart from today?" in resp.text
+
+
+def test_restart_notice_absent_when_yesterday_exists(test_client):
+    """Restart message not shown if yesterday's entry exists."""
+    yesterday = (date.today() - timedelta(days=1)).isoformat()
+    (main.DATA_DIR / f"{yesterday}.md").write_text("entry", encoding="utf-8")
+    resp = test_client.get("/")
+    assert "Restart from today?" not in resp.text
 
 
 def test_save_entry_and_retrieve(test_client):

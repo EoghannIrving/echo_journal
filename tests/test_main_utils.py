@@ -46,3 +46,25 @@ def test_calculate_streaks_deduplicates_dates(tmp_path, monkeypatch):
         "current_week_streak": 2,
         "longest_week_streak": 2,
     }
+
+
+def test_days_since_last_entry_various_gaps(tmp_path):
+    """_days_since_last_entry returns expected gaps."""
+    today = date(2024, 1, 10)
+
+    # No entries yet
+    assert main._days_since_last_entry(tmp_path, today) is None
+
+    # Entry for yesterday -> gap 1
+    (tmp_path / "2024-01-09.md").touch()
+    assert main._days_since_last_entry(tmp_path, today) == 1
+
+    # Replace with entry two days ago -> gap 2
+    (tmp_path / "2024-01-09.md").unlink()
+    (tmp_path / "2024-01-08.md").touch()
+    assert main._days_since_last_entry(tmp_path, today) == 2
+
+    # Entry five days ago -> gap 5
+    (tmp_path / "2024-01-08.md").unlink()
+    (tmp_path / "2024-01-05.md").touch()
+    assert main._days_since_last_entry(tmp_path, today) == 5
