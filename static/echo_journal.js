@@ -5,6 +5,7 @@
   let currentCategory = cfg.category || "";
   const promptKey = `ej-prompt-${entryDate}`;
   const readonly = cfg.readonly === true || cfg.readonly === "true";
+  const energyLevels = { drained: 1, low: 2, ok: 3, energized: 4 };
 
   async function fetchWeather(lat, lon) {
     try {
@@ -136,6 +137,11 @@
     const welcomeEl = document.getElementById('welcome-message');
     const focusToggle = document.getElementById('focus-toggle');
     const newBtn = document.getElementById('new-prompt');
+    const getPromptBtn = document.getElementById('get-prompt');
+    const promptSection = document.getElementById('prompt-section');
+    const editorSection = document.getElementById('editor-section');
+    const moodSelect = document.getElementById('mood-select');
+    const energySelect = document.getElementById('energy-select');
     let delay = 0;
     if (welcomeEl) {
       const wantsGreeting = welcomeEl.dataset.dynamicGreeting === 'true';
@@ -164,17 +170,21 @@
         currentCategory = data.category || currentCategory;
       } catch (_) {}
     }
-    if (promptEl) {
-      promptEl.textContent = currentPrompt;
-      const promptDelay = animateText(promptEl, delay + 300, 15, 40);
-      const buttons = [newBtn, focusToggle].filter(Boolean);
-      if (buttons.length) {
-        setTimeout(() => buttons.forEach(btn => btn.classList.remove('hidden')), promptDelay + 200);
+    if (currentPrompt) {
+      if (promptSection) promptSection.classList.remove('hidden');
+      if (editorSection) editorSection.classList.remove('hidden');
+      if (promptEl) {
+        promptEl.textContent = currentPrompt;
+        const promptDelay = animateText(promptEl, delay + 300, 15, 40);
+        const buttons = [newBtn, focusToggle].filter(Boolean);
+        if (buttons.length) {
+          setTimeout(() => buttons.forEach(btn => btn.classList.remove('hidden')), promptDelay + 200);
+        }
       }
-    }
-    if (catEl) {
-      catEl.textContent = currentCategory || '';
-      catEl.classList.toggle('hidden', !currentCategory);
+      if (catEl) {
+        catEl.textContent = currentCategory || '';
+        catEl.classList.toggle('hidden', !currentCategory);
+      }
     }
     const params = new URLSearchParams(window.location.search);
     if (params.get('focus') === '1') {
@@ -245,11 +255,48 @@
       });
     }
 
+    if (getPromptBtn && promptEl) {
+      getPromptBtn.addEventListener('click', async () => {
+        const mood = moodSelect ? moodSelect.value : '';
+        const energyStr = energySelect ? energySelect.value : '';
+        if (!mood || !energyStr) return;
+        const params = new URLSearchParams({ mood, energy: energyLevels[energyStr] });
+        try {
+          const res = await fetch(`/api/new_prompt?${params.toString()}`);
+          if (res.ok) {
+            const data = await res.json();
+            currentPrompt = data.prompt;
+            currentCategory = data.category || '';
+            if (promptSection) promptSection.classList.remove('hidden');
+            if (editorSection) {
+              editorSection.classList.remove('hidden');
+              if (textarea) textarea.dispatchEvent(new Event('input'));
+            }
+            promptEl.textContent = currentPrompt;
+            animateText(promptEl, 0, 15, 40);
+            if (catEl) {
+              catEl.textContent = currentCategory;
+              catEl.classList.toggle('hidden', !currentCategory);
+            }
+            [newBtn, focusToggle].forEach(btn => btn && btn.classList.remove('hidden'));
+            localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
+          }
+        } catch (_) {}
+      });
+    }
+
     if (newBtn && promptEl) {
       newBtn.addEventListener('click', async (e) => {
         e.preventDefault();
+        const mood = moodSelect ? moodSelect.value : '';
+        const energyStr = energySelect ? energySelect.value : '';
+        const params = new URLSearchParams();
+        if (mood) params.append('mood', mood);
+        const mappedEnergy = energyLevels[energyStr];
+        if (mappedEnergy) params.append('energy', mappedEnergy);
+        const url = `/api/new_prompt${params.toString() ? `?${params.toString()}` : ''}`;
         try {
-          const res = await fetch('/api/new_prompt');
+          const res = await fetch(url);
           if (res.ok) {
             const data = await res.json();
             currentPrompt = data.prompt;
