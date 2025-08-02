@@ -844,21 +844,26 @@ def test_reverse_geocode_network_error(test_client, monkeypatch):
 def test_new_prompt_endpoint(test_client, monkeypatch):
     """/api/new_prompt returns a generated prompt."""
 
-    async def fake_prompt():
+    captured: dict[str, object] = {}
+
+    async def fake_prompt(*, mood=None, energy=None):
+        captured["mood"] = mood
+        captured["energy"] = energy
         return {"prompt": "P", "category": "Test"}
 
     monkeypatch.setattr(main, "generate_prompt", fake_prompt)
 
-    resp = test_client.get("/api/new_prompt")
+    resp = test_client.get("/api/new_prompt", params={"mood": "ok", "energy": 2})
 
     assert resp.status_code == 200
     assert resp.json() == {"prompt": "P", "category": "Test"}
+    assert captured == {"mood": "ok", "energy": 2}
 
 
 def test_save_entry_after_refresh(test_client, monkeypatch):
     """Entries saved after fetching a new prompt use that prompt."""
 
-    async def fake_prompt():
+    async def fake_prompt(*, mood=None, energy=None):  # pylint: disable=unused-argument
         return {"prompt": "New", "category": "Cat"}
 
     monkeypatch.setattr(main, "generate_prompt", fake_prompt)
