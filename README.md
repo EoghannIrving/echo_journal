@@ -66,7 +66,7 @@
 - **Auto-generated prompt selection**  
   - Add What you watched (from Jellyfin) to the metadata
   - Uses contextual signals (Jellyfin, Immich, Last.fm, local time, weather)  
-  - Backend rules or scoring engine selects from `prompts.json`  
+  - Backend rules or scoring engine selects from `prompts.yaml`
   - Contextual input logged into `.meta.json` or frontmatter
   - AI-assisted prompts (“Need inspiration?” feature).  
   - Optional "New Prompt" link to gently refresh the daily suggestion if it doesn't resonate.  

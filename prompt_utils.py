@@ -1,7 +1,7 @@
 """Prompt loading and generation helpers."""
 
 import asyncio
-import json
+import yaml
 import random
 from datetime import date
 
@@ -37,9 +37,9 @@ async def load_prompts() -> dict:
                 try:
                     async with aiofiles.open(PROMPTS_FILE, "r", encoding=ENCODING) as fh:
                         prompts_text = await fh.read()
-                    _prompts_cache["data"] = json.loads(prompts_text)
+                    _prompts_cache["data"] = yaml.safe_load(prompts_text)
                     _prompts_cache["mtime"] = mtime
-                except (FileNotFoundError, json.JSONDecodeError):
+                except (FileNotFoundError, yaml.YAMLError):
                     _prompts_cache["data"] = {}
                     _prompts_cache["mtime"] = mtime
     return _prompts_cache["data"]
