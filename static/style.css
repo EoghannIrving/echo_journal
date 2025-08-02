@@ -239,7 +239,7 @@ summary::-webkit-details-marker {
 }
 
 #daily-prompt {
-  font-size: clamp(2rem, 3vw + 1.5rem, 3rem);
+  font-size: clamp(1.3rem, 2vw + 0.8rem, 1.8rem);
   font-weight: 600;
 }
 
