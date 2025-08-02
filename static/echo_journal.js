@@ -212,7 +212,9 @@
       const mood = moodSelect ? moodSelect.value : '';
       const energyStr = energySelect ? energySelect.value : '';
       const energy = getEnergyValue(energyStr);
+      // Only fetch when both fields are chosen and user is done interacting
       if (!mood || !energy) return;
+      if (document.activeElement === moodSelect || document.activeElement === energySelect) return;
       try {
         const params = new URLSearchParams({ mood, energy });
         const res = await fetch(`/api/new_prompt?${params.toString()}`);
@@ -227,8 +229,14 @@
       } catch (_) {}
     };
 
-    if (moodSelect) moodSelect.addEventListener('change', maybeFetchPrompt);
-    if (energySelect) energySelect.addEventListener('change', maybeFetchPrompt);
+    if (moodSelect) {
+      moodSelect.addEventListener('change', maybeFetchPrompt);
+      moodSelect.addEventListener('blur', maybeFetchPrompt);
+    }
+    if (energySelect) {
+      energySelect.addEventListener('change', maybeFetchPrompt);
+      energySelect.addEventListener('blur', maybeFetchPrompt);
+    }
     maybeFetchPrompt();
     const params = new URLSearchParams(window.location.search);
     if (params.get('focus') === '1') {
