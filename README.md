@@ -151,6 +151,18 @@ photos: []
 
 Additional keys may be introduced in future integrations (e.g., facts, mood tracking). Unknown keys are ignored.
 
+## Energy level mapping
+
+Energy selections from the UI are translated to integers before hitting `/api/new_prompt`.
+This allows the backend to score prompts based on numeric intensity.
+
+| Energy | Value |
+| ------ | ----- |
+| `drained` | 1 |
+| `low` | 2 |
+| `ok` | 3 |
+| `energized` | 4 |
+
 ## Setup
 
 Echo Journal runs as a small FastAPI application. Copy `.env.example` to

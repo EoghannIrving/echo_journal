@@ -6,6 +6,7 @@
   const promptKey = `ej-prompt-${entryDate}`;
   const readonly = cfg.readonly === true || cfg.readonly === "true";
   const energyLevels = { drained: 1, low: 2, ok: 3, energized: 4 };
+  const getEnergyValue = (level) => energyLevels[level] || null;
 
   async function fetchWeather(lat, lon) {
     try {
@@ -259,8 +260,9 @@
       getPromptBtn.addEventListener('click', async () => {
         const mood = moodSelect ? moodSelect.value : '';
         const energyStr = energySelect ? energySelect.value : '';
-        if (!mood || !energyStr) return;
-        const params = new URLSearchParams({ mood, energy: energyLevels[energyStr] });
+        const energy = getEnergyValue(energyStr);
+        if (!mood || !energy) return;
+        const params = new URLSearchParams({ mood, energy });
         try {
           const res = await fetch(`/api/new_prompt?${params.toString()}`);
           if (res.ok) {
@@ -290,10 +292,10 @@
         e.preventDefault();
         const mood = moodSelect ? moodSelect.value : '';
         const energyStr = energySelect ? energySelect.value : '';
+        const energy = getEnergyValue(energyStr);
         const params = new URLSearchParams();
         if (mood) params.append('mood', mood);
-        const mappedEnergy = energyLevels[energyStr];
-        if (mappedEnergy) params.append('energy', mappedEnergy);
+        if (energy) params.append('energy', energy);
         const url = `/api/new_prompt${params.toString() ? `?${params.toString()}` : ''}`;
         try {
           const res = await fetch(url);
