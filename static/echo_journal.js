@@ -142,6 +142,7 @@
     const editorSection = document.getElementById('editor-section');
     const moodSelect = document.getElementById('mood-select');
     const energySelect = document.getElementById('energy-select');
+    let moodEnergyLocked = false;
     let delay = 0;
     if (welcomeEl) {
       const wantsGreeting = welcomeEl.dataset.dynamicGreeting === 'true';
@@ -174,17 +175,17 @@
     const revealPrompt = () => {
       if (!currentPrompt) return;
       if (promptSection) promptSection.classList.remove('hidden');
-      if (editorSection) {
-        editorSection.classList.remove('hidden');
-        if (textarea) textarea.dispatchEvent(new Event('input'));
-      }
       if (promptEl) {
         promptEl.textContent = currentPrompt;
         const promptDelay = animateText(promptEl, delay + 300, 15, 40);
-        const buttons = [newBtn, focusToggle].filter(Boolean);
-        if (buttons.length) {
-          setTimeout(() => buttons.forEach(btn => btn.classList.remove('hidden')), promptDelay + 200);
-        }
+        setTimeout(() => {
+          if (editorSection) {
+            editorSection.classList.remove('hidden');
+            if (textarea) textarea.dispatchEvent(new Event('input'));
+          }
+          const buttons = [newBtn, focusToggle].filter(Boolean);
+          buttons.forEach(btn => btn.classList.remove('hidden'));
+        }, promptDelay + 200);
       }
       if (catEl) {
         catEl.textContent = currentCategory || '';
@@ -194,6 +195,11 @@
 
     const hasEntryContent = textarea && textarea.value.trim() !== '';
     let promptShown = false;
+    if (hasEntryContent) {
+      if (moodSelect) moodSelect.disabled = true;
+      if (energySelect) energySelect.disabled = true;
+      moodEnergyLocked = true;
+    }
     if (currentPrompt && hasEntryContent) {
       revealPrompt();
       promptShown = true;
@@ -366,6 +372,11 @@
           if (result.status === 'success') {
             status.textContent = 'Last saved: just now — Echo Journal';
             status.classList.remove('error-text');
+            if (!moodEnergyLocked) {
+              if (moodSelect) moodSelect.disabled = true;
+              if (energySelect) energySelect.disabled = true;
+              moodEnergyLocked = true;
+            }
           } else {
             status.textContent = 'Save failed. Please try again.';
             status.classList.add('error-text');
