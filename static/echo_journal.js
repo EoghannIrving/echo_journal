@@ -177,6 +177,24 @@
       catEl.classList.toggle('hidden', !currentCategory);
     }
 
+    const focusToggle = document.getElementById('focus-toggle');
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('focus') === '1') {
+      document.body.classList.add('focus-mode');
+    }
+    if (focusToggle) {
+      const updateLabel = () => {
+        const active = document.body.classList.contains('focus-mode');
+        focusToggle.textContent = active ? 'Exit Focus' : 'Focus mode';
+        focusToggle.setAttribute('aria-pressed', active ? 'true' : 'false');
+      };
+      updateLabel();
+      focusToggle.addEventListener('click', () => {
+        document.body.classList.toggle('focus-mode');
+        updateLabel();
+      });
+    }
+
     const toolbar = document.getElementById('md-toolbar');
     const textarea = document.getElementById('journal-text');
     if (textarea) {
