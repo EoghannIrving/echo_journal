@@ -280,6 +280,10 @@ summary::-webkit-details-marker {
   display: none;
 }
 
+.focus-mode #mood-energy-section {
+  display: none;
+}
+
 .focus-mode textarea.journal-textarea {
   min-height: 70vh;
 }
