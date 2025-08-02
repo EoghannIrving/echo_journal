@@ -176,9 +176,8 @@ async def index(request: Request):
         category = meta.get("category", "")
         wotd = meta.get("wotd", "")
     else:
-        prompt_data = await generate_prompt()
-        prompt = prompt_data["prompt"]
-        category = prompt_data.get("category", "")
+        prompt = ""
+        category = ""
         entry = ""
         wotd = ""
 
@@ -676,9 +675,9 @@ async def stats_page(request: Request):
 
 
 @app.get("/api/new_prompt")
-async def new_prompt() -> dict:
+async def new_prompt(mood: str | None = None, energy: int | None = None) -> dict:
     """Return a freshly generated journal prompt."""
-    return await generate_prompt()
+    return await generate_prompt(mood=mood, energy=energy)
 
 
 @app.get("/api/reverse_geocode")
