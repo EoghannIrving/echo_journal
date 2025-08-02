@@ -247,3 +247,12 @@ summary::-webkit-details-marker {
 #intro-tagline {
   font-size: clamp(0.75rem, 0.6vw + 0.6rem, 0.875rem);
 }
+
+/* Focus mode hides navigation links and gives the editor more space */
+.focus-mode #main-nav {
+  display: none;
+}
+
+.focus-mode textarea.journal-textarea {
+  min-height: 70vh;
+}
