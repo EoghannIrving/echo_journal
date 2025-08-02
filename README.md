@@ -230,7 +230,8 @@ The `.env` file configures optional integrations and runtime paths:
   matching `Authorization` header.
 
 Set any of these variables in `.env` or your environment to tailor the app to
-your setup.
+your setup. The **Settings** page lists current values and lets you edit them;
+changes are saved to `.env` and take effect after restarting the server.
 
 ### Disabling integrations
 

@@ -19,6 +19,12 @@
   </fieldset>
 </form>
 
+<form id="env-form" class="w-full max-w-md mx-auto mt-8 text-sm text-gray-700 dark:text-gray-300 space-y-2">
+  <p class="text-center text-gray-500 dark:text-gray-400">Edit server environment variables. Changes require a restart.</p>
+  <div id="env-fields" class="space-y-2"></div>
+  <button type="button" id="save-env" class="mx-auto block bg-blue-600 text-white px-4 py-1 rounded">Save</button>
+</form>
+
 <footer class="w-full max-w-md mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">
   <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
   Echo Journal
@@ -86,6 +92,40 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   save();
+
+  const envForm = document.getElementById('env-form');
+  if (envForm) {
+    const envFields = envForm.querySelector('#env-fields');
+    fetch('/api/env')
+      .then((r) => r.json())
+      .then((vars) => {
+        Object.entries(vars).forEach(([key, value]) => {
+          const label = document.createElement('label');
+          label.className = 'flex items-center gap-2 justify-between';
+          label.textContent = key;
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.id = `env-${key}`;
+          input.value = value;
+          input.className = 'flex-1 border rounded px-2 py-1 bg-white dark:bg-[#333]';
+          label.appendChild(input);
+          envFields.appendChild(label);
+        });
+      });
+
+    envForm.querySelector('#save-env').addEventListener('click', async () => {
+      const vars = {};
+      envFields.querySelectorAll('input').forEach((input) => {
+        const k = input.id.replace('env-', '');
+        vars[k] = input.value;
+      });
+      await fetch('/api/env', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(vars),
+      });
+    });
+  }
 });
 </script>
 
