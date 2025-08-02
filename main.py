@@ -270,6 +270,7 @@ async def save_entry(data: dict):
     prompt = data.get("prompt")
     category = data.get("category")
     location = data.get("location") or {}
+    weather = data.get("weather")
     mood = data.get("mood")
     energy = data.get("energy")
 
@@ -291,7 +292,7 @@ async def save_entry(data: dict):
         )
     first_save = not file_path.exists()
     if first_save:
-        frontmatter = await build_frontmatter(location)
+        frontmatter = await build_frontmatter(location, weather)
     else:
         frontmatter = await read_existing_frontmatter(file_path)
 

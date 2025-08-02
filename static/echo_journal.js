@@ -62,26 +62,20 @@
         console.warn('Reverse geocoding failed:', e);
       }
 
-      const detailsEl = document.getElementById('meta-details');
       const el = document.getElementById('location-display');
       if (el) {
-        el.textContent = `📍 ${locationLabel} (±${Math.round(accuracy)}m)`;
         el.dataset.lat = latitude;
         el.dataset.lon = longitude;
         el.dataset.accuracy = accuracy;
         el.dataset.locationName = locationLabel;
-        el.classList.remove('hidden');
-        detailsEl?.classList.remove('hidden');
       }
 
       const weatherEl = document.getElementById('weather-display');
       if (weatherEl) {
         const weather = await fetchWeather(latitude, longitude);
         if (weather) {
-          const icon = weatherIcons[weather.code] || '';
-          weatherEl.textContent = `${icon} ${weather.temperature}\u00B0C`.trim();
-          weatherEl.classList.remove('hidden');
-          detailsEl?.classList.remove('hidden');
+          weatherEl.dataset.temp = weather.temperature;
+          weatherEl.dataset.code = weather.code;
         }
       }
     },
@@ -291,6 +285,14 @@
             label: locEl.dataset.locationName || ''
           };
         }
+        const weatherEl = document.getElementById('weather-display');
+        let weather = null;
+        if (weatherEl && weatherEl.dataset.temp && weatherEl.dataset.code) {
+          weather = {
+            temperature: parseFloat(weatherEl.dataset.temp),
+            code: parseInt(weatherEl.dataset.code, 10)
+          };
+        }
         const mood = document.getElementById('mood-select').value;
         const energy = document.getElementById('energy-select').value;
 
@@ -299,7 +301,7 @@
           const response = await fetch('/entry', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date, content, prompt, category, location, mood, energy })
+            body: JSON.stringify({ date, content, prompt, category, location, weather, mood, energy })
           });
 
           if (!response.ok) {
