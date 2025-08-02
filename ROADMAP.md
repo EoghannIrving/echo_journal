@@ -83,13 +83,20 @@
 
 ## Phase 6: Insight, Patterning, and Personalization (planned)
 - Filter archive view by mood, energy, tags
+  - Compact filter bar above the archive with emoji + text chips for mood/energy
+  - Tag pills for custom keywords; multi-select toggles entries instantly
 - Mood/energy calendar view (heatmap style)
+  - Month grid colored by dominant mood or energy intensity
+  - Hover or tap shows mood label and entry count; accessible color scale
 - Personal time capsule: “Send to Future Me”
-  - Choose a future date; show message then
+  - Author chooses future date and optional reminder email/notification
+  - Entry resurfaces on that date as a prompt with the original text
 - Prompt lane selector: Sensory | Reflective | Planning | Memory
-  - Dropdown to guide preferred prompt types
+  - Dropdown persists last choice in localStorage; default lane is Reflective
+  - Lane influences which prompt set is served or which time-capsule message displays
 - Micro-nudge fallback when text area is empty
-  - Optionally show quote, image, or “Need a seed?” button
+  - After 5s of inactivity in an empty editor, show subtle “Need a seed?” link
+  - Clicking inserts a gentle one-line starter or pulls a random prompt
 
 ## Design Guardrails
 - Prioritize warmth and ultra-low friction above all else.
