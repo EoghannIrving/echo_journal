@@ -853,11 +853,27 @@ def test_new_prompt_endpoint(test_client, monkeypatch):
 
     monkeypatch.setattr(main, "generate_prompt", fake_prompt)
 
-    resp = test_client.get("/api/new_prompt", params={"mood": "ok", "energy": 2})
+    resp = test_client.get("/api/new_prompt?mood=ok&energy=2")
 
     assert resp.status_code == 200
     assert resp.json() == {"prompt": "P", "category": "Test"}
-    assert captured == {"mood": "ok", "energy": 2}
+    assert captured["mood"] == "ok"
+    assert captured["energy"] == 2
+
+
+def test_new_prompt_endpoint_no_params(test_client, monkeypatch):
+    """/api/new_prompt still returns a prompt without optional params."""
+
+    async def fake_prompt(*, mood=None, energy=None):
+        assert mood is None and energy is None
+        return {"prompt": "P", "category": "Test"}
+
+    monkeypatch.setattr(main, "generate_prompt", fake_prompt)
+
+    resp = test_client.get("/api/new_prompt")
+
+    assert resp.status_code == 200
+    assert resp.json() == {"prompt": "P", "category": "Test"}
 
 
 def test_save_entry_after_refresh(test_client, monkeypatch):
