@@ -177,11 +177,13 @@ async def index(request: Request):
             entry = body.strip()
         category = meta.get("category", "")
         wotd = meta.get("wotd", "")
+        wotd_def = meta.get("wotd_def", "")
     else:
         prompt = ""
         category = ""
         entry = ""
         wotd = ""
+        wotd_def = ""
 
     gap = _days_since_last_entry(DATA_DIR, today)
     missing_yesterday = gap is None or gap > 1
@@ -198,6 +200,7 @@ async def index(request: Request):
             "readonly": False,  # Explicit
             "active_page": "home",
             "wotd": wotd,
+            "wotd_def": wotd_def,
             "missing_yesterday": missing_yesterday,
         },
     )
@@ -567,6 +570,7 @@ async def archive_entry(request: Request, entry_date: str):
             "location": meta.get("location", ""),
             "weather": format_weather(meta["weather"]) if meta.get("weather") else "",
             "wotd": meta.get("wotd", ""),
+            "wotd_def": meta.get("wotd_def", ""),
             "photos": photos,
             "songs": songs,
             "media": media,

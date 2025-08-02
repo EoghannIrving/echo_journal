@@ -134,6 +134,7 @@ location: Example Place
 weather: 18°C code 1
 save_time: Evening
 wotd: luminous
+wotd_def: emitting light
 category: Gratitude
 photos: []
 ```
@@ -146,6 +147,7 @@ photos: []
 | `weather` | Temperature and weather code from Open‑Meteo. | Parsed by `format_weather` to show an icon and temperature. |
 | `save_time` | Morning/Afternoon/Evening/Night recorded at save time. | Provides context for when the entry was written. |
 | `wotd` | Wordnik word of the day. | Displayed in the entry sidebar and as an icon in the archive list. |
+| `wotd_def` | Definition for the word of the day. | Shown alongside the word in entry views. |
 | `category` | Prompt category selected when saving. | Stored for filtering and prompt history. |
 | `photos` | List of photo objects from Immich, initially empty. | Adds a 📸 icon in the archive and shows thumbnails under the entry. |
 
