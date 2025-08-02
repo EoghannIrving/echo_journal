@@ -8,9 +8,16 @@
 
 {% block content %}
 
-<p class="text-sm text-center mb-4 text-gray-500 dark:text-gray-400">
-  No settings are currently available.
-</p>
+<form id="integration-settings" class="w-full max-w-md mx-auto text-sm text-gray-700 dark:text-gray-300 space-y-4">
+  <p class="text-center text-gray-500 dark:text-gray-400">Enable or disable optional integrations. Changes persist only in this browser.</p>
+  <fieldset class="space-y-2 text-left">
+    <legend class="sr-only">Integrations</legend>
+    <label class="flex items-center gap-2 justify-center"><input type="checkbox" id="integration-wordnik" class="mr-2">Wordnik word of the day</label>
+    <label class="flex items-center gap-2 justify-center"><input type="checkbox" id="integration-immich" class="mr-2">Immich photos</label>
+    <label class="flex items-center gap-2 justify-center"><input type="checkbox" id="integration-jellyfin" class="mr-2">Jellyfin media</label>
+    <label class="flex items-center gap-2 justify-center"><input type="checkbox" id="integration-fact" class="mr-2">Fact of the day</label>
+  </fieldset>
+</form>
 
 <footer class="w-full max-w-md mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">
   <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
@@ -62,6 +69,23 @@ document.addEventListener("DOMContentLoaded", () => {
   if (welcomeEl) {
     animateText(welcomeEl, 0, 60, 200);
   }
+
+  const defaultSettings = { wordnik: true, immich: true, jellyfin: true, fact: true };
+  const stored = JSON.parse(localStorage.getItem('ej-integrations') || '{}');
+  const settings = { ...defaultSettings, ...stored };
+  const save = () => localStorage.setItem('ej-integrations', JSON.stringify(settings));
+
+  Object.keys(defaultSettings).forEach((key) => {
+    const cb = document.getElementById(`integration-${key}`);
+    if (!cb) return;
+    cb.checked = settings[key];
+    cb.addEventListener('change', () => {
+      settings[key] = cb.checked;
+      save();
+    });
+  });
+
+  save();
 });
 </script>
 

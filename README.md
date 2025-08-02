@@ -232,6 +232,14 @@ The `.env` file configures optional integrations and runtime paths:
 Set any of these variables in `.env` or your environment to tailor the app to
 your setup.
 
+### Disabling integrations
+
+The web UI includes a **Settings** page where optional integrations can be
+toggled per browser. Uncheck Wordnik, Immich, Jellyfin, or Fact integrations to
+disable their metadata. Your choices are stored in `localStorage` and the
+server skips fetching data for any disabled integrations when building
+frontmatter.
+
 ### Serving behind a VPN or reverse proxy
 
 For secure remote access, run Echo Journal behind your VPN (e.g. WireGuard) or a

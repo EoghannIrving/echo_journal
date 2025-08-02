@@ -294,6 +294,7 @@ async def save_entry(data: dict):
     weather = data.get("weather")
     mood = bleach.clean(data.get("mood") or "").strip() or None
     energy = bleach.clean(data.get("energy") or "").strip() or None
+    integrations = data.get("integrations") or {}
 
     if not entry_date or not content or not prompt:
         return JSONResponse(
@@ -313,7 +314,7 @@ async def save_entry(data: dict):
         )
     first_save = not file_path.exists()
     if first_save:
-        frontmatter = await build_frontmatter(location, weather)
+        frontmatter = await build_frontmatter(location, weather, integrations)
     else:
         frontmatter = await read_existing_frontmatter(file_path)
 
@@ -338,9 +339,11 @@ async def save_entry(data: dict):
         async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
             await fh.write(md_text)
 
-    await update_photo_metadata(entry_date, file_path)
-    await update_song_metadata(entry_date, file_path)
-    await update_media_metadata(entry_date, file_path)
+    if integrations.get("immich", True):
+        await update_photo_metadata(entry_date, file_path)
+    if integrations.get("jellyfin", True):
+        await update_song_metadata(entry_date, file_path)
+        await update_media_metadata(entry_date, file_path)
 
     return {"status": "success"}
 

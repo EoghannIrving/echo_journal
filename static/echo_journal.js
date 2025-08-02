@@ -7,6 +7,8 @@
   const readonly = cfg.readonly === true || cfg.readonly === "true";
   const energyLevels = { drained: 1, low: 2, ok: 3, energized: 4 };
   const getEnergyValue = (level) => energyLevels[level] || null;
+  const defaultIntegrations = { wordnik: true, immich: true, jellyfin: true, fact: true };
+  const integrationSettings = { ...defaultIntegrations, ...JSON.parse(localStorage.getItem('ej-integrations') || '{}') };
 
   async function fetchWeather(lat, lon) {
     try {
@@ -359,7 +361,7 @@
           const response = await fetch('/entry', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date, content, prompt, category, location, weather, mood, energy })
+            body: JSON.stringify({ date, content, prompt, category, location, weather, mood, energy, integrations: integrationSettings })
           });
 
           if (!response.ok) {
