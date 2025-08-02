@@ -15,10 +15,11 @@ _prompts_cache: dict = {"data": None, "mtime": None}
 _prompts_lock = asyncio.Lock()
 
 
-async def load_prompts() -> dict:
+async def load_prompts() -> list[dict]:
     """Load and cache journal prompts from ``PROMPTS_FILE``.
 
     The cache automatically invalidates when ``PROMPTS_FILE`` changes on disk.
+    Returns an empty list if the file is missing or invalid.
     """
     try:
         mtime = PROMPTS_FILE.stat().st_mtime
@@ -37,10 +38,10 @@ async def load_prompts() -> dict:
                 try:
                     async with aiofiles.open(PROMPTS_FILE, "r", encoding=ENCODING) as fh:
                         prompts_text = await fh.read()
-                    _prompts_cache["data"] = yaml.safe_load(prompts_text)
+                    _prompts_cache["data"] = yaml.safe_load(prompts_text) or []
                     _prompts_cache["mtime"] = mtime
                 except (FileNotFoundError, yaml.YAMLError):
-                    _prompts_cache["data"] = {}
+                    _prompts_cache["data"] = []
                     _prompts_cache["mtime"] = mtime
     return _prompts_cache["data"]
 
@@ -63,41 +64,63 @@ def get_season(target_date: date) -> str:
 
 
 async def generate_prompt(tags: list[str] | None = None) -> dict:
-    """Select and return a prompt for the current day."""
+    """Select and return a prompt for the current day.
+
+    ``prompts.yaml`` now stores a list of prompt dictionaries with fields like
+    ``id``, ``prompt`` and ``tags``.  This function chooses a prompt at random,
+    optionally filtering by ``tags`` and using ActivationEngine to rank
+    candidates when available.
+    """
     today = date.today()
     weekday = today.strftime("%A")
     season = get_season(today)
 
     prompts = await load_prompts()
-    if not prompts:
+    if not isinstance(prompts, list) or not prompts:
         return {"category": None, "prompt": "Prompts file not found"}
 
-    categories_dict = prompts.get("categories")
-    if not isinstance(categories_dict, dict):
-        return {"category": None, "prompt": "No categories found"}
-
-    categories = list(categories_dict.keys())
-    if not categories:
-        return {"category": None, "prompt": "No categories found"}
-
-    if tags:
-        filtered = [c for c in categories if c.lower() in [t.lower() for t in tags]]
-        if filtered:
-            categories = filtered
-
-    category = random.choice(categories)
-    candidates = categories_dict.get(category, [])
+    candidates = prompts
     if tags:
         tag_set = {t.lower() for t in tags}
-        candidates = [c for c in candidates if any(t in c.lower() for t in tag_set)] or candidates
+        candidates = [
+            p
+            for p in prompts
+            if any(tag.lower() in tag_set for tag in p.get("tags", []))
+        ] or prompts
+
     if not candidates:
-        return {"category": category.capitalize(), "prompt": "No prompts in this category"}
+        return {"category": None, "prompt": "No prompts available"}
 
     if tags:
-        ranked = await rank_prompts(candidates, tags)
-        if ranked:
-            candidates = ranked
+        ranked_strings = await rank_prompts([p.get("prompt", "") for p in candidates], tags)
+        lookup = {p.get("prompt", ""): p for p in candidates}
+        candidates = [lookup[s] for s in ranked_strings if s in lookup] or candidates
 
-    prompt_template = random.choice(candidates)
-    prompt = prompt_template.replace("{{weekday}}", weekday).replace("{{season}}", season)
-    return {"category": category.capitalize(), "prompt": prompt}
+    chosen = random.choice(candidates)
+    prompt_text = chosen.get("prompt", "")
+    prompt_text = prompt_text.replace("{{weekday}}", weekday).replace("{{season}}", season)
+
+    # Derive a category from the prompt id or tags
+    category = None
+    pid = chosen.get("id")
+    if isinstance(pid, str):
+        for sep in ("-", "_"):
+            if sep in pid:
+                category = pid.split(sep, 1)[0]
+                break
+    if not category:
+        tags_list = chosen.get("tags")
+        if tags_list:
+            category = tags_list[0]
+
+    result = {
+        "prompt": prompt_text,
+        "category": category.capitalize() if isinstance(category, str) else None,
+        "id": pid,
+        "tags": chosen.get("tags", []),
+        "energy": chosen.get("energy"),
+        "mood": chosen.get("mood"),
+    }
+    if "anchor" in chosen:
+        result["anchor"] = chosen["anchor"]
+    return result
