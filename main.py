@@ -53,6 +53,7 @@ from jellyfin_utils import update_song_metadata, update_media_metadata
 from prompt_utils import generate_prompt
 from weather_utils import build_frontmatter, time_of_day_label
 from activation_engine_utils import fetch_tags
+from env_utils import load_env, save_env
 
 
 # Provide pathlib.Path.is_relative_to on Python < 3.9
@@ -769,6 +770,18 @@ async def proxy_asset(asset_id: str):
         raise HTTPException(status_code=resp.status_code, detail="Asset fetch failed")
     content_type = resp.headers.get("content-type", "application/octet-stream")
     return Response(content=resp.content, media_type=content_type)
+
+
+@app.get("/api/env")
+async def get_env_settings() -> Dict[str, str]:
+    """Return key/value pairs from the .env file."""
+    return load_env()
+
+
+@app.post("/api/env")
+async def update_env_settings(values: Dict[str, str]) -> Dict[str, str]:
+    """Merge provided values into the .env file and return the updated mapping."""
+    return save_env(values)
 
 
 @app.post("/api/backfill_songs")

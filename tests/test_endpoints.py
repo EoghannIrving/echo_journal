@@ -1040,3 +1040,28 @@ def test_basic_auth_required(monkeypatch):
     token = base64.b64encode(b"user:pass").decode()
     resp2 = client.get("/", headers={"Authorization": f"Basic {token}"})
     assert resp2.status_code == 200
+
+
+def test_env_endpoints(test_client, tmp_path, monkeypatch):
+    """/api/env returns and updates .env values."""
+    env_file = tmp_path / ".env"
+    env_file.write_text("FOO=bar\n", encoding="utf-8")
+    import env_utils
+
+    monkeypatch.setattr(env_utils, "ENV_PATH", env_file)
+    monkeypatch.setattr(main, "load_env", env_utils.load_env)
+    monkeypatch.setattr(main, "save_env", env_utils.save_env)
+
+    token = base64.b64encode(b"user:pass").decode()
+    resp = test_client.get("/api/env", headers={"Authorization": f"Basic {token}"})
+    assert resp.status_code == 200
+    assert resp.json() == {"FOO": "bar"}
+
+    resp2 = test_client.post(
+        "/api/env",
+        json={"BAR": "baz"},
+        headers={"Authorization": f"Basic {token}"},
+    )
+    assert resp2.status_code == 200
+    assert resp2.json()["BAR"] == "baz"
+    assert "BAR=baz" in env_file.read_text(encoding="utf-8")
