@@ -233,6 +233,33 @@ Set any of these variables in `.env` or your environment to tailor the app to
 your setup. The **Settings** page lists current values and lets you edit them;
 changes are saved to `.env` and take effect after restarting the server.
 
+### Google Cloud service account credentials
+
+Some integrations require a Google Cloud service account. Provide a JSON
+credentials file that includes keys such as `client_email`, `token_uri`, and
+`private_key`.
+
+```json
+{
+  "type": "service_account",
+  "project_id": "my-project",
+  "private_key_id": "abc123",
+  "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
+  "client_email": "my-service-account@my-project.iam.gserviceaccount.com",
+  "client_id": "1234567890",
+  "token_uri": "https://oauth2.googleapis.com/token"
+}
+```
+
+Set the path to this file before running the app:
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+```
+
+You can also add `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json`
+to your `.env` file.
+
 ### Disabling integrations
 
 The web UI includes a **Settings** page where optional integrations can be
