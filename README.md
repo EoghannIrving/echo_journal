@@ -235,9 +235,10 @@ changes are saved to `.env` and take effect after restarting the server.
 
 ### Google Cloud service account credentials
 
-Some integrations require a Google Cloud service account. Provide a JSON
-credentials file that includes keys such as `client_email`, `token_uri`, and
-`private_key`.
+Some integrations require a Google Cloud service account. Provide the full JSON
+key downloaded from the Google Cloud console; it must include top-level fields
+like `type`, `client_email`, `token_uri`, and `private_key`. Keys that only
+contain a `"web"` section are OAuth client configs and will not work.
 
 ```json
 {
