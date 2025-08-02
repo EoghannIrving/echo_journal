@@ -181,6 +181,9 @@ async def index(request: Request):
         entry = ""
         wotd = ""
 
+    gap = _days_since_last_entry(DATA_DIR, today)
+    missing_yesterday = gap is None or gap > 1
+
     return templates.TemplateResponse(
         request,
         "echo_journal.html",
@@ -193,8 +196,27 @@ async def index(request: Request):
             "readonly": False,  # Explicit
             "active_page": "home",
             "wotd": wotd,
+            "missing_yesterday": missing_yesterday,
         },
     )
+
+
+def _days_since_last_entry(data_dir: Path = DATA_DIR, today: date | None = None) -> int | None:
+    """Return days since the most recent entry prior to ``today``."""
+    today = today or date.today()
+    last_entry: date | None = None
+    for file in data_dir.glob("*.md"):
+        try:
+            entry_date = datetime.strptime(file.stem, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        if entry_date >= today:
+            continue
+        if last_entry is None or entry_date > last_entry:
+            last_entry = entry_date
+    if last_entry is None:
+        return None
+    return (today - last_entry).days
 
 
 def _with_updated_save_time(frontmatter: str | None, label: str) -> str | None:
