@@ -214,9 +214,8 @@
       const mood = moodSelect ? moodSelect.value : '';
       const energyStr = energySelect ? energySelect.value : '';
       const energy = getEnergyValue(energyStr);
-      // Only fetch when both fields are chosen and user is done interacting
+      // Only fetch when both fields are chosen
       if (!mood || !energy) return;
-      if (document.activeElement === moodSelect || document.activeElement === energySelect) return;
       try {
         const params = new URLSearchParams({ mood, energy });
         const res = await fetch(`/api/new_prompt?${params.toString()}`);
