@@ -207,6 +207,29 @@ summary::-webkit-details-marker {
 }
 
 
+.prompt-btn {
+  font-size: 0.75rem;
+  color: #4b5563;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  background-color: #f9fafb;
+}
+
+.prompt-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.dark .prompt-btn {
+  color: #d1d5db;
+  border-color: #4b5563;
+  background-color: #374151;
+}
+
+.dark .prompt-btn:hover {
+  background-color: #4b5563;
+}
+
 .hidden { display: none; }
 
 .meta-card {
@@ -250,6 +273,10 @@ summary::-webkit-details-marker {
 
 /* Focus mode hides navigation links and gives the editor more space */
 .focus-mode #main-nav {
+  display: none;
+}
+
+.focus-mode .welcome-message {
   display: none;
 }
 

@@ -20,8 +20,8 @@
   <div class="p-4 mb-1 space-y-1">
       <div class="flex items-center justify-center gap-2">
         <p id="daily-prompt" class="font-sans leading-snug opacity-0">{{ prompt }}</p>
-        <button type="button" id="new-prompt" class="text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 text-sm" aria-label="New Prompt">Refresh prompt</button>
-        <button type="button" id="focus-toggle" class="text-blue-600 visited:text-blue-400 dark:text-blue-400 dark:visited:text-blue-300 text-sm" aria-pressed="false">Focus mode</button>
+        <button type="button" id="new-prompt" class="prompt-btn hidden" aria-label="New Prompt">Refresh</button>
+        <button type="button" id="focus-toggle" class="prompt-btn hidden" aria-pressed="false" aria-label="Toggle focus mode">Focus</button>
       </div>
     <details id="prompt-meta" class="text-gray-600 dark:text-gray-400">
       <summary class="sr-only">Prompt details</summary>
@@ -70,7 +70,7 @@
   </fieldset>
 </details>
   <section class="w-full mx-auto mt-6 p-4 rounded-xl">
-    <button id="save-button" class="block w-full max-w-sm mx-auto mt-3 bg-slate-500 text-white rounded-xl py-3 text-lg font-semibold shadow transition hover:bg-slate-600 hover:brightness-105 hover:shadow-lg dark:bg-gray-400 dark:hover:bg-slate-500" aria-label="Save entry">Save Entry</button>
+    <button id="save-button" class="hidden block w-full max-w-sm mx-auto mt-3 bg-slate-500 text-white rounded-xl py-3 text-lg font-semibold shadow transition hover:bg-slate-600 hover:brightness-105 hover:shadow-lg dark:bg-gray-400 dark:hover:bg-slate-500" aria-label="Save entry">Save Entry</button>
   </section>
 
   <details id="meta-details" class="w-full mx-auto text-center mt-2 space-y-1 hidden">

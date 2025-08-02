@@ -140,6 +140,8 @@
     };
 
     const welcomeEl = document.getElementById('welcome-message');
+    const focusToggle = document.getElementById('focus-toggle');
+    const newBtn = document.getElementById('new-prompt');
     let delay = 0;
     if (welcomeEl) {
       const wantsGreeting = welcomeEl.dataset.dynamicGreeting === 'true';
@@ -170,14 +172,16 @@
     }
     if (promptEl) {
       promptEl.textContent = currentPrompt;
-      animateText(promptEl, delay + 300, 15, 40);
+      const promptDelay = animateText(promptEl, delay + 300, 15, 40);
+      const buttons = [newBtn, focusToggle].filter(Boolean);
+      if (buttons.length) {
+        setTimeout(() => buttons.forEach(btn => btn.classList.remove('hidden')), promptDelay + 200);
+      }
     }
     if (catEl) {
       catEl.textContent = currentCategory || '';
       catEl.classList.toggle('hidden', !currentCategory);
     }
-
-    const focusToggle = document.getElementById('focus-toggle');
     const params = new URLSearchParams(window.location.search);
     if (params.get('focus') === '1') {
       document.body.classList.add('focus-mode');
@@ -185,7 +189,7 @@
     if (focusToggle) {
       const updateLabel = () => {
         const active = document.body.classList.contains('focus-mode');
-        focusToggle.textContent = active ? 'Exit Focus' : 'Focus mode';
+        focusToggle.textContent = active ? 'Exit Focus' : 'Focus';
         focusToggle.setAttribute('aria-pressed', active ? 'true' : 'false');
       };
       updateLabel();
@@ -197,9 +201,17 @@
 
     const toolbar = document.getElementById('md-toolbar');
     const textarea = document.getElementById('journal-text');
+    const saveButton = document.getElementById('save-button');
     if (textarea) {
       // Ensure the field height matches preloaded content
       textarea.dispatchEvent(new Event('input'));
+    }
+    if (textarea && saveButton) {
+      const toggleSaveVisibility = () => {
+        saveButton.classList.toggle('hidden', textarea.value.trim() === '');
+      };
+      toggleSaveVisibility();
+      textarea.addEventListener('input', toggleSaveVisibility);
     }
     if (toolbar && textarea) {
       toolbar.addEventListener('click', (e) => {
@@ -239,7 +251,6 @@
       });
     }
 
-    const newBtn = document.getElementById('new-prompt');
     if (newBtn && promptEl) {
       newBtn.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -260,7 +271,6 @@
       });
     }
 
-    const saveButton = document.getElementById('save-button');
     if (saveButton) {
       saveButton.addEventListener('click', async () => {
         if (saveButton.disabled) {
