@@ -123,6 +123,25 @@ def test_word_of_day_in_frontmatter(test_client, monkeypatch):
     assert "wotd: serendipity" in text
 
 
+def test_wordnik_disabled_in_frontmatter(test_client, monkeypatch):
+    """Wordnik data should be omitted when integration is disabled."""
+
+    async def fake_word():
+        return "serendipity"
+
+    monkeypatch.setattr(weather_utils, "fetch_word_of_day", fake_word)
+    payload = {
+        "date": "2020-10-11",
+        "content": "entry",
+        "prompt": "prompt",
+        "integrations": {"wordnik": False},
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    text = (main.DATA_DIR / "2020-10-11.md").read_text(encoding="utf-8")
+    assert "wotd:" not in text
+
+
 def test_category_saved_in_frontmatter(test_client):
     """Prompt category should be stored in frontmatter when provided."""
     payload = {
@@ -580,6 +599,32 @@ def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
     assert data[0]["thumb"] == "/api/thumbnail/123?size=thumbnail"
 
 
+def test_immich_disabled_skips_photo_metadata(test_client, monkeypatch):
+    """Disabling Immich should prevent photo metadata from being saved."""
+
+    async def fake_fetch(_date_str: str, media_type: str = "IMAGE"):
+        _ = media_type
+        return [
+            {
+                "id": "123",
+                "originalFileName": "img1.jpg",
+                "fileCreatedAt": "2023-01-01T12:00:00Z",
+            }
+        ]
+
+    monkeypatch.setattr(immich_utils, "fetch_assets_for_date", fake_fetch)
+    payload = {
+        "date": "2023-01-02",
+        "content": "entry",
+        "prompt": "prompt",
+        "integrations": {"immich": False},
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    json_path = main.DATA_DIR / "2023-01-02.photos.json"
+    assert not json_path.exists()
+
+
 def test_save_entry_adds_song_metadata(test_client, monkeypatch):
     """Saving an entry stores song metadata from Jellyfin."""
 
@@ -615,6 +660,31 @@ def test_save_entry_adds_media_metadata(test_client, monkeypatch):
     assert json_path.exists()
     media = json.loads(json_path.read_text(encoding="utf-8"))
     assert media[0]["title"] == "Movie"
+
+
+def test_jellyfin_disabled_skips_metadata(test_client, monkeypatch):
+    """Disabling Jellyfin should skip song and media metadata saves."""
+
+    async def fake_fetch_songs(_date_str: str):
+        return [{"track": "t1", "artist": "a1", "plays": 1}]
+
+    async def fake_fetch_media(_date_str: str):
+        return [{"title": "Movie", "series": ""}]
+
+    monkeypatch.setattr(jellyfin_utils, "fetch_top_songs", fake_fetch_songs)
+    monkeypatch.setattr(jellyfin_utils, "fetch_daily_media", fake_fetch_media)
+    payload = {
+        "date": "2023-05-07",
+        "content": "entry",
+        "prompt": "prompt",
+        "integrations": {"jellyfin": False},
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    songs_path = main.DATA_DIR / "2023-05-07.songs.json"
+    media_path = main.DATA_DIR / "2023-05-07.media.json"
+    assert not songs_path.exists()
+    assert not media_path.exists()
 
 
 def test_backfill_song_metadata(test_client, monkeypatch):

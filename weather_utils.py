@@ -42,8 +42,16 @@ def time_of_day_label(now: datetime | None = None) -> str:
     return "Night"
 
 
-async def build_frontmatter(location: dict, weather: Optional[Dict[str, float]] = None) -> str:
-    """Return a YAML frontmatter string based on the provided location and weather."""
+async def build_frontmatter(
+    location: dict,
+    weather: Optional[Dict[str, float]] = None,
+    integrations: dict | None = None,
+) -> str:
+    """Return a YAML frontmatter string based on the provided location and weather.
+
+    ``integrations`` toggles optional data sources like Wordnik and Immich.
+    """
+    integrations = integrations or {}
     lat = float(location.get("lat") or 0)
     lon = float(location.get("lon") or 0)
     label = location.get("label") or ""
@@ -51,7 +59,9 @@ async def build_frontmatter(location: dict, weather: Optional[Dict[str, float]] 
         weather_str = f"{weather['temperature']}°C code {int(weather['code'])}"
     else:
         weather_str = await fetch_weather(lat, lon)
-    wotd = await fetch_word_of_day()
+    wotd = None
+    if integrations.get("wordnik", True):
+        wotd = await fetch_word_of_day()
 
     lines = []
     if label:
@@ -61,5 +71,6 @@ async def build_frontmatter(location: dict, weather: Optional[Dict[str, float]] 
     lines.append(f"save_time: {time_of_day_label()}")
     if wotd:
         lines.append(f"wotd: {wotd}")
-    lines.append("photos: []")
+    if integrations.get("immich", True):
+        lines.append("photos: []")
     return "\n".join(lines)
