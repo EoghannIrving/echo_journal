@@ -140,6 +140,7 @@
     const welcomeEl = document.getElementById('welcome-message');
     const focusToggle = document.getElementById('focus-toggle');
     const newBtn = document.getElementById('new-prompt');
+    const aiBtn = document.getElementById('ai-prompt');
     const promptSection = document.getElementById('prompt-section');
     const editorSection = document.getElementById('editor-section');
     const moodSelect = document.getElementById('mood-select');
@@ -185,7 +186,7 @@
             editorSection.classList.remove('hidden');
             if (textarea) textarea.dispatchEvent(new Event('input'));
           }
-          const buttons = [newBtn, focusToggle].filter(Boolean);
+          const buttons = [newBtn, aiBtn, focusToggle].filter(Boolean);
           buttons.forEach(btn => btn.classList.remove('hidden'));
         };
         setTimeout(showEditor, totalDelay + 200);
@@ -221,7 +222,7 @@
       if (promptEl) promptEl.textContent = '';
       if (promptEl) promptEl.classList.add('opacity-0');
       if (editorSection) editorSection.classList.add('hidden');
-      [newBtn, focusToggle].filter(Boolean).forEach(btn => btn.classList.add('hidden'));
+      [newBtn, aiBtn, focusToggle].filter(Boolean).forEach(btn => btn.classList.add('hidden'));
       try {
         const params = new URLSearchParams({ mood, energy });
         const res = await fetch(`/api/new_prompt?${params.toString()}`);
@@ -332,6 +333,26 @@
             if (catEl) {
               catEl.textContent = currentCategory;
               catEl.classList.toggle('hidden', !currentCategory);
+            }
+            localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
+          }
+        } catch (_) {}
+      });
+    }
+
+    if (aiBtn && promptEl) {
+      aiBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          const res = await fetch('/api/ai_prompt');
+          if (res.ok) {
+            const data = await res.json();
+            currentPrompt = data.prompt;
+            currentCategory = '';
+            promptEl.textContent = currentPrompt;
+            if (catEl) {
+              catEl.textContent = '';
+              catEl.classList.add('hidden');
             }
             localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
           }

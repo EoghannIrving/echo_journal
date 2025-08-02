@@ -18,6 +18,7 @@ import httpx  # pylint: disable=import-error
 
 import aiofiles  # type: ignore  # pylint: disable=import-error
 import pytest  # pylint: disable=import-error
+import ai_prompt_utils
 from fastapi.testclient import TestClient  # pylint: disable=import-error
 
 # Prepare required directories before importing the app
@@ -1065,3 +1066,24 @@ def test_env_endpoints(test_client, tmp_path, monkeypatch):
     assert resp2.status_code == 200
     assert resp2.json()["BAR"] == "baz"
     assert "BAR=baz" in env_file.read_text(encoding="utf-8")
+
+
+def test_ai_prompt_missing_key(test_client, monkeypatch):
+    """AI endpoint returns 503 when API key is missing."""
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    token = base64.b64encode(b"user:pass").decode()
+    resp = test_client.get("/api/ai_prompt", headers={"Authorization": f"Basic {token}"})
+    assert resp.status_code == 503
+
+
+def test_ai_prompt_external_failure(test_client, monkeypatch):
+    """AI endpoint returns 503 when external service fails."""
+    monkeypatch.setenv("OPENAI_API_KEY", "dummy")
+
+    async def fake_fetch():
+        return None
+
+    monkeypatch.setattr(ai_prompt_utils, "fetch_ai_prompt", fake_fetch)
+    token = base64.b64encode(b"user:pass").decode()
+    resp = test_client.get("/api/ai_prompt", headers={"Authorization": f"Basic {token}"})
+    assert resp.status_code == 503
