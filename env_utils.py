@@ -1,4 +1,4 @@
-"""Helpers for reading and writing .env files."""
+"""Helpers for reading .env files."""
 
 import logging
 from pathlib import Path
@@ -27,17 +27,3 @@ def load_env(path: Path | None = None) -> Dict[str, str]:
     return env
 
 
-def save_env(values: Dict[str, str], path: Path | None = None) -> Dict[str, str]:
-    """Merge ``values`` into the .env file and return updated mapping."""
-    if path is None:
-        path = ENV_PATH
-    data = load_env(path)
-    data.update(values)
-    lines = [f"{k}={v}" for k, v in data.items()]
-    content = "\n".join(lines) + "\n"
-    try:
-        with path.open("w", encoding="utf-8") as fh:
-            fh.write(content)
-    except OSError as exc:
-        logger.error("Could not write %s: %s", path, exc)
-    return data
