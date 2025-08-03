@@ -950,6 +950,49 @@ def test_reverse_geocode_network_error(test_client, monkeypatch):
     assert resp.json()["detail"] == "Reverse geocoding failed"
 
 
+def test_reverse_geocode_user_agent(test_client, monkeypatch):
+    """Configured User-Agent header is sent to Nominatim."""
+
+    class FakeClient:
+        """Async HTTP client capturing request headers."""
+
+        def __init__(self):
+            self.request_headers = None
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def get(self, url, params=None, headers=None, timeout=None):
+            self.request_headers = headers
+
+            class Resp:  # pylint: disable=too-few-public-methods
+                status_code = 200
+                headers = {}
+
+                def json(self):
+                    return {
+                        "display_name": "X",
+                        "address": {"city": "C", "state": "S", "country": "CO"},
+                    }
+
+                def raise_for_status(self):
+                    return None
+
+            return Resp()
+
+    client = FakeClient()
+    monkeypatch.setattr(main.httpx, "AsyncClient", lambda: client)
+    monkeypatch.setattr(main, "NOMINATIM_USER_AGENT", "TestAgent/1.0")
+
+    resp = test_client.get("/api/reverse_geocode", params={"lat": 1.0, "lon": 2.0})
+
+    assert resp.status_code == 200
+    assert client.request_headers == {"User-Agent": "TestAgent/1.0"}
+
+
 def test_new_prompt_endpoint(test_client, monkeypatch):
     """/api/new_prompt returns a generated prompt."""
 

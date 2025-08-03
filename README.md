@@ -233,6 +233,8 @@ The `.env` file configures optional integrations and runtime paths:
   `JELLYFIN_PLAY_THRESHOLD` control pagination and play percentage.
 - `ACTIVATION_ENGINE_URL` – base URL of the local ActivationEngine service used
   for tagging and prompt ranking.
+- `NOMINATIM_USER_AGENT` – identifies your app when calling the Nominatim
+  reverse geocoding API. Include contact info per the usage policy.
   - Logging options: `LOG_LEVEL`, `LOG_FILE`, `LOG_MAX_BYTES`,
     `LOG_BACKUP_COUNT`.
 - `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` – enable optional HTTP Basic
