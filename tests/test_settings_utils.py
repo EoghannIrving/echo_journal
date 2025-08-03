@@ -1,6 +1,8 @@
 """Tests for ``settings_utils`` helpers."""
 
+import importlib
 import logging
+
 import yaml
 
 from echo_journal import settings_utils
@@ -32,10 +34,25 @@ def test_load_settings_logs_error(tmp_path, caplog):
     assert any(str(p) in r.getMessage() for r in caplog.records)
 
 
-def test_save_settings_logs_error(tmp_path, caplog):
-    """Errors writing settings files should be logged."""
+def test_save_settings_creates_dir(tmp_path, caplog):
+    """Missing parent directories should be created when saving settings."""
     p = tmp_path / "dir" / "settings.yaml"
     with caplog.at_level(logging.ERROR, logger="ej.settings"):
         data = settings_utils.save_settings({"A": "1"}, p)
     assert data == {"A": "1"}
-    assert any(str(p) in r.getMessage() for r in caplog.records)
+    assert yaml.safe_load(p.read_text(encoding="utf-8")) == {"A": "1"}
+    # No error logs expected
+    assert all("Could not write" not in r.getMessage() for r in caplog.records)
+
+
+def test_settings_path_relative_to_app_dir(tmp_path, monkeypatch):
+    """Default ``SETTINGS_PATH`` should live under ``APP_DIR``."""
+    app_dir = tmp_path / "app"
+    monkeypatch.setenv("APP_DIR", str(app_dir))
+    importlib.reload(settings_utils)
+    settings_utils.save_settings({"X": "1"})
+    expected = app_dir / "settings.yaml"
+    assert expected.read_text(encoding="utf-8") == "X: '1'\n"
+    # Reset module to default state for other tests
+    monkeypatch.delenv("APP_DIR")
+    importlib.reload(settings_utils)
