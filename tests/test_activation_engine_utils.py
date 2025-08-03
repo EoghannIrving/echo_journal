@@ -1,6 +1,6 @@
 """Tests for Activation Engine utilities."""
 
-# pylint: disable=missing-function-docstring,missing-class-docstring,unused-argument,duplicate-code
+# pylint: disable=duplicate-code
 
 import asyncio
 
@@ -11,27 +11,37 @@ class FakeClient:
     """Minimal async client to capture POST requests."""
 
     def __init__(self, data):
+        """Initialize the client with ``data`` to return from responses."""
         self._data = data
         self.captured = {}
 
     async def __aenter__(self):
+        """Enter the async context manager returning ``self``."""
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
+        """Exit the async context manager."""
         return False
 
     async def post(self, url, json=None, timeout=None):
+        """Capture POST ``url`` and ``json`` payloads and return a stubbed response."""
         self.captured["url"] = url
         self.captured["json"] = json
+        self.captured["timeout"] = timeout
 
         class Response:
+            """Simple response object mimicking an ``httpx`` response."""
+
             def __init__(self, data):
+                """Store ``data`` for later retrieval."""
                 self._data = data
 
             def raise_for_status(self):
+                """No-op ``raise_for_status`` implementation."""
                 return None
 
             def json(self):
+                """Return the stored ``data``."""
                 return self._data
 
         return Response(self._data)
