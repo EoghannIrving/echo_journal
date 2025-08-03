@@ -67,19 +67,19 @@
 - Quick tag reactions
   - Visual + textual buttons: e.g., 😔 Sad, ⚡ Energized, 🪫 Drained
   - Enable archive filtering and stats
-- Streak disruption softness
+- Streak disruption softness ✅ Completed
   - If no entry exists for yesterday, show gentle “Restart from today?” message
   - Avoid shaming or pressure
 - Prompt explanation tooltips
   - Optional: hover or tap to explain what kind of prompts each mood receives
 
 ### Jellyfin Viewing Integration
-- Log TV and movie views per day using Jellyfin API
-- Save to `<date>.media.json` or embed into frontmatter
-- Surface watched content optionally below entry or in archive
-- Support for optional filtering: “Show entries with movies/TV”
+- Log TV and movie views per day using Jellyfin API ✅ Completed
+- Save to `<date>.media.json` or embed into frontmatter ✅ Completed
+- Surface watched content optionally below entry or in archive ✅ Completed
+- Support for optional filtering: “Show entries with movies/TV” ✅ Completed
 - Add “Today I watched…” or “This story reminded me of…” prompts if media exists
-- Reuse Jellyfin API setup already in use for music enrichment
+- Reuse Jellyfin API setup already in use for music enrichment ✅ Completed
 
 ## Phase 6: Insight, Patterning, and Personalization (planned)
 - Filter archive view by mood, energy, tags

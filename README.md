@@ -68,6 +68,7 @@ with an AI helper. Below is the project roadmap and current feature set.
 
 ### Enrichment and UX Enhancements
 
+- Gentle restart reminder if yesterday's entry is missing ✅
 - **Auto-generated prompt selection**
   - Add What you watched (from Jellyfin) to the metadata ✅
   - Uses contextual signals (Jellyfin, Immich, Last.fm, local time, weather)
@@ -273,9 +274,10 @@ to your `.env` file.
 ### Disabling integrations
 
 The web UI includes a **Settings** page where optional integrations can be
-toggled per browser. Uncheck Wordnik, Immich, Jellyfin, or Fact integrations to
-disable their metadata. Your choices are stored in `localStorage` and the
-server skips fetching data for any disabled integrations when building
+toggled per browser. Uncheck Wordnik, Immich, or Jellyfin integrations to
+disable their metadata. A future "Fact of the Day" option will also be
+toggleable here once implemented. Your choices are stored in `localStorage` and
+the server skips fetching data for any disabled integrations when building
 frontmatter.
 
 ### Serving behind a VPN or reverse proxy

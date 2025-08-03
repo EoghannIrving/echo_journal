@@ -11,16 +11,10 @@ This list only tracks outstanding items from the roadmap.
   - [ ] 10-second journaling mode for quick entries with timestamp and optional metadata.
   - [ ] Time-contextual prompt variations (e.g., "This morning…", "Looking back…", "To Future You…").
   - [ ] Quick tag reactions (visual + textual buttons) enabling archive filtering and stats.
-  - [ ] Streak disruption softness (gentle "Restart from today?" message).
   - [ ] Prompt explanation tooltips describing prompt types.
 
 - [ ] **Jellyfin viewing integration**
-  - [ ] Log TV and movie views per day using Jellyfin API.
-  - [ ] Save to `<date>.media.json` or embed into frontmatter.
-  - [ ] Surface watched content optionally below entry or in archive.
-  - [ ] Support optional filtering: "Show entries with movies/TV".
   - [ ] Add prompts like "Today I watched…" or "This story reminded me of…" if media exists.
-  - [ ] Reuse Jellyfin API setup already in use for music enrichment.
 
 - [ ] **Insight, patterning, and personalization**
   - [ ] Filter archive view by mood, energy, and tags with interactive filter bar.
