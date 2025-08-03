@@ -298,9 +298,9 @@ frontmatter.
 - Provide a valid contact email in `NOMINATIM_USER_AGENT` to comply with the
   Nominatim usage policy; requests without contact info may be throttled or
   rejected.
-- The `/api/env` endpoint returns environment details for convenience during
-  development. Restrict it to trusted networks or run the app behind a VPN or
-  reverse proxy to avoid leaking secrets.
+- The `/api/settings` endpoint returns server configuration details for
+  convenience during development. Restrict it to trusted networks or run the
+  app behind a VPN or reverse proxy to avoid leaking secrets.
 - Outbound requests now include a 10-second timeout and prompt categories are
   sanitized before saving or rendering, limiting the impact of malicious or
   unexpected input.

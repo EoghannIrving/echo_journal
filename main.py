@@ -55,7 +55,6 @@ from prompt_utils import generate_prompt
 from ai_prompt_utils import fetch_ai_prompt
 from weather_utils import build_frontmatter, time_of_day_label
 from activation_engine_utils import fetch_tags
-from env_utils import load_env
 from settings_utils import load_settings, save_settings
 
 
@@ -767,25 +766,20 @@ async def proxy_asset(asset_id: str):
     return Response(content=resp.content, media_type=content_type)
 
 
-@app.get("/api/env")
-async def get_env_settings() -> Dict[str, str]:
-    """Return key/value pairs from the .env file overridden by settings.yaml."""
+@app.get("/api/settings")
+async def get_settings() -> Dict[str, str]:
+    """Return key/value pairs from ``settings.yaml``."""
     if not AUTH_ENABLED:
         raise HTTPException(status_code=403)
-    env = load_env()
-    settings = load_settings()
-    return {**env, **settings}
+    return load_settings()
 
 
-@app.post("/api/env")
-async def update_env_settings(values: Dict[str, str]) -> Dict[str, str]:
-    """Merge provided values into settings.yaml and return the updated mapping."""
+@app.post("/api/settings")
+async def update_settings(values: Dict[str, str]) -> Dict[str, str]:
+    """Merge provided values into ``settings.yaml`` and return the updated mapping."""
     if not AUTH_ENABLED:
         raise HTTPException(status_code=403)
-    save_settings(values)
-    env = load_env()
-    settings = load_settings()
-    return {**env, **settings}
+    return save_settings(values)
 
 
 @app.post("/api/backfill_songs")

@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
       fact: 'INTEGRATION_FACT',
     };
 
-    fetch('/api/env')
+    fetch('/api/settings')
       .then((r) => r.json())
       .then((vars) => {
         Object.entries(integrationKeys).forEach(([key, envKey]) => {
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
         vars[envKey] = cb && cb.checked ? 'true' : 'false';
       });
 
-      await fetch('/api/env', {
+      await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(vars),
