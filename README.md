@@ -184,6 +184,15 @@ docker-compose up --build
 
 This builds the CSS and starts the app on <http://localhost:8510>.
 
+The container defaults to UTC. To use your local timezone, set the
+`TZ` environment variable before starting:
+
+```bash
+TZ=America/Los_Angeles docker-compose up --build
+```
+
+You can also place `TZ=Your/Timezone` in a `.env` file.
+
 ### ActivationEngine companion
 
 Clone the [ActivationEngine](https://github.com/EoghannIrving/ActivationEngine)
