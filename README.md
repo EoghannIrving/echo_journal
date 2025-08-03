@@ -223,6 +223,8 @@ The `.env` file configures optional integrations and runtime paths:
 - `DATA_DIR`, `APP_DIR`, `PROMPTS_FILE`, `STATIC_DIR`, `TEMPLATES_DIR` –
   internal paths used by the application.
 - `WORDNIK_API_KEY` – enables the Wordnik "word of the day" prompt.
+- `OPENAI_API_KEY` – enables AI-generated prompts via the OpenAI API.
+  Usage may incur costs and is subject to OpenAI's rate limits.
 - `IMMICH_URL` and `IMMICH_API_KEY` – fetch photos from your Immich server
   within the `IMMICH_TIME_BUFFER` hour window.
 - `JELLYFIN_URL`, `JELLYFIN_API_KEY`, and `JELLYFIN_USER_ID` – pull
