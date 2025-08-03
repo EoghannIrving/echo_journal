@@ -8,7 +8,7 @@
   const energyLevels = { drained: 1, low: 2, ok: 3, energized: 4 };
   const getEnergyValue = (level) => energyLevels[level] || null;
   const defaultIntegrations = { wordnik: true, immich: true, jellyfin: true, fact: true };
-  const integrationSettings = { ...defaultIntegrations, ...JSON.parse(localStorage.getItem('ej-integrations') || '{}') };
+  const integrationSettings = { ...defaultIntegrations, ...(cfg.integrations || {}) };
 
   async function fetchWeather(lat, lon) {
     try {

@@ -99,7 +99,8 @@
         entryDate: "{{ date }}",
         prompt: {{ prompt | tojson }},
         category: {{ category | tojson }},
-        readonly: {{ 'true' if readonly else 'false' }}
+        readonly: {{ 'true' if readonly else 'false' }},
+        integrations: {{ integrations | tojson }}
       };
     </script>
     <script src="/static/echo_journal.js"></script>

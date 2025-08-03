@@ -189,6 +189,14 @@ async def index(request: Request):
     gap = _days_since_last_entry(DATA_DIR, today)
     missing_yesterday = gap is None or gap > 1
 
+    settings = load_settings()
+    integrations = {
+        "wordnik": settings.get("INTEGRATION_WORDNIK", "true").lower() != "false",
+        "immich": settings.get("INTEGRATION_IMMICH", "true").lower() != "false",
+        "jellyfin": settings.get("INTEGRATION_JELLYFIN", "true").lower() != "false",
+        "fact": settings.get("INTEGRATION_FACT", "true").lower() != "false",
+    }
+
     return templates.TemplateResponse(
         request,
         "echo_journal.html",
@@ -203,6 +211,7 @@ async def index(request: Request):
             "wotd": wotd,
             "wotd_def": wotd_def,
             "missing_yesterday": missing_yesterday,
+            "integrations": integrations,
         },
     )
 
