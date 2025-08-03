@@ -5,11 +5,11 @@ Thank you for your interest in improving Echo Journal! This project welcomes pul
 ## Development setup
 
 1. Fork the repository and clone your fork locally.
-2. Create a virtual environment and install the requirements:
+2. Create a virtual environment and install the project:
    ```sh
    python -m venv .venv
    source .venv/bin/activate
-   pip install -r requirements.txt
+   pip install .
    ```
 3. Install Node dependencies and build the CSS:
    ```sh
