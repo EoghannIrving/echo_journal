@@ -1,12 +1,16 @@
-"""Helpers for reading and writing settings.yaml files."""
+"""Helpers for reading and writing ``settings.yaml`` files."""
 
 import logging
+import os
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 import yaml
 
-SETTINGS_PATH = Path("settings.yaml")
+# ``settings.yaml`` lives inside the application directory which defaults to
+# ``/app`` but can be overridden via the ``APP_DIR`` environment variable.
+APP_DIR = Path(os.getenv("APP_DIR", "/app"))
+SETTINGS_PATH = APP_DIR / "settings.yaml"
 
 logger = logging.getLogger("ej.settings")
 
@@ -32,6 +36,7 @@ def save_settings(values: Dict[str, str], path: Path | None = None) -> Dict[str,
     data = load_settings(path)
     data.update(values)
     try:
+        path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("w", encoding="utf-8") as fh:
             yaml.safe_dump(data, fh, allow_unicode=True, default_flow_style=False)
     except OSError as exc:
