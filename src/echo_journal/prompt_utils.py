@@ -12,6 +12,39 @@ from .config import PROMPTS_FILE, ENCODING
 _prompts_cache: dict = {"data": None, "mtime": None}
 _prompts_lock = asyncio.Lock()
 
+# Mapping of anchor types to (mood, energy) pairs
+ANCHOR_MOOD_ENERGY: dict[str, list[tuple[str, int]]] = {
+    "soft": [
+        ("sad", 1), ("meh", 1), ("drained", 1), ("self-doubt", 1),
+        ("self-doubt", 2), ("okay", 2),
+    ],
+    "moderate": [
+        ("meh", 2), ("okay", 3), ("joyful", 3), ("self-doubt", 3),
+        ("focused", 3), ("energized", 3),
+    ],
+    "strong": [
+        ("joyful", 4), ("focused", 4), ("energized", 4),
+    ],
+    "micro": [
+        ("sad", 1), ("drained", 1), ("self-doubt", 1),
+    ],
+}
+
+
+def _choose_anchor(mood: str | None, energy: int | None) -> str | None:
+    """Return a random anchor value based on mood and energy."""
+    if mood is None or energy is None:
+        return None
+    mood_l = mood.lower()
+    matches = [
+        anchor
+        for anchor, pairs in ANCHOR_MOOD_ENERGY.items()
+        if (mood_l, energy) in pairs
+    ]
+    if not matches:
+        return None
+    return random.choice(matches)
+
 
 async def load_prompts() -> list[dict]:
     """Load and cache journal prompts from ``PROMPTS_FILE``.
@@ -68,12 +101,10 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
 ) -> dict:
     """Select and return a prompt for the current day.
 
-    Prompts are chosen at random, optionally filtered by ``mood`` and
-    ``energy``. ``mood`` matches prompts whose mood equals the supplied value or
-    contains it when a list is provided. ``energy`` filters for prompts
-    requiring less than or equal to the given level. If ``debug`` is ``True``,
-    additional information about the selection process is returned under a
-    ``debug`` key.
+    ``mood`` and ``energy`` are used only to derive an ``anchor`` value via
+    :data:`ANCHOR_MOOD_ENERGY`. Prompts are filtered solely by this anchor. If
+    ``debug`` is ``True``, information about the selection process is returned
+    under a ``debug`` key.
     """
     today = date.today()
     weekday = today.strftime("%A")
@@ -83,7 +114,11 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
     if not isinstance(prompts, list) or not prompts:
         result = {"category": None, "prompt": "Prompts file not found"}
         if debug:
-            result["debug"] = {"initial": [], "after_mood": [], "after_energy": [], "chosen": None}
+            result["debug"] = {
+                "initial": [],
+                "after_anchor": [],
+                "chosen": None,
+            }
         return result
 
     candidates = prompts
@@ -91,39 +126,13 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
     if debug:
         debug_info["initial"] = [p.get("id") for p in candidates]
 
-    if mood:
-        m = mood.lower()
-
-        def mood_matches(val):
-            if val is None:
-                return True
-            if isinstance(val, str):
-                return val.lower() == "any" or val.lower() == m
-            if isinstance(val, list):
-                lowered = [str(v).lower() for v in val]
-                return "any" in lowered or m in lowered
-            return False
-
-        candidates = [p for p in candidates if mood_matches(p.get("mood"))]
+    anchor = _choose_anchor(mood, energy)
+    if anchor:
+        candidates = [p for p in candidates if p.get("anchor") == anchor]
         if debug:
-            debug_info["after_mood"] = [p.get("id") for p in candidates]
+            debug_info["after_anchor"] = [p.get("id") for p in candidates]
     elif debug:
-        debug_info["after_mood"] = [p.get("id") for p in candidates]
-
-    if energy is not None:
-        def energy_matches(val):
-            if val is None:
-                return True
-            try:
-                return int(val) <= energy
-            except (TypeError, ValueError):
-                return False
-
-        candidates = [p for p in candidates if energy_matches(p.get("energy"))]
-        if debug:
-            debug_info["after_energy"] = [p.get("id") for p in candidates]
-    elif debug:
-        debug_info["after_energy"] = [p.get("id") for p in candidates]
+        debug_info["after_anchor"] = [p.get("id") for p in candidates]
 
     if not candidates:
         result = {"category": None, "prompt": "No prompts available"}
