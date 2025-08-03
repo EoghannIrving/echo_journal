@@ -30,14 +30,23 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
 
 ### Run with Python
 
-1. Copy the example environment file and set `JOURNALS_DIR` and any other needed variables:
+1. Create a virtual environment and install dependencies:
+
+   ```bash
+   python -m venv .venv && source .venv/bin/activate
+   pip install .
+   npm install
+   npm run build:css
+   ```
+
+2. Copy the example environment file and set `JOURNALS_DIR` and any other needed variables:
 
    ```bash
    cp .env.example .env
    # edit .env to point JOURNALS_DIR to a writable path
    ```
 
-2. Start the development server:
+3. Start the development server:
 
    ```bash
    uvicorn echo_journal.main:app --reload
