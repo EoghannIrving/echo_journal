@@ -9,7 +9,7 @@
 {% block content %}
 
 <form id="settings-form" class="w-full max-w-md mx-auto text-sm text-gray-700 dark:text-gray-300 space-y-4">
-  <p class="text-center text-gray-500 dark:text-gray-400">Enable or disable optional integrations and edit server settings. Values are saved to <code>settings.yaml</code> and override <code>.env</code>. Changes require a restart.</p>
+  <p class="text-center text-gray-500 dark:text-gray-400">Enable or disable optional integrations and edit server settings. Values are saved to <code>settings.yaml</code>. Changes require a restart.</p>
   <fieldset id="integration-settings" class="space-y-2 text-left">
     <legend class="sr-only">Integrations</legend>
     <label class="flex items-center gap-2 justify-center"><input type="checkbox" id="integration-wordnik" class="mr-2">Wordnik word of the day</label>
@@ -84,16 +84,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     fetch('/api/settings')
       .then((r) => r.json())
-      .then((vars) => {
-        Object.entries(integrationKeys).forEach(([key, envKey]) => {
+      .then((settings) => {
+        Object.entries(integrationKeys).forEach(([key, settingKey]) => {
           const cb = document.getElementById(`integration-${key}`);
           if (cb) {
-            cb.checked = vars[envKey] !== 'false';
-            delete vars[envKey];
+            cb.checked = settings[settingKey] !== 'false';
+            delete settings[settingKey];
           }
         });
 
-        Object.entries(vars).forEach(([key, value]) => {
+        Object.entries(settings).forEach(([key, value]) => {
           const label = document.createElement('label');
           label.className = 'flex items-center gap-2 justify-between';
           label.textContent = key;
@@ -108,21 +108,21 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
     settingsForm.querySelector('#save-settings').addEventListener('click', async () => {
-      const vars = {};
+      const updated = {};
       settingsFields.querySelectorAll('input').forEach((input) => {
         const k = input.id.replace('setting-', '');
-        vars[k] = input.value;
+        updated[k] = input.value;
       });
 
-      Object.entries(integrationKeys).forEach(([key, envKey]) => {
+      Object.entries(integrationKeys).forEach(([key, settingKey]) => {
         const cb = document.getElementById(`integration-${key}`);
-        vars[envKey] = cb && cb.checked ? 'true' : 'false';
+        updated[settingKey] = cb && cb.checked ? 'true' : 'false';
       });
 
       await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(vars),
+        body: JSON.stringify(updated),
       });
     });
   }
