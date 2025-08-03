@@ -257,3 +257,12 @@ reverse proxy such as Nginx or Caddy. The proxy can handle TLS termination and
 restrict access to known networks. When exposing the app publicly, enable Basic
 Auth by setting `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` so unauthenticated
 requests are rejected with a `401` response.
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to get started.
+
+## License
+
+Echo Journal is released under the [GNU General Public License v3](LICENSE).
+By contributing, you agree that your contributions will be licensed under the same terms.
