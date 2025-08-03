@@ -27,7 +27,14 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
         with path.open("r", encoding="utf-8") as fh:
             data: Dict[str, Any] = yaml.safe_load(fh) or {}
             # Ensure keys and values are strings
-            return {str(k): str(v) for k, v in data.items()}
+            data = {str(k): "" if v is None else str(v) for k, v in data.items()}
+            # Fill in blank values from environment variables
+            for key, value in list(data.items()):
+                if value == "":
+                    env_val = os.getenv(key)
+                    if env_val:
+                        data[key] = env_val
+            return data
     except OSError as exc:
         logger.error("Could not read %s: %s", path, exc)
         return {}
