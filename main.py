@@ -54,7 +54,8 @@ from prompt_utils import generate_prompt
 from ai_prompt_utils import fetch_ai_prompt
 from weather_utils import build_frontmatter, time_of_day_label
 from activation_engine_utils import fetch_tags
-from env_utils import load_env, save_env
+from env_utils import load_env
+from settings_utils import load_settings, save_settings
 
 
 # Provide pathlib.Path.is_relative_to on Python < 3.9
@@ -788,14 +789,19 @@ async def proxy_asset(asset_id: str):
 
 @app.get("/api/env")
 async def get_env_settings() -> Dict[str, str]:
-    """Return key/value pairs from the .env file."""
-    return load_env()
+    """Return key/value pairs from the .env file overridden by settings.yaml."""
+    env = load_env()
+    settings = load_settings()
+    return {**env, **settings}
 
 
 @app.post("/api/env")
 async def update_env_settings(values: Dict[str, str]) -> Dict[str, str]:
-    """Merge provided values into the .env file and return the updated mapping."""
-    return save_env(values)
+    """Merge provided values into settings.yaml and return the updated mapping."""
+    save_settings(values)
+    env = load_env()
+    settings = load_settings()
+    return {**env, **settings}
 
 
 @app.post("/api/backfill_songs")
