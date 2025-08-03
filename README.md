@@ -1,4 +1,9 @@
-# Echo Journal Roadmap
+# Echo Journal
+
+Echo Journal is a minimalist FastAPI journaling app that stores Markdown
+entries enriched with optional metadata like mood, energy, location, weather,
+photos and media. Daily prompts can be refreshed or even generated on demand
+with an AI helper. Below is the project roadmap and current feature set.
 
 ## Phase 1: Core MVP ✅ Completed
 
@@ -63,16 +68,16 @@
 
 ### Enrichment and UX Enhancements
 
-- **Auto-generated prompt selection**  
-  - Add What you watched (from Jellyfin) to the metadata
-  - Uses contextual signals (Jellyfin, Immich, Last.fm, local time, weather)  
+- **Auto-generated prompt selection**
+  - Add What you watched (from Jellyfin) to the metadata ✅
+  - Uses contextual signals (Jellyfin, Immich, Last.fm, local time, weather)
   - Backend rules or scoring engine selects from `prompts.yaml`
   - Contextual input logged into `.meta.json` or frontmatter
-  - AI-assisted prompts (“Need inspiration?” feature).  
-  - Optional "New Prompt" link to gently refresh the daily suggestion if it doesn't resonate.  
-    - Subtle secondary text that fades in on hover/tap.  
-    - Client-side localStorage ensures the prompt stays consistent after saving.  
-  - Optional secure remote access (auth, VPN/reverse proxy).  
+  - AI-assisted prompts (“Need inspiration?” feature) ✅
+  - Optional "New Prompt" link to gently refresh the daily suggestion if it doesn't resonate ✅
+    - Subtle secondary text that fades in on hover/tap.
+    - Client-side localStorage ensures the prompt stays consistent after saving.
+  - Optional secure remote access (auth, VPN/reverse proxy) ✅
 
 - **Minimalist journal screen mode**  
   - One visible prompt only  
