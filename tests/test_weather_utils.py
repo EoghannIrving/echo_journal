@@ -5,7 +5,7 @@
 import asyncio
 from datetime import datetime
 
-import weather_utils
+from echo_journal import weather_utils
 
 class FakeClient:
     """Minimal ``httpx.AsyncClient`` stand-in for ``fetch_weather``."""

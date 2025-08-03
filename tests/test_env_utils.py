@@ -2,7 +2,7 @@
 
 import logging
 
-import env_utils
+from echo_journal import env_utils
 
 
 def test_load_env_parses_pairs(tmp_path):

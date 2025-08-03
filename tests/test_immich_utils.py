@@ -3,7 +3,7 @@
 import asyncio
 import json as jsonlib
 
-import immich_utils
+from echo_journal import immich_utils
 
 
 class FakeClient:

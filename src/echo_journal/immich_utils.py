@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 
 import httpx
 
-from config import IMMICH_URL, IMMICH_API_KEY
+from .config import IMMICH_URL, IMMICH_API_KEY
 
 # Allow widening the search range so photos close to midnight in other
 # timezones are included. The default of 15 hours covers even the most

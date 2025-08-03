@@ -213,8 +213,8 @@ host.
 1. Install dependencies:
 
    ```bash
-   pip install -r requirements.txt
-   # requirements.txt installs PyYAML for YAML frontmatter parsing
+   pip install .
+   # installs Echo Journal and its Python dependencies
    npm install
    npm run build:css
    ```

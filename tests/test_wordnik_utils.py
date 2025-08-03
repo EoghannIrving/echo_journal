@@ -4,7 +4,7 @@
 
 import asyncio
 
-import wordnik_utils as wu
+from echo_journal import wordnik_utils as wu
 
 
 class FakeClient:

@@ -2,7 +2,7 @@
 
 import asyncio
 
-import prompt_utils
+from echo_journal import prompt_utils
 
 # pylint: disable=protected-access
 

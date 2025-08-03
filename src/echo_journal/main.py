@@ -25,7 +25,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from config import (
+from .config import (
     DATA_DIR,
     STATIC_DIR,
     TEMPLATES_DIR,
@@ -40,7 +40,7 @@ from config import (
     BASIC_AUTH_PASSWORD,
     NOMINATIM_USER_AGENT,
 )
-from file_utils import (
+from .file_utils import (
     safe_entry_path,
     parse_entry,
     read_existing_frontmatter,
@@ -49,13 +49,13 @@ from file_utils import (
     format_weather,
     load_json_file,
 )
-from immich_utils import update_photo_metadata
-from jellyfin_utils import update_song_metadata, update_media_metadata
-from prompt_utils import generate_prompt
-from ai_prompt_utils import fetch_ai_prompt
-from weather_utils import build_frontmatter, time_of_day_label
-from activation_engine_utils import fetch_tags
-from settings_utils import load_settings, save_settings
+from .immich_utils import update_photo_metadata
+from .jellyfin_utils import update_song_metadata, update_media_metadata
+from .prompt_utils import generate_prompt
+from .ai_prompt_utils import fetch_ai_prompt
+from .weather_utils import build_frontmatter, time_of_day_label
+from .activation_engine_utils import fetch_tags
+from .settings_utils import load_settings, save_settings
 
 
 # Provide pathlib.Path.is_relative_to on Python < 3.9
@@ -803,3 +803,14 @@ async def backfill_song_metadata() -> dict:
             added += 1
     songs_logger.info("Backfill complete; added %d files", added)
     return {"added": added}
+
+
+def main() -> None:
+    """Run the Echo Journal ASGI application."""
+    import uvicorn
+
+    uvicorn.run("echo_journal.main:app", host="0.0.0.0", port=8000)
+
+
+if __name__ == "__main__":
+    main()

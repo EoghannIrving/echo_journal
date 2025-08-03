@@ -6,7 +6,7 @@ from datetime import datetime
 import httpx
 import yaml
 
-from wordnik_utils import fetch_word_of_day
+from .wordnik_utils import fetch_word_of_day
 
 
 async def fetch_weather(lat: float, lon: float) -> Optional[str]:

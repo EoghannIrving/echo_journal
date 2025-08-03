@@ -4,7 +4,7 @@ import logging
 from typing import List
 import httpx
 
-from config import ACTIVATION_ENGINE_URL
+from .config import ACTIVATION_ENGINE_URL
 
 logger = logging.getLogger("ej.activation")
 
