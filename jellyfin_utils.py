@@ -231,4 +231,3 @@ async def update_media_metadata(date_str: str, journal_path: Path) -> None:
         logger.info("Wrote %d media records to %s", len(media), media_path)
     except OSError as exc:
         logger.error("Failed to write media metadata file: %s", exc)
-
