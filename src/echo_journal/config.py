@@ -27,7 +27,6 @@ JELLYFIN_URL = _get_setting("JELLYFIN_URL")
 JELLYFIN_API_KEY = _get_setting("JELLYFIN_API_KEY")
 JELLYFIN_USER_ID = _get_setting("JELLYFIN_USER_ID")
 JELLYFIN_PLAY_THRESHOLD = int(_get_setting("JELLYFIN_PLAY_THRESHOLD", "90"))
-ACTIVATION_ENGINE_URL = _get_setting("ACTIVATION_ENGINE_URL", "http://localhost:8000")
 NOMINATIM_USER_AGENT = _get_setting(
     "NOMINATIM_USER_AGENT", "EchoJournal/1.0 (contact@example.com)"
 )
