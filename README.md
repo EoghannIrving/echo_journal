@@ -5,6 +5,12 @@ entries enriched with optional metadata like mood, energy, location, weather,
 photos and media. Daily prompts can be refreshed or even generated on demand
 with an AI helper. Below is the project roadmap and current feature set.
 
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Environment variables](#environment-variables)
+- [Security considerations](#security-considerations)
+
 ## Prerequisites
 
 - **Python** 3.10+
