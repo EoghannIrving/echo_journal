@@ -1,6 +1,10 @@
+"""Tests for prompt utility helpers."""
+
 import asyncio
 
 import prompt_utils
+
+# pylint: disable=protected-access
 
 
 def test_generate_prompt_filters_and_category(tmp_path, monkeypatch):

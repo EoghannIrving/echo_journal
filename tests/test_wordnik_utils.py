@@ -1,5 +1,7 @@
 """Tests for Wordnik utilities."""
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,unused-argument,duplicate-code
+
 import asyncio
 
 import wordnik_utils as wu

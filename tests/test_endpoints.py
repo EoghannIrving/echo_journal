@@ -4,7 +4,7 @@
 # pytest expects tests to accept the ``test_client`` fixture as an argument,
 # which triggers ``redefined-outer-name`` from pylint.
 #
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,too-many-lines,import-outside-toplevel,multiple-imports,wrong-import-order,unused-argument
 
 import json
 import os

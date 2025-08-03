@@ -1,7 +1,5 @@
 """Tests for ``env_utils`` helpers."""
 
-from pathlib import Path
-
 import env_utils
 
 

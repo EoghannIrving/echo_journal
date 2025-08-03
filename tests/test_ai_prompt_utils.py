@@ -1,5 +1,7 @@
 """Tests for AI prompt utilities."""
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,unused-argument,duplicate-code
+
 import asyncio
 import ai_prompt_utils as ai
 
