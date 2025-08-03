@@ -25,10 +25,6 @@ from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from dotenv import load_dotenv
-
-load_dotenv()
-
 from .config import (
     DATA_DIR,
     STATIC_DIR,
