@@ -6,6 +6,9 @@ from pathlib import Path
 from typing import Any, Dict
 
 import yaml
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ``settings.yaml`` lives inside the application directory which defaults to
 # ``/app`` but can be overridden via the ``APP_DIR`` environment variable.
