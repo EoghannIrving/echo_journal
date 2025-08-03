@@ -11,8 +11,13 @@ Thank you for your interest in improving Echo Journal! This project welcomes pul
    source .venv/bin/activate
    pip install -r requirements.txt
    ```
-   Alternatively you can run the app through Docker Compose using `docker-compose up --build`.
-3. Run the application locally and verify your changes.
+3. Install Node dependencies and build the CSS:
+   ```sh
+   npm install
+   npm run build:css
+   ```
+   Alternatively, running the project with Docker Compose (`docker-compose up --build`) will perform the above setup steps automatically.
+4. Run the application locally and verify your changes.
 
 ## Style and testing
 
