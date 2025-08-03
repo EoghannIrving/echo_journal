@@ -1049,28 +1049,36 @@ def test_basic_auth_required(monkeypatch):
 
 
 def test_env_endpoints(test_client, tmp_path, monkeypatch):
-    """/api/env returns and updates .env values."""
+    """/api/env returns .env values overridden by settings.yaml and saves updates."""
     env_file = tmp_path / ".env"
     env_file.write_text("FOO=bar\n", encoding="utf-8")
-    import env_utils
+    settings_file = tmp_path / "settings.yaml"
+    settings_file.write_text("FOO: baz\n", encoding="utf-8")
+
+    import env_utils, settings_utils
 
     monkeypatch.setattr(env_utils, "ENV_PATH", env_file)
+    monkeypatch.setattr(settings_utils, "SETTINGS_PATH", settings_file)
     monkeypatch.setattr(main, "load_env", env_utils.load_env)
-    monkeypatch.setattr(main, "save_env", env_utils.save_env)
+    monkeypatch.setattr(main, "load_settings", settings_utils.load_settings)
+    monkeypatch.setattr(main, "save_settings", settings_utils.save_settings)
 
     token = base64.b64encode(b"user:pass").decode()
     resp = test_client.get("/api/env", headers={"Authorization": f"Basic {token}"})
     assert resp.status_code == 200
-    assert resp.json() == {"FOO": "bar"}
+    # settings.yaml overrides .env
+    assert resp.json() == {"FOO": "baz"}
 
     resp2 = test_client.post(
         "/api/env",
-        json={"BAR": "baz"},
+        json={"BAR": "qux"},
         headers={"Authorization": f"Basic {token}"},
     )
     assert resp2.status_code == 200
-    assert resp2.json()["BAR"] == "baz"
-    assert "BAR=baz" in env_file.read_text(encoding="utf-8")
+    body = resp2.json()
+    assert body["BAR"] == "qux"
+    # Value saved to settings.yaml
+    assert "BAR: qux" in settings_file.read_text(encoding="utf-8")
 
 
 def test_ai_prompt_missing_key(test_client, monkeypatch):
