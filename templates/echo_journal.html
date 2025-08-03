@@ -100,7 +100,7 @@
         prompt: {{ prompt | tojson }},
         category: {{ category | tojson }},
         readonly: {{ 'true' if readonly else 'false' }},
-        integrations: {{ integrations | tojson }}
+        integrations: {{ integrations | tojson }} {# includes ai integration key #}
       };
     </script>
     <script src="/static/echo_journal.js"></script>

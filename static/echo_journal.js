@@ -7,7 +7,7 @@
   const readonly = cfg.readonly === true || cfg.readonly === "true";
   const energyLevels = { drained: 1, low: 2, ok: 3, energized: 4 };
   const getEnergyValue = (level) => energyLevels[level] || null;
-  const defaultIntegrations = { wordnik: true, immich: true, jellyfin: true, fact: true };
+  const defaultIntegrations = { wordnik: true, immich: true, jellyfin: true, fact: true, ai: true };
   const integrationSettings = { ...defaultIntegrations, ...(cfg.integrations || {}) };
 
   async function fetchWeather(lat, lon) {
@@ -129,6 +129,9 @@
     const focusToggle = document.getElementById('focus-toggle');
     const newBtn = document.getElementById('new-prompt');
     const aiBtn = document.getElementById('ai-prompt');
+    if (aiBtn && !integrationSettings.ai) {
+      aiBtn.classList.add('hidden');
+    }
     const promptSection = document.getElementById('prompt-section');
     const editorSection = document.getElementById('editor-section');
     const moodSelect = document.getElementById('mood-select');
@@ -174,7 +177,7 @@
             editorSection.classList.remove('hidden');
             if (textarea) textarea.dispatchEvent(new Event('input'));
           }
-          const buttons = [newBtn, aiBtn, focusToggle].filter(Boolean);
+          const buttons = [newBtn, integrationSettings.ai ? aiBtn : null, focusToggle].filter(Boolean);
           buttons.forEach(btn => btn.classList.remove('hidden'));
         };
         setTimeout(showEditor, totalDelay + 200);
@@ -210,7 +213,9 @@
       if (promptEl) promptEl.textContent = '';
       if (promptEl) promptEl.classList.add('opacity-0');
       if (editorSection) editorSection.classList.add('hidden');
-      [newBtn, aiBtn, focusToggle].filter(Boolean).forEach(btn => btn.classList.add('hidden'));
+      [newBtn, integrationSettings.ai ? aiBtn : null, focusToggle]
+        .filter(Boolean)
+        .forEach(btn => btn.classList.add('hidden'));
       try {
         const params = new URLSearchParams({ mood, energy });
         const res = await fetch(`/api/new_prompt?${params.toString()}`);
@@ -340,6 +345,8 @@
               catEl.classList.add('hidden');
             }
             localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
+          } else {
+            alert('Failed to fetch AI prompt.');
           }
         } catch (_) {}
       });

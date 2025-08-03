@@ -11,6 +11,7 @@ from typing import Dict
 
 import json
 import logging
+import os
 from logging.handlers import RotatingFileHandler
 import time
 
@@ -196,6 +197,7 @@ async def index(request: Request):
         "jellyfin": settings.get("INTEGRATION_JELLYFIN", "true").lower() != "false",
         "fact": settings.get("INTEGRATION_FACT", "true").lower() != "false",
     }
+    integrations["ai"] = bool(os.getenv("OPENAI_API_KEY"))
 
     return templates.TemplateResponse(
         request,
