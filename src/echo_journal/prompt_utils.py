@@ -7,7 +7,7 @@ from datetime import date
 import yaml
 import aiofiles
 
-from config import PROMPTS_FILE, ENCODING
+from .config import PROMPTS_FILE, ENCODING
 
 _prompts_cache: dict = {"data": None, "mtime": None}
 _prompts_lock = asyncio.Lock()

@@ -4,7 +4,7 @@
 
 import asyncio
 
-import activation_engine_utils as ae
+from echo_journal import activation_engine_utils as ae
 
 
 class FakeClient:

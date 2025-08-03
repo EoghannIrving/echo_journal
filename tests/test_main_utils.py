@@ -5,7 +5,7 @@
 from datetime import date
 import importlib
 
-import main
+from echo_journal import main
 
 
 def test_with_updated_save_time_replaces_indented():

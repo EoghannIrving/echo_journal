@@ -3,7 +3,7 @@
 # pylint: disable=missing-function-docstring,missing-class-docstring,unused-argument,duplicate-code
 
 import asyncio
-import ai_prompt_utils as ai
+from echo_journal import ai_prompt_utils as ai
 
 
 class FakeClient:

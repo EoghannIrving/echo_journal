@@ -1,6 +1,6 @@
 """Tests for file utilities."""
 
-import file_utils
+from echo_journal import file_utils
 
 
 def test_parse_entry_preserves_trailing_newlines():

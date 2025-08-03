@@ -9,7 +9,7 @@ from datetime import datetime
 import aiofiles
 import yaml
 
-from config import DATA_DIR, ENCODING
+from .config import DATA_DIR, ENCODING
 
 
 def safe_entry_path(entry_date: str, data_dir: Path = DATA_DIR) -> Path:

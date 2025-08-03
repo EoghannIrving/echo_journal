@@ -3,7 +3,7 @@
 import logging
 import yaml
 
-import settings_utils
+from echo_journal import settings_utils
 
 
 def test_load_settings_returns_strings(tmp_path):

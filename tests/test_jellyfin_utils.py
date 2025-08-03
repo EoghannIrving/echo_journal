@@ -2,7 +2,7 @@
 
 import asyncio
 
-import jellyfin_utils
+from echo_journal import jellyfin_utils
 
 
 class FakeClient:

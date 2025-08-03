@@ -10,7 +10,7 @@ import os
 
 import httpx
 
-from config import (
+from .config import (
     JELLYFIN_URL,
     JELLYFIN_API_KEY,
     JELLYFIN_USER_ID,

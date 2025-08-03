@@ -2,7 +2,7 @@
 
 # pylint: disable=protected-access
 
-import config
+from echo_journal import config
 
 
 def test_get_setting_prefers_settings(monkeypatch):

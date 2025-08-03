@@ -3,7 +3,7 @@
 from pathlib import Path
 import os
 
-from settings_utils import load_settings
+from .settings_utils import load_settings
 
 _SETTINGS = load_settings()
 
