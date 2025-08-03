@@ -1085,7 +1085,7 @@ def test_basic_auth_malformed_headers_logged(monkeypatch, caplog, header):
 
 
 def test_settings_endpoints(tmp_path, monkeypatch):
-    """/api/settings requires auth and persists values when authorized."""
+    """/api/settings is available without auth when disabled and persists values."""
     settings_file = tmp_path / "settings.yaml"
     settings_file.write_text("FOO: baz\n", encoding="utf-8")
 
@@ -1105,11 +1105,16 @@ def test_settings_endpoints(tmp_path, monkeypatch):
     monkeypatch.setattr(mod, "load_settings", settings_utils.load_settings)
     monkeypatch.setattr(mod, "save_settings", settings_utils.save_settings)
 
-    # AUTH_ENABLED is False; requests should be forbidden
+    # With auth disabled, endpoints should succeed
     resp = client.get("/api/settings")
-    assert resp.status_code == 403
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["FOO"] == "baz"
+
     resp2 = client.post("/api/settings", json={"BAR": "qux"})
-    assert resp2.status_code == 403
+    assert resp2.status_code == 200
+    assert resp2.json()["BAR"] == "qux"
+    assert "BAR: qux" in settings_file.read_text(encoding="utf-8")
 
     # Enable authentication and reload modules
     monkeypatch.setenv("BASIC_AUTH_USERNAME", "user")
@@ -1130,13 +1135,13 @@ def test_settings_endpoints(tmp_path, monkeypatch):
 
     resp4 = client.post(
         "/api/settings",
-        json={"BAR": "qux"},
+        json={"BAR": "new"},
         headers={"Authorization": f"Basic {token}"},
     )
     assert resp4.status_code == 200
     body = resp4.json()
-    assert body["BAR"] == "qux"
-    assert "BAR: qux" in settings_file.read_text(encoding="utf-8")
+    assert body["BAR"] == "new"
+    assert "BAR: new" in settings_file.read_text(encoding="utf-8")
 
     # Reset modules for subsequent tests
     monkeypatch.delenv("BASIC_AUTH_USERNAME", raising=False)

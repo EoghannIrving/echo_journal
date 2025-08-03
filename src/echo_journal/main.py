@@ -791,8 +791,6 @@ async def proxy_asset(asset_id: str):
 @app.get("/api/settings")
 async def get_settings() -> Dict[str, str]:
     """Return configuration values from the environment and ``settings.yaml``."""
-    if not AUTH_ENABLED:
-        raise HTTPException(status_code=403)
 
     values: Dict[str, str] = {}
     for key in ENV_SETTING_KEYS:
@@ -814,8 +812,6 @@ async def get_settings() -> Dict[str, str]:
 @app.post("/api/settings")
 async def update_settings(values: Dict[str, str]) -> Dict[str, str]:
     """Merge provided values into ``settings.yaml`` and return the updated mapping."""
-    if not AUTH_ENABLED:
-        raise HTTPException(status_code=403)
     return save_settings(values)
 
 
