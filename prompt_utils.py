@@ -1,10 +1,10 @@
 """Prompt loading and generation helpers."""
 
 import asyncio
-import yaml
 import random
 from datetime import date
 
+import yaml
 import aiofiles
 
 from config import PROMPTS_FILE, ENCODING
@@ -61,7 +61,7 @@ def get_season(target_date: date) -> str:
     return "Winter"
 
 
-async def generate_prompt(
+async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
     mood: str | None = None,
     energy: int | None = None,
     debug: bool = False,
