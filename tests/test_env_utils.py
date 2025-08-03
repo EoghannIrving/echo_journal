@@ -18,5 +18,5 @@ def test_load_env_logs_error(tmp_path, caplog):
     p = tmp_path / "missing.env"
     with caplog.at_level(logging.ERROR, logger="ej.env"):
         env = env_utils.load_env(p)
-    assert env == {}
+    assert not env
     assert any(str(p) in r.getMessage() for r in caplog.records)

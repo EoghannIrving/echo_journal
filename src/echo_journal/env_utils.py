@@ -25,5 +25,3 @@ def load_env(path: Path | None = None) -> Dict[str, str]:
     except OSError as exc:
         logger.error("Could not read %s: %s", path, exc)
     return env
-
-

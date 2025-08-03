@@ -20,6 +20,7 @@ import aiofiles
 import bleach
 import httpx
 import markdown
+import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -829,8 +830,6 @@ async def backfill_song_metadata() -> dict:
 
 def main() -> None:
     """Run the Echo Journal ASGI application."""
-    import uvicorn
-
     uvicorn.run("echo_journal.main:app", host="0.0.0.0", port=8000)
 
 
