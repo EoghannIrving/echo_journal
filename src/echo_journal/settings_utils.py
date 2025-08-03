@@ -10,10 +10,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ``settings.yaml`` lives inside the application directory which defaults to
-# ``/app`` but can be overridden via the ``APP_DIR`` environment variable.
-APP_DIR = Path(os.getenv("APP_DIR", "/app"))
-SETTINGS_PATH = APP_DIR / "settings.yaml"
+# ``settings.yaml`` should live alongside the journal data so that it persists
+# outside of the application container.  Default to ``/journals`` but allow the
+# location to be overridden via the ``DATA_DIR`` environment variable.
+DATA_DIR = Path(os.getenv("DATA_DIR", "/journals"))
+SETTINGS_PATH = DATA_DIR / "settings.yaml"
 
 logger = logging.getLogger("ej.settings")
 
