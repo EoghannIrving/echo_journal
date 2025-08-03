@@ -173,8 +173,9 @@ This allows the backend to score prompts based on numeric intensity.
 
 ## Setup
 
-Echo Journal runs as a small FastAPI application. Copy `.env.example` to
-`.env` and edit paths or API keys before launching the server.
+Echo Journal runs as a small FastAPI application. Create a `settings.yaml`
+file and edit paths or API keys before launching the server. This file is the
+authoritative source for configuration.
 
 ### Docker Compose quick start
 
@@ -191,7 +192,8 @@ The container defaults to UTC. To use your local timezone, set the
 TZ=America/Los_Angeles docker-compose up --build
 ```
 
-You can also place `TZ=Your/Timezone` in a `.env` file.
+You can also set `TZ=Your/Timezone` in `settings.yaml`. Restart the server for
+changes to take effect.
 
 ### ActivationEngine companion
 
@@ -205,8 +207,8 @@ pip install -r requirements.txt
 uvicorn main:app --port 8000
 ```
 
-Set `ACTIVATION_ENGINE_URL` in your `.env` if running on a different port or
-host.
+Set `ACTIVATION_ENGINE_URL` in `settings.yaml` if running on a different port
+or host. Restart the server after editing the file.
 
 ### Running directly with Python
 
@@ -227,7 +229,8 @@ host.
 
 ### Environment variables
 
-The `.env` file configures optional integrations and runtime paths:
+The `settings.yaml` file configures optional integrations and runtime paths. It
+is the authoritative source for these values:
 
 - `JOURNALS_DIR` – host directory for your Markdown entries.
 - `DATA_DIR`, `APP_DIR`, `PROMPTS_FILE`, `STATIC_DIR`, `TEMPLATES_DIR` –
@@ -250,9 +253,10 @@ The `.env` file configures optional integrations and runtime paths:
   authentication for the web UI. When both are set, all requests must include a
   matching `Authorization` header.
 
-Set any of these variables in `.env` or your environment to tailor the app to
-your setup. The **Settings** page lists current values and lets you edit them;
-changes are saved to `.env` and take effect after restarting the server.
+Set any of these variables in `settings.yaml` or your environment to tailor the
+app to your setup. The **Settings** page lists current values and lets you edit
+them; changes are written to `settings.yaml` and take effect after restarting
+the server.
 
 ### Google Cloud service account credentials
 
@@ -279,8 +283,8 @@ Set the path to this file before running the app:
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 ```
 
-You can also add `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json`
-to your `.env` file.
+You can also set `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json`
+in `settings.yaml`. Restart the server after updating the file.
 
 ### Disabling integrations
 
