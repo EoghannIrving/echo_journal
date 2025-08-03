@@ -373,25 +373,6 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
     return {"status": "success"}
 
 
-@app.get("/entry")
-async def load_entry(entry_date: str):
-    """Load the textual content for an entry without headers."""
-    try:
-        file_path = safe_entry_path(entry_date, DATA_DIR)
-    except ValueError:
-        return JSONResponse(
-            status_code=404, content={"status": "not_found", "content": ""}
-        )
-    if file_path.exists():
-        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
-            content = await fh.read()
-        # Parse markdown safely to handle different newline styles
-        _, body = split_frontmatter(content)
-        entry_text = parse_entry(body)[1] or body.strip()
-        return {"status": "success", "content": entry_text}
-    return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
-
-
 async def _load_extra_meta(md_file: Path, meta: dict) -> None:  # pylint: disable=too-many-branches
     """Populate ``meta`` with photo, song and media info if present."""
     if meta.get("photos") in (None, [], "[]"):
