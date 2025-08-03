@@ -1080,16 +1080,13 @@ def test_basic_auth_malformed_headers_logged(monkeypatch, caplog, header):
     )
 
 
-def test_env_endpoints(tmp_path, monkeypatch):
-    """/api/env requires auth and merges settings when authorized."""
-    env_file = tmp_path / ".env"
-    env_file.write_text("FOO=bar\n", encoding="utf-8")
+def test_settings_endpoints(tmp_path, monkeypatch):
+    """/api/settings requires auth and persists values when authorized."""
     settings_file = tmp_path / "settings.yaml"
     settings_file.write_text("FOO: baz\n", encoding="utf-8")
 
-    import env_utils, settings_utils, importlib, config, main
+    import settings_utils, importlib, config, main
 
-    monkeypatch.setattr(env_utils, "ENV_PATH", env_file)
     monkeypatch.setattr(settings_utils, "SETTINGS_PATH", settings_file)
 
     # Ensure auth is disabled and reload modules
@@ -1100,14 +1097,13 @@ def test_env_endpoints(tmp_path, monkeypatch):
     client = TestClient(mod.app)
 
     # Patch helpers
-    monkeypatch.setattr(mod, "load_env", env_utils.load_env)
     monkeypatch.setattr(mod, "load_settings", settings_utils.load_settings)
     monkeypatch.setattr(mod, "save_settings", settings_utils.save_settings)
 
     # AUTH_ENABLED is False; requests should be forbidden
-    resp = client.get("/api/env")
+    resp = client.get("/api/settings")
     assert resp.status_code == 403
-    resp2 = client.post("/api/env", json={"BAR": "qux"})
+    resp2 = client.post("/api/settings", json={"BAR": "qux"})
     assert resp2.status_code == 403
 
     # Enable authentication and reload modules
@@ -1117,18 +1113,16 @@ def test_env_endpoints(tmp_path, monkeypatch):
     mod = importlib.reload(main)
     client = TestClient(mod.app)
 
-    monkeypatch.setattr(mod, "load_env", env_utils.load_env)
     monkeypatch.setattr(mod, "load_settings", settings_utils.load_settings)
     monkeypatch.setattr(mod, "save_settings", settings_utils.save_settings)
 
     token = base64.b64encode(b"user:pass").decode()
-    resp3 = client.get("/api/env", headers={"Authorization": f"Basic {token}"})
+    resp3 = client.get("/api/settings", headers={"Authorization": f"Basic {token}"})
     assert resp3.status_code == 200
-    # settings.yaml overrides .env
     assert resp3.json() == {"FOO": "baz"}
 
     resp4 = client.post(
-        "/api/env",
+        "/api/settings",
         json={"BAR": "qux"},
         headers={"Authorization": f"Basic {token}"},
     )
