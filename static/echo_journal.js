@@ -102,36 +102,24 @@
       }
 
       target.textContent = '';
+      target.classList.remove('opacity-0');
 
       let delay = startDelay;
       const tokens = text.split(/(\s+)/);
 
       tokens.forEach((token) => {
         if (/^\s+$/.test(token)) {
-          target.appendChild(document.createTextNode(token));
-          return;
+          setTimeout(() => target.appendChild(document.createTextNode(token)), delay);
+          delay += wordDelay;
+        } else {
+          Array.from(token).forEach((ch) => {
+            setTimeout(() => {
+              target.textContent += ch;
+            }, delay);
+            delay += letterDelay;
+          });
+          delay += wordDelay;
         }
-
-        const wordSpan = document.createElement('span');
-        wordSpan.style.whiteSpace = 'nowrap';
-        wordSpan.style.display = 'inline-block';
-
-        Array.from(token).forEach((ch) => {
-          const letter = document.createElement('span');
-          letter.textContent = ch;
-          letter.className = 'letter-span inline-block opacity-0 transition-opacity duration-200';
-          letter.style.transitionDelay = `${delay}ms`;
-          delay += letterDelay;
-          wordSpan.appendChild(letter);
-        });
-
-        delay += wordDelay;
-        target.appendChild(wordSpan);
-      });
-
-      target.classList.remove('opacity-0');
-      requestAnimationFrame(() => {
-        target.querySelectorAll('.letter-span').forEach((span) => span.classList.add('opacity-100'));
       });
 
       return delay;
@@ -239,11 +227,9 @@
 
     if (moodSelect) {
       moodSelect.addEventListener('change', maybeFetchPrompt);
-      moodSelect.addEventListener('blur', maybeFetchPrompt);
     }
     if (energySelect) {
       energySelect.addEventListener('change', maybeFetchPrompt);
-      energySelect.addEventListener('blur', maybeFetchPrompt);
     }
     const params = new URLSearchParams(window.location.search);
     if (params.get('focus') === '1') {
