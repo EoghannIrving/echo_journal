@@ -1,5 +1,7 @@
 """Utility functions for interacting with the Wordnik API."""
 
+# pylint: disable=duplicate-code
+
 import os
 from typing import Optional, Tuple
 

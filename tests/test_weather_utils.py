@@ -1,5 +1,7 @@
 """Tests for weather utility helpers."""
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,unused-argument,duplicate-code
+
 import asyncio
 from datetime import datetime
 
@@ -54,7 +56,12 @@ def test_build_frontmatter(monkeypatch):
     monkeypatch.setattr(weather_utils, "fetch_weather", fake_fetch_weather)
     monkeypatch.setattr(weather_utils, "fetch_word_of_day", fake_wotd)
     monkeypatch.setattr(weather_utils, "time_of_day_label", lambda: "Morning")
-    fm = asyncio.run(weather_utils.build_frontmatter({"lat": 1, "lon": 2, "label": "Town"}, integrations={"immich": False}))
+    fm = asyncio.run(
+        weather_utils.build_frontmatter(
+            {"lat": 1, "lon": 2, "label": "Town"},
+            integrations={"immich": False},
+        )
+    )
     lines = fm.splitlines()
     assert "location: Town" in lines
     assert "weather: 10\u00b0C code 2" in lines

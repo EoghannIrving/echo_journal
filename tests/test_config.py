@@ -1,5 +1,7 @@
 """Tests for configuration helpers."""
 
+# pylint: disable=protected-access
+
 import config
 
 
