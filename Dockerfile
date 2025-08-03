@@ -7,10 +7,9 @@ RUN npm ci && mkdir -p static && npm run build:css && npm cache clean --force
 # Runtime stage
 FROM python:3.12-slim
 WORKDIR /app
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy application source and install dependencies from pyproject.toml
 COPY . .
-RUN pip install .
+RUN pip install --no-cache-dir .
 # Copy only the built CSS artifact from the build stage
 COPY --from=build /app/static/tailwind.css ./static/tailwind.css
 EXPOSE 8000

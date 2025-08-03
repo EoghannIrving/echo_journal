@@ -19,10 +19,12 @@ with an AI helper. Below is the project roadmap and current feature set.
 git clone https://github.com/<your_user>/echo_journal.git
 cd echo_journal
 python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install .  # installs Echo Journal and its Python dependencies
 npm install
 npm run build:css
 ```
+
+Python dependencies are defined in `pyproject.toml` and installed with `pip install .`.
 
 ## Usage
 
@@ -59,7 +61,7 @@ To verify the app runs, try the following sequence:
 git clone https://github.com/<your_user>/echo_journal.git
 cd echo_journal
 python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install .  # installs Echo Journal and its Python dependencies
 npm install
 npm run build:css
 cp .env.example .env  # set JOURNALS_DIR inside
