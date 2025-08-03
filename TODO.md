@@ -2,13 +2,30 @@
 
 This list only tracks outstanding items from the roadmap.
 
-- [ ] **Metadata parsing improvements**
-  - [ ] Use `pyyaml` to read the frontmatter delimited by `---` at the top of each entry
+- [ ] **Fact of the Day integration**
+  - [ ] Pull a "Fact of the Day" and add that to the journal.
 
-- [ ] **Enrichment integration prep**
-  - [ ] Pull a "Fact of the Day" and add that to the journal
-  - [ ] AI assisted prompts / "Need inspiration?" feature
-  - [ ] Optional "New Prompt" link with hover/tap hint
-  - [ ] Evaluate secure remote access options (auth or VPN/proxy)
-  - [ ] Settings to allow for turning off optional integrations
+- [ ] **AuADHD support enhancements**
+  - [ ] Mood + energy tagging (stored client-side) with UI toggle and optional text-only mode.
+  - [ ] Prompt strategy matched to mood/energy with categorized prompt sets and optional "Prompt Style" dropdown.
+  - [ ] 10-second journaling mode for quick entries with timestamp and optional metadata.
+  - [ ] Time-contextual prompt variations (e.g., "This morning…", "Looking back…", "To Future You…").
+  - [ ] Quick tag reactions (visual + textual buttons) enabling archive filtering and stats.
+  - [ ] Streak disruption softness (gentle "Restart from today?" message).
+  - [ ] Prompt explanation tooltips describing prompt types.
+
+- [ ] **Jellyfin viewing integration**
+  - [ ] Log TV and movie views per day using Jellyfin API.
+  - [ ] Save to `<date>.media.json` or embed into frontmatter.
+  - [ ] Surface watched content optionally below entry or in archive.
+  - [ ] Support optional filtering: "Show entries with movies/TV".
+  - [ ] Add prompts like "Today I watched…" or "This story reminded me of…" if media exists.
+  - [ ] Reuse Jellyfin API setup already in use for music enrichment.
+
+- [ ] **Insight, patterning, and personalization**
+  - [ ] Filter archive view by mood, energy, and tags with interactive filter bar.
+  - [ ] Mood/energy calendar view (heatmap style).
+  - [ ] Personal time capsule "Send to Future Me" feature.
+  - [ ] Prompt lane selector (Sensory | Reflective | Planning | Memory) with persisted selection.
+  - [ ] Micro-nudge fallback link when text area is empty.
 
