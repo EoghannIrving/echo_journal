@@ -291,6 +291,20 @@ toggleable here once implemented. Your choices are stored in `localStorage` and
 the server skips fetching data for any disabled integrations when building
 frontmatter.
 
+### Security considerations
+
+- Set `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` before exposing the app
+  to the internet. Without these variables, anyone can access your journal.
+- Provide a valid contact email in `NOMINATIM_USER_AGENT` to comply with the
+  Nominatim usage policy; requests without contact info may be throttled or
+  rejected.
+- The `/api/env` endpoint returns environment details for convenience during
+  development. Restrict it to trusted networks or run the app behind a VPN or
+  reverse proxy to avoid leaking secrets.
+- Outbound requests now include a 10-second timeout and prompt categories are
+  sanitized before saving or rendering, limiting the impact of malicious or
+  unexpected input.
+
 ### Serving behind a VPN or reverse proxy
 
 For secure remote access, run Echo Journal behind your VPN (e.g. WireGuard) or a
