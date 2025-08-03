@@ -14,6 +14,7 @@ import tempfile
 from datetime import datetime, date, timedelta
 from pathlib import Path
 import base64
+import logging
 import httpx  # pylint: disable=import-error
 
 import aiofiles  # type: ignore  # pylint: disable=import-error
@@ -1046,6 +1047,32 @@ def test_basic_auth_required(monkeypatch):
     token = base64.b64encode(b"user:pass").decode()
     resp2 = client.get("/", headers={"Authorization": f"Basic {token}"})
     assert resp2.status_code == 200
+
+
+@pytest.mark.parametrize(
+    "header",
+    [
+        "Basic not_base64",
+        f"Basic {base64.b64encode(b'useronly').decode()}",
+    ],
+)
+def test_basic_auth_malformed_headers_logged(monkeypatch, caplog, header):
+    """Malformed Basic headers should be rejected and logged."""
+    monkeypatch.setenv("BASIC_AUTH_USERNAME", "user")
+    monkeypatch.setenv("BASIC_AUTH_PASSWORD", "pass")
+    import importlib
+    import config
+
+    importlib.reload(config)
+    mod = importlib.reload(main)
+    client = TestClient(mod.app)
+
+    with caplog.at_level(logging.WARNING, logger="ej.auth"):
+        resp = client.get("/", headers={"Authorization": header})
+    assert resp.status_code == 401
+    assert any(
+        "Invalid Basic auth header" in record.getMessage() for record in caplog.records
+    )
 
 
 def test_env_endpoints(test_client, tmp_path, monkeypatch):
