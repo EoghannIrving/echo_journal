@@ -80,6 +80,34 @@ elif BASIC_AUTH_USERNAME or BASIC_AUTH_PASSWORD:
         "Both BASIC_AUTH_USERNAME and BASIC_AUTH_PASSWORD must be set; disabling auth"
     )
 
+# Keys configurable via environment variables and editable from the settings page.
+# Values provided in ``settings.yaml`` override these defaults.
+ENV_SETTING_KEYS = [
+    "JOURNALS_DIR",
+    "DATA_DIR",
+    "APP_DIR",
+    "PROMPTS_FILE",
+    "STATIC_DIR",
+    "TEMPLATES_DIR",
+    "WORDNIK_API_KEY",
+    "OPENAI_API_KEY",
+    "IMMICH_URL",
+    "IMMICH_API_KEY",
+    "IMMICH_TIME_BUFFER",
+    "JELLYFIN_URL",
+    "JELLYFIN_API_KEY",
+    "JELLYFIN_USER_ID",
+    "JELLYFIN_PAGE_SIZE",
+    "JELLYFIN_PLAY_THRESHOLD",
+    "NOMINATIM_USER_AGENT",
+    "LOG_LEVEL",
+    "LOG_FILE",
+    "LOG_MAX_BYTES",
+    "LOG_BACKUP_COUNT",
+    "BASIC_AUTH_USERNAME",
+    "BASIC_AUTH_PASSWORD",
+]
+
 
 # Setup logging to both the console and a rotating file under ``DATA_DIR``
 handlers = [logging.StreamHandler()]
@@ -760,10 +788,12 @@ async def proxy_asset(asset_id: str):
 
 @app.get("/api/settings")
 async def get_settings() -> Dict[str, str]:
-    """Return key/value pairs from ``settings.yaml``."""
+    """Return configuration values from the environment and ``settings.yaml``."""
     if not AUTH_ENABLED:
         raise HTTPException(status_code=403)
-    return load_settings()
+    values = {key: os.getenv(key, "") for key in ENV_SETTING_KEYS}
+    values.update(load_settings())
+    return values
 
 
 @app.post("/api/settings")

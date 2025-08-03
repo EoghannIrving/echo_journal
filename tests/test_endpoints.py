@@ -1120,7 +1120,9 @@ def test_settings_endpoints(tmp_path, monkeypatch):
     token = base64.b64encode(b"user:pass").decode()
     resp3 = client.get("/api/settings", headers={"Authorization": f"Basic {token}"})
     assert resp3.status_code == 200
-    assert resp3.json() == {"FOO": "baz"}
+    body = resp3.json()
+    assert body["FOO"] == "baz"
+    assert body["BASIC_AUTH_USERNAME"] == "user"
 
     resp4 = client.post(
         "/api/settings",
