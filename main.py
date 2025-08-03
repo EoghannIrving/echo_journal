@@ -373,26 +373,6 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
     return {"status": "success"}
 
 
-@app.get("/entry/{entry_date}")
-async def get_entry(entry_date: str):
-    """Return the full markdown entry for the given date."""
-    try:
-        file_path = safe_entry_path(entry_date, DATA_DIR)
-    except ValueError as exc:
-        raise HTTPException(status_code=404, detail="Entry not found") from exc
-    if file_path.exists():
-        try:
-            async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
-                content = await fh.read()
-        except OSError as exc:
-            raise HTTPException(status_code=500, detail="Could not read entry") from exc
-        return {
-            "date": entry_date,
-            "content": content,
-        }
-    return JSONResponse(status_code=404, content={"error": "Entry not found"})
-
-
 @app.get("/entry")
 async def load_entry(entry_date: str):
     """Load the textual content for an entry without headers."""
