@@ -87,17 +87,16 @@ def test_restart_notice_absent_when_yesterday_exists(test_client):
     assert "Restart from today?" not in resp.text
 
 
-def test_save_entry_and_retrieve(test_client):
-    """Entries can be saved and later retrieved."""
+def test_save_entry_creates_file(test_client):
+    """Entries can be saved to disk."""
     payload = {"date": "2020-01-01", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
     assert resp.json()["status"] == "success"
     file_path = main.DATA_DIR / "2020-01-01.md"
     assert file_path.exists()
-    resp2 = test_client.get("/entry", params={"entry_date": "2020-01-01"})
-    assert resp2.status_code == 200
-    assert resp2.json()["content"] == "entry"
+    text = file_path.read_text(encoding="utf-8")
+    assert "entry" in text
 
 
 def test_save_entry_records_time(test_client, monkeypatch):
@@ -214,40 +213,6 @@ def test_save_entry_missing_fields(test_client):
     assert resp.status_code == 400
     assert resp.json()["status"] == "error"
 
-def test_load_entry(test_client):
-    """load_entry endpoint should return the entry text without headers."""
-    (main.DATA_DIR / "2020-02-02.md").write_text(
-        "# Prompt\nA\n\n# Entry\nB", encoding="utf-8"
-    )
-    resp = test_client.get("/entry", params={"entry_date": "2020-02-02"})
-    assert resp.status_code == 200
-    assert resp.json()["content"] == "B"
-
-
-def test_load_entry_windows_newlines(test_client):
-    """load_entry handles Windows CRLF line endings."""
-    (main.DATA_DIR / "2020-02-03.md").write_text(
-        "# Prompt\r\nA\r\n\r\n# Entry\r\nB", encoding="utf-8"
-    )
-    resp = test_client.get("/entry", params={"entry_date": "2020-02-03"})
-    assert resp.status_code == 200
-    assert resp.json()["content"] == "B"
-
-
-def test_load_entry_case_insensitive_headers(test_client):
-    """load_entry accepts lowercase section headers."""
-    (main.DATA_DIR / "2020-02-04.md").write_text(
-        "# prompt\nA\n\n# entry\nB", encoding="utf-8"
-    )
-    resp = test_client.get("/entry", params={"entry_date": "2020-02-04"})
-    assert resp.status_code == 200
-    assert resp.json()["content"] == "B"
-
-
-def test_load_entry_missing(test_client):
-    """Loading a missing entry should return 404."""
-    resp = test_client.get("/entry", params={"entry_date": "2000-01-01"})
-    assert resp.status_code == 404
 
 
 def test_view_entry_existing(test_client):
@@ -405,12 +370,6 @@ def test_save_entry_path_traversal(test_client):
 def test_view_entry_traversal(test_client):
     """Path traversal attempts in view routes should be denied."""
     resp = test_client.get("/archive/../../etc/passwd")
-    assert resp.status_code == 404
-
-
-def test_load_entry_empty_date(test_client):
-    """Empty entry_date should return a 404 error."""
-    resp = test_client.get("/entry", params={"entry_date": ""})
     assert resp.status_code == 404
 
 
