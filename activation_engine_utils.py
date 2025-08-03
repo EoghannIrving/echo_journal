@@ -1,3 +1,5 @@
+"""Helpers for talking to the external Activation Engine service."""
+
 import logging
 from typing import List
 import httpx
@@ -41,7 +43,11 @@ async def rank_prompts(prompts: List[str], tags: List[str]) -> List[str]:
             data = resp.json()
             candidates = data.get("candidates")
             if isinstance(candidates, list):
-                return [c.get("task", c) for c in candidates if isinstance(c, dict) or isinstance(c, str)]
+                return [
+                    c.get("task", c)
+                    for c in candidates
+                    if isinstance(c, (dict, str))
+                ]
     except (httpx.HTTPError, ValueError) as exc:
         logger.error("ActivationEngine rank-tasks failed: %s", exc)
     return prompts
