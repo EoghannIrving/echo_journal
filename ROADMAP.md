@@ -50,6 +50,59 @@
 - Allow refreshing the prompt via a "New Prompt" link ✅ Completed
 - Evaluate secure remote access options and toggles for integrations ✅ Completed
 
+
+### Backdated journaling support
+- Allow user to create/edit entries for past dates
+- UI clearly shows: “You’re writing for {{date}}” (date banner)
+- Prompt uses past-tense framing (e.g., “Looking back…”)
+- Show contextual memory joggers:
+  - Weather for that day
+  - Photos from Immich
+  - Songs or TV shows via Jellyfin/Last.fm
+  - Time clues (e.g., “You started your day with…”)
+- Fallback message if no metadata available
+- “Back to Today” link for easy return to current entry
+
+### Enrichment and UX Enhancements
+- Gentle restart reminder if yesterday's entry is missing ✅
+- **Auto-generated prompt selection**
+  - Add What you watched (from Jellyfin) to the metadata ✅
+  - Uses contextual signals (Jellyfin, Immich, Last.fm, local time, weather)
+  - Backend rules or scoring engine selects from `prompts.yaml`
+  - Contextual input logged into `.meta.json` or frontmatter
+  - AI-assisted prompts (“Need inspiration?” feature) ✅
+  - Optional "New Prompt" link to gently refresh the daily suggestion if it doesn't resonate ✅
+    - Subtle secondary text that fades in on hover/tap.
+    - Client-side localStorage ensures the prompt stays consistent after saving.
+  - Optional secure remote access (auth, VPN/reverse proxy) ✅
+- **Minimalist journal screen mode**
+  - One visible prompt only
+  - No toolbar or menus
+  - Prompt gently faded in for clarity
+  - Triggered by URL query or persistent setting
+- **Expanded 10-second journaling mode**
+  - No refresh or formatting
+  - Designed for raw, low-pressure reflection
+  - Auto-save on blur or idle timeout (optional)
+- **Full ambient metadata capture**
+  - Mood, time block, weather, Jellyfin/Last.fm/Immich content
+  - Files created: `.songs.json`, `.media.json`, `.photos.json`, `.meta.json`
+  - Example YAML frontmatter:
+    ```yaml
+    mood: Energized
+    time_block: evening
+    weather: Cloudy, 73°F
+    songs_played: 4
+    photos: 2
+    tv: ["Doctor Who"]
+    ```
+- **Smart append-to-entry mode**
+  - Detects existing entry for the day
+  - Inserts separator (`---` or timestamp) for each append
+  - Preserves single-entry-per-day model
+  - “Add to Today’s Journal” button shown if applicable
+  - Metadata for each append saved to `.meta.json` as list
+
 ### AuADHD Support Enhancements
 - Mood + energy tagging (stored client-side)
   - UI toggle with emoji **and** visible text labels
