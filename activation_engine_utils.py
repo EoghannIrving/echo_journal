@@ -25,29 +25,3 @@ async def fetch_tags(mood: str, energy: str, context: str) -> List[str]:
     except (httpx.HTTPError, ValueError) as exc:
         logger.error("ActivationEngine get-tags failed: %s", exc)
     return []
-
-async def rank_prompts(prompts: List[str], tags: List[str]) -> List[str]:
-    """Return prompts sorted by relevance via ActivationEngine."""
-    if not ACTIVATION_ENGINE_URL:
-        return prompts
-    url = f"{ACTIVATION_ENGINE_URL.rstrip('/')}/rank-tasks"
-    payload = {"tasks": [
-        {"name": p, "project": "prompt"} for p in prompts
-    ], "user_state": {"mood": None, "energy": 3, "context": {}}}
-    if tags:
-        payload["user_state"]["mood"] = tags[0]
-    try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(url, json=payload, timeout=10)
-            resp.raise_for_status()
-            data = resp.json()
-            candidates = data.get("candidates")
-            if isinstance(candidates, list):
-                return [
-                    c.get("task", c)
-                    for c in candidates
-                    if isinstance(c, (dict, str))
-                ]
-    except (httpx.HTTPError, ValueError) as exc:
-        logger.error("ActivationEngine rank-tasks failed: %s", exc)
-    return prompts

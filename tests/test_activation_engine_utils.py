@@ -58,16 +58,3 @@ def test_fetch_tags(monkeypatch):
     assert tags == ["joy", "1", "calm"]
     assert client.captured["url"] == "http://ae/get-tags"
     assert client.captured["json"]["mood"] == "m"
-
-
-def test_rank_prompts(monkeypatch):
-    """``rank_prompts`` should return prompts ordered by relevance."""
-    client = FakeClient({"candidates": [{"task": "b"}, {"task": "a"}]})
-    monkeypatch.setattr(ae.httpx, "AsyncClient", lambda: client)
-    monkeypatch.setattr(ae, "ACTIVATION_ENGINE_URL", "http://ae")
-
-    ranked = asyncio.run(ae.rank_prompts(["a", "b"], ["joy"]))
-
-    assert ranked == ["b", "a"]
-    assert client.captured["url"] == "http://ae/rank-tasks"
-    assert client.captured["json"]["user_state"]["mood"] == "joy"
