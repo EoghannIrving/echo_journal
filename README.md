@@ -5,6 +5,67 @@ entries enriched with optional metadata like mood, energy, location, weather,
 photos and media. Daily prompts can be refreshed or even generated on demand
 with an AI helper. Below is the project roadmap and current feature set.
 
+## Prerequisites
+
+- **Python** 3.10+
+- **Node.js** 18+ and npm for building Tailwind CSS assets
+- **Docker** and **Docker Compose** (optional, for containerized deployment)
+
+## Installation
+
+### Clone and install dependencies
+
+```bash
+git clone https://github.com/<your_user>/echo_journal.git
+cd echo_journal
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+npm install
+npm run build:css
+```
+
+## Usage
+
+### Run with Python
+
+1. Copy the example environment file and set `JOURNALS_DIR` and any other needed variables:
+
+   ```bash
+   cp .env.example .env
+   # edit .env to point JOURNALS_DIR to a writable path
+   ```
+
+2. Start the development server:
+
+   ```bash
+   uvicorn main:app --reload
+   ```
+
+### Run with Docker Compose
+
+```bash
+cp .env.example .env
+# adjust JOURNALS_DIR and other variables in .env
+docker-compose up --build
+```
+
+## Example walkthrough
+
+To verify the app runs, try the following sequence:
+
+```bash
+git clone https://github.com/<your_user>/echo_journal.git
+cd echo_journal
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+npm install
+npm run build:css
+cp .env.example .env  # set JOURNALS_DIR inside
+uvicorn main:app --reload
+```
+
+Then open <http://localhost:8000> in your browser. You should see the Echo Journal interface and can create a test entry.
+
 ## Phase 1: Core MVP ✅ Completed
 
 - Mobile-first, minimalist web UI served locally via Docker  
