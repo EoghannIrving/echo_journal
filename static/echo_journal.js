@@ -312,7 +312,6 @@
         textarea.dispatchEvent(new Event('input'));
       });
     }
-
     if (newBtn && promptEl) {
       newBtn.addEventListener('click', async (e) => {
         e.preventDefault();
