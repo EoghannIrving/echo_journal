@@ -49,7 +49,7 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
 
    ```bash
    cp .env.example .env
-   # edit .env to point JOURNALS_DIR to a writable path
+   # edit .env to point JOURNALS_DIR to a writable path; it will be loaded on startup
    ```
 
 3. Start the development server:
@@ -188,6 +188,9 @@ changes to take effect.
    ```
 
 ### Environment variables
+
+Echo Journal automatically loads variables from a `.env` file at startup using
+[`python-dotenv`](https://pypi.org/project/python-dotenv/).
 
 The `settings.yaml` file configures optional integrations and runtime paths. It
 is the authoritative source for these values:
