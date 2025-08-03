@@ -3,24 +3,22 @@
 # pylint: disable=import-error
 
 import asyncio
-from collections import defaultdict
-from datetime import date, datetime, timedelta
-from pathlib import Path
-
-from typing import Dict
-
+import base64
+import hmac
 import json
 import logging
 import os
-from logging.handlers import RotatingFileHandler
 import time
+from collections import defaultdict
+from datetime import date, datetime, timedelta
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
+from typing import Dict
 
 import aiofiles
 import bleach
 import httpx
 import markdown
-import base64
-import hmac
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -160,7 +158,7 @@ async def timing_middleware(request: Request, call_next):
 
 
 @app.get("/")
-async def index(request: Request):
+async def index(request: Request):  # pylint: disable=too-many-locals
     """Render the journal entry page for the current day."""
     today = date.today()
     date_str = today.isoformat()
@@ -301,7 +299,7 @@ def _with_updated_tags(frontmatter: str | None, tags: list[str]) -> str | None:
 
 
 @app.post("/entry")
-async def save_entry(data: dict):
+async def save_entry(data: dict):  # pylint: disable=too-many-locals
     """Save a journal entry for the provided date."""
     entry_date = data.get("date")
     content = data.get("content")
@@ -404,7 +402,7 @@ async def load_entry(entry_date: str):
     return JSONResponse(status_code=404, content={"status": "not_found", "content": ""})
 
 
-async def _load_extra_meta(md_file: Path, meta: dict) -> None:
+async def _load_extra_meta(md_file: Path, meta: dict) -> None:  # pylint: disable=too-many-branches
     """Populate ``meta`` with photo, song and media info if present."""
     if meta.get("photos") in (None, [], "[]"):
         json_path = md_file.with_suffix(".photos.json")
@@ -468,7 +466,7 @@ async def _collect_entries() -> list[dict]:
 
 
 @app.get("/archive", response_class=HTMLResponse)
-async def archive_view(
+async def archive_view(  # pylint: disable=too-many-branches
     request: Request,
     sort_by: str | None = None,
     filter_: str | None = Query(None, alias="filter"),
