@@ -38,6 +38,7 @@ from config import (
     LOG_BACKUP_COUNT,
     BASIC_AUTH_USERNAME,
     BASIC_AUTH_PASSWORD,
+    NOMINATIM_USER_AGENT,
 )
 from file_utils import (
     safe_entry_path,
@@ -747,7 +748,7 @@ async def reverse_geocode(lat: float, lon: float):
         "format": "json",
         "zoom": 18,
     }
-    headers = {"User-Agent": "EchoJournal/1.0 (you@example.com)"}
+    headers = {"User-Agent": NOMINATIM_USER_AGENT}
 
     try:
         async with httpx.AsyncClient() as client:
