@@ -928,19 +928,23 @@ def test_reverse_geocode_user_agent(test_client, monkeypatch):
             return False
 
         async def get(self, url, params=None, headers=None, timeout=None):
+            """Return a fake response while capturing request headers."""
             self.request_headers = headers
 
             class Resp:  # pylint: disable=too-few-public-methods
+                """Simple fake HTTP response."""
                 status_code = 200
                 headers = {}
 
                 def json(self):
+                    """Return dummy JSON data."""
                     return {
                         "display_name": "X",
                         "address": {"city": "C", "state": "S", "country": "CO"},
                     }
 
                 def raise_for_status(self):
+                    """No-op status check."""
                     return None
 
             return Resp()
@@ -1086,7 +1090,7 @@ def test_settings_endpoints(tmp_path, monkeypatch):
     settings_file.write_text("FOO: baz\n", encoding="utf-8")
 
     import importlib
-    from echo_journal import settings_utils, config, main
+    from echo_journal import settings_utils, config
 
     monkeypatch.setattr(settings_utils, "SETTINGS_PATH", settings_file)
 
