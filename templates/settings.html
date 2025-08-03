@@ -81,10 +81,41 @@ document.addEventListener("DOMContentLoaded", () => {
       jellyfin: 'INTEGRATION_JELLYFIN',
       fact: 'INTEGRATION_FACT',
     };
+    const envSettingKeys = [
+      'JOURNALS_DIR',
+      'DATA_DIR',
+      'APP_DIR',
+      'PROMPTS_FILE',
+      'STATIC_DIR',
+      'TEMPLATES_DIR',
+      'WORDNIK_API_KEY',
+      'OPENAI_API_KEY',
+      'IMMICH_URL',
+      'IMMICH_API_KEY',
+      'IMMICH_TIME_BUFFER',
+      'JELLYFIN_URL',
+      'JELLYFIN_API_KEY',
+      'JELLYFIN_USER_ID',
+      'JELLYFIN_PAGE_SIZE',
+      'JELLYFIN_PLAY_THRESHOLD',
+      'NOMINATIM_USER_AGENT',
+      'LOG_LEVEL',
+      'LOG_FILE',
+      'LOG_MAX_BYTES',
+      'LOG_BACKUP_COUNT',
+      'BASIC_AUTH_USERNAME',
+      'BASIC_AUTH_PASSWORD',
+    ];
 
     fetch('/api/settings')
       .then((r) => r.json())
       .then((settings) => {
+        envSettingKeys.forEach((key) => {
+          if (!(key in settings)) {
+            settings[key] = '';
+          }
+        });
+
         Object.entries(integrationKeys).forEach(([key, settingKey]) => {
           const cb = document.getElementById(`integration-${key}`);
           if (cb) {
