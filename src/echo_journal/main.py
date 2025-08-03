@@ -54,7 +54,6 @@ from .jellyfin_utils import update_song_metadata, update_media_metadata
 from .prompt_utils import generate_prompt
 from .ai_prompt_utils import fetch_ai_prompt
 from .weather_utils import build_frontmatter, time_of_day_label
-from .activation_engine_utils import fetch_tags
 from .settings_utils import load_settings, save_settings
 
 
@@ -297,10 +296,6 @@ def _with_updated_energy(frontmatter: str | None, energy: str | None) -> str | N
     return _update_field(frontmatter, "energy", energy)
 
 
-def _with_updated_tags(frontmatter: str | None, tags: list[str]) -> str | None:
-    return _update_field(frontmatter, "tags", tags)
-
-
 @app.post("/entry")
 async def save_entry(data: dict):  # pylint: disable=too-many-locals
     """Save a journal entry for the provided date."""
@@ -348,9 +343,6 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
     frontmatter = _with_updated_category(frontmatter, category)
     frontmatter = _with_updated_mood(frontmatter, mood)
     frontmatter = _with_updated_energy(frontmatter, energy)
-
-    tags = await fetch_tags(mood or "", energy or "", content)
-    frontmatter = _with_updated_tags(frontmatter, tags)
 
     md_body = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
     if frontmatter is not None:
