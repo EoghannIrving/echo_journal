@@ -1,5 +1,6 @@
 """Tests for ``settings_utils`` helpers."""
 
+import logging
 import yaml
 
 import settings_utils
@@ -20,3 +21,21 @@ def test_save_settings_merges(tmp_path):
     result = settings_utils.save_settings({"B": "b"}, p)
     assert result == {"A": "a", "B": "b"}
     assert yaml.safe_load(p.read_text(encoding="utf-8")) == {"A": "a", "B": "b"}
+
+
+def test_load_settings_logs_error(tmp_path, caplog):
+    """Missing files should log an error and return an empty dict."""
+    p = tmp_path / "missing.yaml"
+    with caplog.at_level(logging.ERROR, logger="ej.settings"):
+        data = settings_utils.load_settings(p)
+    assert data == {}
+    assert any(str(p) in r.getMessage() for r in caplog.records)
+
+
+def test_save_settings_logs_error(tmp_path, caplog):
+    """Errors writing settings files should be logged."""
+    p = tmp_path / "dir" / "settings.yaml"
+    with caplog.at_level(logging.ERROR, logger="ej.settings"):
+        data = settings_utils.save_settings({"A": "1"}, p)
+    assert data == {"A": "1"}
+    assert any(str(p) in r.getMessage() for r in caplog.records)

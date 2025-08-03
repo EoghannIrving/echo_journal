@@ -1,11 +1,14 @@
 """Helpers for reading and writing settings.yaml files."""
 
+import logging
 from pathlib import Path
 from typing import Dict, Any
 
 import yaml
 
 SETTINGS_PATH = Path("settings.yaml")
+
+logger = logging.getLogger("ej.settings")
 
 
 def load_settings(path: Path | None = None) -> Dict[str, str]:
@@ -17,7 +20,8 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
             data: Dict[str, Any] = yaml.safe_load(fh) or {}
             # Ensure keys and values are strings
             return {str(k): str(v) for k, v in data.items()}
-    except OSError:
+    except OSError as exc:
+        logger.error("Could not read %s: %s", path, exc)
         return {}
 
 
@@ -30,6 +34,6 @@ def save_settings(values: Dict[str, str], path: Path | None = None) -> Dict[str,
     try:
         with path.open("w", encoding="utf-8") as fh:
             yaml.safe_dump(data, fh, allow_unicode=True, default_flow_style=False)
-    except OSError:
-        pass
+    except OSError as exc:
+        logger.error("Could not write %s: %s", path, exc)
     return data

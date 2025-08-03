@@ -1,9 +1,12 @@
 """Helpers for reading and writing .env files."""
 
+import logging
 from pathlib import Path
 from typing import Dict
 
 ENV_PATH = Path(".env")
+
+logger = logging.getLogger("ej.env")
 
 
 def load_env(path: Path | None = None) -> Dict[str, str]:
@@ -19,8 +22,8 @@ def load_env(path: Path | None = None) -> Dict[str, str]:
                     continue
                 key, value = line.split("=", 1)
                 env[key.strip()] = value.strip()
-    except OSError:
-        pass
+    except OSError as exc:
+        logger.error("Could not read %s: %s", path, exc)
     return env
 
 
@@ -35,6 +38,6 @@ def save_env(values: Dict[str, str], path: Path | None = None) -> Dict[str, str]
     try:
         with path.open("w", encoding="utf-8") as fh:
             fh.write(content)
-    except OSError:
-        pass
+    except OSError as exc:
+        logger.error("Could not write %s: %s", path, exc)
     return data
