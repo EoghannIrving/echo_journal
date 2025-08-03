@@ -38,7 +38,9 @@ npm run build:css
 2. Start the development server:
 
    ```bash
-   uvicorn main:app --reload
+   uvicorn echo_journal.main:app --reload
+   # or use the console script
+   echo-journal
    ```
 
 ### Run with Docker Compose
@@ -61,7 +63,9 @@ pip install -r requirements.txt
 npm install
 npm run build:css
 cp .env.example .env  # set JOURNALS_DIR inside
-uvicorn main:app --reload
+uvicorn echo_journal.main:app --reload
+# or
+echo-journal
 ```
 
 Then open <http://localhost:8000> in your browser. You should see the Echo Journal interface and can create a test entry.
@@ -161,7 +165,9 @@ changes to take effect.
 2. Launch the development server:
 
    ```bash
-   uvicorn main:app --reload
+   uvicorn echo_journal.main:app --reload
+   # or
+   echo-journal
    ```
 
 ### Environment variables
