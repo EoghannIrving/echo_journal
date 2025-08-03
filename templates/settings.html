@@ -8,19 +8,15 @@
 
 {% block content %}
 
-<form id="integration-settings" class="w-full max-w-md mx-auto text-sm text-gray-700 dark:text-gray-300 space-y-4">
-  <p class="text-center text-gray-500 dark:text-gray-400">Enable or disable optional integrations. Changes persist only in this browser.</p>
-  <fieldset class="space-y-2 text-left">
+<form id="settings-form" class="w-full max-w-md mx-auto text-sm text-gray-700 dark:text-gray-300 space-y-4">
+  <p class="text-center text-gray-500 dark:text-gray-400">Enable or disable optional integrations and edit server settings. Values are saved to <code>settings.yaml</code> and override <code>.env</code>. Changes require a restart.</p>
+  <fieldset id="integration-settings" class="space-y-2 text-left">
     <legend class="sr-only">Integrations</legend>
     <label class="flex items-center gap-2 justify-center"><input type="checkbox" id="integration-wordnik" class="mr-2">Wordnik word of the day</label>
     <label class="flex items-center gap-2 justify-center"><input type="checkbox" id="integration-immich" class="mr-2">Immich photos</label>
     <label class="flex items-center gap-2 justify-center"><input type="checkbox" id="integration-jellyfin" class="mr-2">Jellyfin media</label>
     <label class="flex items-center gap-2 justify-center"><input type="checkbox" id="integration-fact" class="mr-2">Fact of the day</label>
   </fieldset>
-</form>
-
-<form id="settings-form" class="w-full max-w-md mx-auto mt-8 text-sm text-gray-700 dark:text-gray-300 space-y-2">
-  <p class="text-center text-gray-500 dark:text-gray-400">Edit server settings. Values are saved to <code>settings.yaml</code> and override <code>.env</code>. Changes require a restart.</p>
   <div id="settings-fields" class="space-y-2"></div>
   <button type="button" id="save-settings" class="mx-auto block bg-blue-600 text-white px-4 py-1 rounded">Save</button>
 </form>
@@ -76,29 +72,27 @@ document.addEventListener("DOMContentLoaded", () => {
     animateText(welcomeEl, 0, 60, 200);
   }
 
-  const defaultSettings = { wordnik: true, immich: true, jellyfin: true, fact: true };
-  const stored = JSON.parse(localStorage.getItem('ej-integrations') || '{}');
-  const settings = { ...defaultSettings, ...stored };
-  const save = () => localStorage.setItem('ej-integrations', JSON.stringify(settings));
-
-  Object.keys(defaultSettings).forEach((key) => {
-    const cb = document.getElementById(`integration-${key}`);
-    if (!cb) return;
-    cb.checked = settings[key];
-    cb.addEventListener('change', () => {
-      settings[key] = cb.checked;
-      save();
-    });
-  });
-
-  save();
-
   const settingsForm = document.getElementById('settings-form');
   if (settingsForm) {
     const settingsFields = settingsForm.querySelector('#settings-fields');
+    const integrationKeys = {
+      wordnik: 'INTEGRATION_WORDNIK',
+      immich: 'INTEGRATION_IMMICH',
+      jellyfin: 'INTEGRATION_JELLYFIN',
+      fact: 'INTEGRATION_FACT',
+    };
+
     fetch('/api/env')
       .then((r) => r.json())
       .then((vars) => {
+        Object.entries(integrationKeys).forEach(([key, envKey]) => {
+          const cb = document.getElementById(`integration-${key}`);
+          if (cb) {
+            cb.checked = vars[envKey] !== 'false';
+            delete vars[envKey];
+          }
+        });
+
         Object.entries(vars).forEach(([key, value]) => {
           const label = document.createElement('label');
           label.className = 'flex items-center gap-2 justify-between';
@@ -119,6 +113,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const k = input.id.replace('setting-', '');
         vars[k] = input.value;
       });
+
+      Object.entries(integrationKeys).forEach(([key, envKey]) => {
+        const cb = document.getElementById(`integration-${key}`);
+        vars[envKey] = cb && cb.checked ? 'true' : 'false';
+      });
+
       await fetch('/api/env', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
