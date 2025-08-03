@@ -25,6 +25,9 @@ from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
+from . import config as config_module
+from .ai_prompt_utils import fetch_ai_prompt
 from .config import (
     DATA_DIR,
     STATIC_DIR,
@@ -40,7 +43,6 @@ from .config import (
     BASIC_AUTH_PASSWORD,
     NOMINATIM_USER_AGENT,
 )
-from . import config as config_module
 from .file_utils import (
     safe_entry_path,
     parse_entry,
@@ -51,11 +53,10 @@ from .file_utils import (
     load_json_file,
 )
 from .immich_utils import update_photo_metadata
-from .jellyfin_utils import update_song_metadata, update_media_metadata
+from .jellyfin_utils import update_media_metadata, update_song_metadata
 from .prompt_utils import generate_prompt
-from .ai_prompt_utils import fetch_ai_prompt
-from .weather_utils import build_frontmatter, time_of_day_label
 from .settings_utils import load_settings, save_settings
+from .weather_utils import build_frontmatter, time_of_day_label
 
 
 # Provide pathlib.Path.is_relative_to on Python < 3.9
