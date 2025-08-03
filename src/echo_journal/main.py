@@ -44,6 +44,7 @@ from .config import (
     BASIC_AUTH_PASSWORD,
     NOMINATIM_USER_AGENT,
 )
+from . import config as config_module
 from .file_utils import (
     safe_entry_path,
     parse_entry,
@@ -795,8 +796,21 @@ async def get_settings() -> Dict[str, str]:
     """Return configuration values from the environment and ``settings.yaml``."""
     if not AUTH_ENABLED:
         raise HTTPException(status_code=403)
-    values = {key: os.getenv(key, "") for key in ENV_SETTING_KEYS}
-    values.update(load_settings())
+
+    values: Dict[str, str] = {}
+    for key in ENV_SETTING_KEYS:
+        value = getattr(config_module, key, os.getenv(key, ""))
+        if value is None:
+            value = ""
+        elif not isinstance(value, str):
+            value = str(value)
+        values[key] = value
+
+    # Include any additional keys from settings.yaml that aren't in
+    # ``ENV_SETTING_KEYS``.
+    for key, val in load_settings().items():
+        values.setdefault(key, val)
+
     return values
 
 

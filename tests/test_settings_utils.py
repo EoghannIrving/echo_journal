@@ -45,14 +45,14 @@ def test_save_settings_creates_dir(tmp_path, caplog):
     assert all("Could not write" not in r.getMessage() for r in caplog.records)
 
 
-def test_settings_path_relative_to_app_dir(tmp_path, monkeypatch):
-    """Default ``SETTINGS_PATH`` should live under ``APP_DIR``."""
-    app_dir = tmp_path / "app"
-    monkeypatch.setenv("APP_DIR", str(app_dir))
+def test_settings_path_relative_to_data_dir(tmp_path, monkeypatch):
+    """Default ``SETTINGS_PATH`` should live under ``DATA_DIR``."""
+    data_dir = tmp_path / "data"
+    monkeypatch.setenv("DATA_DIR", str(data_dir))
     importlib.reload(settings_utils)
     settings_utils.save_settings({"X": "1"})
-    expected = app_dir / "settings.yaml"
+    expected = data_dir / "settings.yaml"
     assert expected.read_text(encoding="utf-8") == "X: '1'\n"
     # Reset module to default state for other tests
-    monkeypatch.delenv("APP_DIR")
+    monkeypatch.delenv("DATA_DIR")
     importlib.reload(settings_utils)
