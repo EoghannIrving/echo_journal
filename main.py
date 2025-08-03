@@ -308,7 +308,13 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
     entry_date = data.get("date")
     content = data.get("content")
     prompt = data.get("prompt")
-    category = data.get("category")
+    category = (
+        bleach.clean(data.get("category") or "")
+        .replace("\n", " ")
+        .replace("\r", " ")
+        .strip()
+        or None
+    )
     location = data.get("location") or {}
     weather = data.get("weather")
     mood = bleach.clean(data.get("mood") or "").strip() or None

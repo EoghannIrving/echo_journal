@@ -19,7 +19,6 @@ import httpx  # pylint: disable=import-error
 
 import aiofiles  # type: ignore  # pylint: disable=import-error
 import pytest  # pylint: disable=import-error
-import ai_prompt_utils
 from fastapi.testclient import TestClient  # pylint: disable=import-error
 
 # Prepare required directories before importing the app
@@ -48,6 +47,8 @@ if not PROMPTS_FILE.exists():
 sys.path.insert(0, str(ROOT))
 
 # Import the application after environment setup
+import ai_prompt_utils  # pylint: disable=wrong-import-position
+from file_utils import split_frontmatter, parse_frontmatter  # pylint: disable=wrong-import-position
 import main  # type: ignore  # pylint: disable=wrong-import-position
 import weather_utils  # pylint: disable=wrong-import-position
 import immich_utils  # pylint: disable=wrong-import-position
@@ -158,6 +159,22 @@ def test_category_saved_in_frontmatter(test_client):
     assert resp.status_code == 200
     text = (main.DATA_DIR / "2020-12-12.md").read_text(encoding="utf-8")
     assert "category: Fun" in text
+
+
+def test_category_sanitized_and_yaml_safe(test_client):
+    """Malicious category input should be sanitized and not break YAML."""
+    payload = {
+        "date": "2020-12-13",
+        "content": "entry",
+        "prompt": "prompt",
+        "category": "Fun\nBad",
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    text = (main.DATA_DIR / "2020-12-13.md").read_text(encoding="utf-8")
+    frontmatter, _ = split_frontmatter(text)
+    meta = parse_frontmatter(frontmatter)
+    assert meta["category"] == "Fun Bad"
 
 
 def test_weather_saved_when_provided(test_client):
