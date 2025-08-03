@@ -177,24 +177,31 @@ changes to take effect.
 The `settings.yaml` file configures optional integrations and runtime paths. It
 is the authoritative source for these values:
 
-- `JOURNALS_DIR` – host directory for your Markdown entries.
-- `DATA_DIR`, `APP_DIR`, `PROMPTS_FILE`, `STATIC_DIR`, `TEMPLATES_DIR` –
-  internal paths used by the application.
-- `WORDNIK_API_KEY` – enables the Wordnik "word of the day" prompt.
-- `OPENAI_API_KEY` – enables AI-generated prompts via the OpenAI API.
-  Usage may incur costs and is subject to OpenAI's rate limits.
-- `IMMICH_URL` and `IMMICH_API_KEY` – fetch photos from your Immich server
-  within the `IMMICH_TIME_BUFFER` hour window.
-- `JELLYFIN_URL`, `JELLYFIN_API_KEY`, and `JELLYFIN_USER_ID` – pull
-  recently watched shows from Jellyfin. `JELLYFIN_PAGE_SIZE` and
-  `JELLYFIN_PLAY_THRESHOLD` control pagination and play percentage.
-- `NOMINATIM_USER_AGENT` – identifies your app when calling the Nominatim
-  reverse geocoding API. Include contact info per the usage policy.
-- Logging options: `LOG_LEVEL`, `LOG_FILE`, `LOG_MAX_BYTES`,
-  `LOG_BACKUP_COUNT`.
-- `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` – enable optional HTTP Basic
-  authentication for the web UI. When both are set, all requests must include a
-  matching `Authorization` header.
+| Variable | Purpose | Notes / Defaults |
+| --- | --- | --- |
+| `JOURNALS_DIR` | Host directory for your Markdown entries. | Set to a writable path. |
+| `DATA_DIR` | Internal application path. | Default `/journals`. |
+| `APP_DIR` | Internal application directory. | Default `/app`. |
+| `PROMPTS_FILE` | Location of YAML prompts file. | Default `/app/prompts.yaml`. |
+| `STATIC_DIR` | Directory for static assets. | Default `/app/static`. |
+| `TEMPLATES_DIR` | Directory for Jinja2 templates. | Default `/app/templates`. |
+| `WORDNIK_API_KEY` | Enables the Wordnik "word of the day" prompt. | |
+| `OPENAI_API_KEY` | Enables AI-generated prompts via the OpenAI API. | Usage may incur costs and is subject to OpenAI's rate limits. |
+| `IMMICH_URL` | URL of your Immich server. | |
+| `IMMICH_API_KEY` | API key for Immich. | |
+| `IMMICH_TIME_BUFFER` | Hour window to fetch photos. | Default `15`. |
+| `JELLYFIN_URL` | Base URL of Jellyfin server. | |
+| `JELLYFIN_API_KEY` | API key for Jellyfin. | |
+| `JELLYFIN_USER_ID` | Jellyfin user ID. | |
+| `JELLYFIN_PAGE_SIZE` | Pagination size for Jellyfin API. | Default `200`. |
+| `JELLYFIN_PLAY_THRESHOLD` | Percent threshold for "played". | Default `90`. |
+| `NOMINATIM_USER_AGENT` | Identifies your app when calling the Nominatim reverse geocoding API. | Include contact info per the usage policy. |
+| `LOG_LEVEL` | Logging verbosity. | Default `DEBUG`. |
+| `LOG_FILE` | Path to log file. | If empty, logs to stderr. |
+| `LOG_MAX_BYTES` | Max size before log rotation. | Default `1,048,576`. |
+| `LOG_BACKUP_COUNT` | Number of rotated log files. | Default `3`. |
+| `BASIC_AUTH_USERNAME` | Username for optional HTTP Basic authentication. | |
+| `BASIC_AUTH_PASSWORD` | Password for optional HTTP Basic authentication. | |
 
 Set any of these variables in `settings.yaml` or your environment to tailor the
 app to your setup. The **Settings** page lists current values and lets you edit
