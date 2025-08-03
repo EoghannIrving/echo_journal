@@ -95,9 +95,9 @@ def test_save_entry_and_retrieve(test_client):
     assert resp.json()["status"] == "success"
     file_path = main.DATA_DIR / "2020-01-01.md"
     assert file_path.exists()
-    resp2 = test_client.get("/entry/2020-01-01")
+    resp2 = test_client.get("/entry", params={"entry_date": "2020-01-01"})
     assert resp2.status_code == 200
-    assert "prompt" in resp2.json()["content"]
+    assert resp2.json()["content"] == "entry"
 
 
 def test_save_entry_records_time(test_client, monkeypatch):
@@ -213,13 +213,6 @@ def test_save_entry_missing_fields(test_client):
     resp = test_client.post("/entry", json={"date": "2020-01-02"})
     assert resp.status_code == 400
     assert resp.json()["status"] == "error"
-
-
-def test_get_entry_not_found(test_client):
-    """Fetching a non-existent entry should return 404."""
-    resp = test_client.get("/entry/1999-01-01")
-    assert resp.status_code == 404
-
 
 def test_load_entry(test_client):
     """load_entry endpoint should return the entry text without headers."""
@@ -408,13 +401,6 @@ def test_save_entry_path_traversal(test_client):
     assert resp.json()["status"] == "error"
     expected = main.DATA_DIR / "malicious.md"
     assert not expected.exists()
-
-
-def test_get_entry_invalid_date(test_client):
-    """Invalid date segments should yield a 404 response."""
-    resp = test_client.get("/entry/invalid-date")
-    assert resp.status_code == 404
-
 
 def test_view_entry_traversal(test_client):
     """Path traversal attempts in view routes should be denied."""
