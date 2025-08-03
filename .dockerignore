@@ -1,0 +1,28 @@
+# Ignore Python bytecode and caches
+__pycache__/
+*.py[cod]
+
+# Exclude virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Node dependencies
+node_modules/
+
+# Test suites
+tests/
+
+# Git and other development files
+.git
+.gitignore
+.github/
+Dockerfile
+docker-compose.yml
+*.md
+*.log
+.env
+.env.*
+.idea/
+.vscode/
