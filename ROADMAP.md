@@ -46,9 +46,9 @@
 ## Phase 5: Enrichment and polish (in progress)
 - Document YAML frontmatter structure in the README ✅ Completed
 - Add optional "Fact of the Day" integration
-- Provide an AI-assisted prompt helper
-- Allow refreshing the prompt via a "New Prompt" link
-- Evaluate secure remote access options and toggles for integrations
+- Provide an AI-assisted prompt helper ✅ Completed
+- Allow refreshing the prompt via a "New Prompt" link ✅ Completed
+- Evaluate secure remote access options and toggles for integrations ✅ Completed
 
 ### AuADHD Support Enhancements
 - Mood + energy tagging (stored client-side)
