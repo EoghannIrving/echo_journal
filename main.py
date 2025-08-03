@@ -4,6 +4,7 @@
 
 import asyncio
 import base64
+import binascii
 import hmac
 import json
 import logging
@@ -104,6 +105,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("ej.timing")
 songs_logger = logging.getLogger("ej.jellyfin")
+auth_logger = logging.getLogger("ej.auth")
 
 # Store recent request timings on the FastAPI state
 MAX_TIMINGS = 50
@@ -130,7 +132,8 @@ async def basic_auth_middleware(request: Request, call_next):
             encoded = auth_header.split(" ", 1)[1]
             decoded = base64.b64decode(encoded).decode("utf-8")
             username, password = decoded.split(":", 1)
-        except Exception:  # pylint: disable=broad-except
+        except (binascii.Error, UnicodeDecodeError, ValueError) as exc:
+            auth_logger.warning("Invalid Basic auth header: %s", exc)
             return Response(status_code=401, headers={"WWW-Authenticate": "Basic"})
         if not (
             hmac.compare_digest(username, BASIC_AUTH_USERNAME)
