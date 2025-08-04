@@ -22,6 +22,7 @@ class FakeClient:
     async def post(self, url, headers=None, json=None, timeout=None):
         self.captured["url"] = url
         self.captured["headers"] = headers
+        self.captured["json"] = json
 
         class Response:
             def __init__(self, data):
@@ -43,13 +44,14 @@ def test_no_api_key(monkeypatch):
 
 
 def test_fetch_ai_prompt(monkeypatch):
-    """Valid responses should return trimmed prompt text."""
-    client = FakeClient({"choices": [{"text": "  Hello\n"}]})
+    """Valid responses should return structured prompt data."""
+    payload = {"choices": [{"text": '{"prompt": "Hello", "anchor": "soft", "tags": ["mood"]}' }]}  # noqa: E501
+    client = FakeClient(payload)
     monkeypatch.setenv("OPENAI_API_KEY", "x")
     monkeypatch.setattr(ai.httpx, "AsyncClient", lambda: client)
 
-    prompt = asyncio.run(ai.fetch_ai_prompt())
+    data = asyncio.run(ai.fetch_ai_prompt())
 
-    assert prompt == "Hello"
+    assert data == {"prompt": "Hello", "anchor": "soft", "tags": ["mood"]}
     assert client.captured["url"] == ai.OPENAI_URL
     assert client.captured["headers"]["Authorization"] == "Bearer x"
