@@ -86,7 +86,7 @@
   - Auto-save on blur or idle timeout (optional)
 - **Full ambient metadata capture**
   - Mood, time block, weather, Jellyfin/Last.fm/Immich content
-  - Files created: `.songs.json`, `.media.json`, `.photos.json`, `.meta.json`
+  - Files created under `.meta/`: `<date>.songs.json`, `<date>.media.json`, `<date>.photos.json`, `<date>.meta.json`
   - Example YAML frontmatter:
     ```yaml
     mood: Energized

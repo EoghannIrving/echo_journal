@@ -87,7 +87,7 @@ def test_update_photo_metadata_filters_assets(monkeypatch, tmp_path):
 
     asyncio.run(immich_utils.update_photo_metadata("2025-07-19", md_path))
 
-    json_path = md_path.with_suffix(".photos.json")
+    json_path = md_path.parent / ".meta" / f"{md_path.stem}.photos.json"
     data = jsonlib.loads(json_path.read_text(encoding="utf-8"))
 
     assert len(data) == 1
