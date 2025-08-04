@@ -130,6 +130,7 @@
     const focusToggle = document.getElementById('focus-toggle');
     const newBtn = document.getElementById('new-prompt');
     const aiBtn = document.getElementById('ai-prompt');
+    const restartNotice = document.getElementById('restart-notice');
     if (aiBtn && !integrationSettings.ai) {
       aiBtn.classList.add('hidden');
     }
@@ -139,6 +140,19 @@
     const energySelect = document.getElementById('energy-select');
     let moodEnergyLocked = false;
     let delay = 0;
+    if (restartNotice) {
+      const removeNotice = () => restartNotice.remove();
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        restartNotice.classList.remove('opacity-0');
+        setTimeout(removeNotice, 5000);
+      } else {
+        requestAnimationFrame(() => restartNotice.classList.remove('opacity-0'));
+        setTimeout(() => {
+          restartNotice.classList.add('opacity-0');
+          setTimeout(removeNotice, 1000);
+        }, 4000);
+      }
+    }
     if (welcomeEl) {
       const wantsGreeting = welcomeEl.dataset.dynamicGreeting === 'true';
 
