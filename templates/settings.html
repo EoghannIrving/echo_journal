@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
         Object.entries(integrationKeys).forEach(([key, settingKey]) => {
           const cb = document.getElementById(`integration-${key}`);
           if (cb) {
-            cb.checked = settings[settingKey] !== 'false';
+            cb.checked = String(settings[settingKey]).toLowerCase() !== 'false';
             delete settings[settingKey];
           }
         });
