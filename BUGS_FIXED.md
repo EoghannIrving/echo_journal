@@ -379,16 +379,10 @@ The following issues were identified and subsequently resolved.
      【F:main.py†L278-L296】
 
 42. **`JOURNALS_DIR` docs mismatch code** (fixed)
-   - README now clarifies that `DATA_DIR` controls the in-container path while
-     `JOURNALS_DIR` only affects the Docker volume mount.
-   - Fixed lines:
-     ```markdown
-     When using Docker Compose, set the `JOURNALS_DIR` environment variable
-     ...
-     If you run the application without Docker, or need to override the
-     location inside the container, set the `DATA_DIR` environment variable
-     ```
-     【F:README.md†L50-L60】
+  - Docs no longer treat `JOURNALS_DIR` as a runtime setting. It only affects
+    the Docker volume mount.
+  - When using Docker Compose, set `JOURNALS_DIR` to choose the host path
+    mounted at `/journals`.
 
 43. **Double `.md` extension possible** (fixed)
    - `safe_entry_path` now uses `with_suffix` so existing `.md` extensions are
