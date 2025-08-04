@@ -49,9 +49,11 @@
     <div class="p-4 mb-1 space-y-1">
         <div class="flex items-center gap-2">
           <p id="daily-prompt" class="font-sans leading-snug opacity-0 text-left">{{ prompt }}</p>
-          <button type="button" id="new-prompt" class="prompt-btn hidden" aria-label="New Prompt">Refresh</button>
-          <button type="button" id="ai-prompt" class="prompt-btn hidden" aria-label="Need inspiration?">Need inspiration?</button>
-          <button type="button" id="focus-toggle" class="prompt-btn hidden" aria-pressed="false" aria-label="Toggle focus mode">Focus</button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" id="new-prompt" class="prompt-btn hidden" aria-label="New Prompt">Refresh</button>
+            <button type="button" id="ai-prompt" class="prompt-btn hidden" aria-label="Need inspiration?">Need inspiration?</button>
+            <button type="button" id="focus-toggle" class="prompt-btn hidden" aria-pressed="false" aria-label="Toggle focus mode">Focus</button>
+          </div>
         </div>
       <details id="prompt-meta" class="text-gray-600 dark:text-gray-400">
         <summary class="sr-only">Prompt details</summary>
