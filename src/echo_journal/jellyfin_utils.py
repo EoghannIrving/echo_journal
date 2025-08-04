@@ -162,8 +162,10 @@ async def update_song_metadata(date_str: str, journal_path: Path) -> None:
         logger.info("No song data for %s", date_str)
         return
 
-    song_path = journal_path.with_suffix(".songs.json")
+    meta_dir = journal_path.parent / ".meta"
     try:
+        meta_dir.mkdir(parents=True, exist_ok=True)
+        song_path = meta_dir / f"{journal_path.stem}.songs.json"
         with open(song_path, "w", encoding="utf-8") as f:
             json.dump(songs, f, indent=2)
         logger.info("Wrote %d song records to %s", len(songs), song_path)
@@ -224,8 +226,10 @@ async def update_media_metadata(date_str: str, journal_path: Path) -> None:
         logger.info("No media data for %s", date_str)
         return
 
-    media_path = journal_path.with_suffix(".media.json")
+    meta_dir = journal_path.parent / ".meta"
     try:
+        meta_dir.mkdir(parents=True, exist_ok=True)
+        media_path = meta_dir / f"{journal_path.stem}.media.json"
         with open(media_path, "w", encoding="utf-8") as f:
             json.dump(media, f, indent=2)
         logger.info("Wrote %d media records to %s", len(media), media_path)

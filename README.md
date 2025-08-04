@@ -215,7 +215,7 @@ is the authoritative source for these values:
 | `JELLYFIN_PLAY_THRESHOLD` | Percent threshold for "played". | Default `90`. |
 | `NOMINATIM_USER_AGENT` | Identifies your app when calling the Nominatim reverse geocoding API. | Include contact info per the usage policy. |
 | `LOG_LEVEL` | Logging verbosity. | Default `DEBUG`. |
-| `LOG_FILE` | Path to log file. | If empty, logs to stderr. |
+| `LOG_FILE` | Path to log file. | Default `/journals/.log/echo_journal.log`; if empty, logs to stderr. |
 | `LOG_MAX_BYTES` | Max size before log rotation. | Default `1,048,576`. |
 | `LOG_BACKUP_COUNT` | Number of rotated log files. | Default `3`. |
 | `BASIC_AUTH_USERNAME` | Username for optional HTTP Basic authentication. | |

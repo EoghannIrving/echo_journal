@@ -464,7 +464,8 @@ def test_archive_filter_has_photos(test_client):
     """Entries can be filtered by those containing photos."""
     md1 = main.DATA_DIR / "2024-01-01.md"
     md1.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
-    photos_path = main.DATA_DIR / "2024-01-01.photos.json"
+    photos_path = main.DATA_DIR / ".meta" / "2024-01-01.photos.json"
+    photos_path.parent.mkdir(exist_ok=True)
     photos_path.write_text(json.dumps([{"url": "u", "thumb": "t"}]), encoding="utf-8")
 
     md2 = main.DATA_DIR / "2024-01-02.md"
@@ -560,7 +561,7 @@ def test_save_entry_adds_photo_metadata(test_client, monkeypatch):
     payload = {"date": "2023-01-01", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
-    json_path = main.DATA_DIR / "2023-01-01.photos.json"
+    json_path = main.DATA_DIR / ".meta" / "2023-01-01.photos.json"
     assert json_path.exists()
     data = json.loads(json_path.read_text(encoding="utf-8"))
     assert data[0]["caption"] == "img1.jpg"
@@ -590,7 +591,7 @@ def test_immich_disabled_skips_photo_metadata(test_client, monkeypatch):
     }
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
-    json_path = main.DATA_DIR / "2023-01-02.photos.json"
+    json_path = main.DATA_DIR / ".meta" / "2023-01-02.photos.json"
     assert not json_path.exists()
 
 
@@ -607,7 +608,7 @@ def test_save_entry_adds_song_metadata(test_client, monkeypatch):
     payload = {"date": "2023-05-05", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
-    json_path = main.DATA_DIR / "2023-05-05.songs.json"
+    json_path = main.DATA_DIR / ".meta" / "2023-05-05.songs.json"
     assert json_path.exists()
     songs = json.loads(json_path.read_text(encoding="utf-8"))
     assert songs[0]["track"] == "t1"
@@ -625,7 +626,7 @@ def test_save_entry_adds_media_metadata(test_client, monkeypatch):
     payload = {"date": "2023-05-06", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
-    json_path = main.DATA_DIR / "2023-05-06.media.json"
+    json_path = main.DATA_DIR / ".meta" / "2023-05-06.media.json"
     assert json_path.exists()
     media = json.loads(json_path.read_text(encoding="utf-8"))
     assert media[0]["title"] == "Movie"
@@ -650,8 +651,8 @@ def test_jellyfin_disabled_skips_metadata(test_client, monkeypatch):
     }
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
-    songs_path = main.DATA_DIR / "2023-05-07.songs.json"
-    media_path = main.DATA_DIR / "2023-05-07.media.json"
+    songs_path = main.DATA_DIR / ".meta" / "2023-05-07.songs.json"
+    media_path = main.DATA_DIR / ".meta" / "2023-05-07.media.json"
     assert not songs_path.exists()
     assert not media_path.exists()
 
@@ -672,7 +673,7 @@ def test_backfill_song_metadata(test_client, monkeypatch):
 
     assert resp.status_code == 200
     assert resp.json()["added"] == 1
-    songs_path = main.DATA_DIR / "2023-06-06.songs.json"
+    songs_path = main.DATA_DIR / ".meta" / "2023-06-06.songs.json"
     assert songs_path.exists()
 
 
@@ -732,7 +733,8 @@ def test_view_entry_shows_photos(test_client):
             "caption": "two",
         },
     ]
-    json_path = main.DATA_DIR / "2023-04-04.photos.json"
+    json_path = main.DATA_DIR / ".meta" / "2023-04-04.photos.json"
+    json_path.parent.mkdir(exist_ok=True)
     json_path.write_text(json.dumps(photos), encoding="utf-8")
 
     resp = test_client.get("/archive/2023-04-04")
@@ -750,7 +752,8 @@ def test_view_entry_shows_songs(test_client):
         {"track": "s1", "artist": "a1", "plays": 2},
         {"track": "s2", "artist": "a2", "plays": 1},
     ]
-    json_path = main.DATA_DIR / "2023-07-07.songs.json"
+    json_path = main.DATA_DIR / ".meta" / "2023-07-07.songs.json"
+    json_path.parent.mkdir(exist_ok=True)
     json_path.write_text(json.dumps(songs), encoding="utf-8")
 
     resp = test_client.get("/archive/2023-07-07")
@@ -764,7 +767,8 @@ def test_archive_shows_song_icon(test_client):
 
     md_path = main.DATA_DIR / "2024-02-02.md"
     md_path.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
-    json_path = main.DATA_DIR / "2024-02-02.songs.json"
+    json_path = main.DATA_DIR / ".meta" / "2024-02-02.songs.json"
+    json_path.parent.mkdir(exist_ok=True)
     json_path.write_text(json.dumps([{"track": "t", "artist": "a"}]), encoding="utf-8")
 
     resp = test_client.get("/archive")
@@ -777,7 +781,8 @@ def test_archive_filter_has_songs(test_client):
 
     md1 = main.DATA_DIR / "2025-01-01.md"
     md1.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
-    songs_path = main.DATA_DIR / "2025-01-01.songs.json"
+    songs_path = main.DATA_DIR / ".meta" / "2025-01-01.songs.json"
+    songs_path.parent.mkdir(exist_ok=True)
     songs_path.write_text(json.dumps([{"track": "t", "artist": "a"}]), encoding="utf-8")
 
     md2 = main.DATA_DIR / "2025-01-02.md"
@@ -794,12 +799,14 @@ def test_archive_sort_by_songs(test_client):
 
     md1 = main.DATA_DIR / "2026-01-01.md"
     md1.write_text("# Prompt\nP1\n\n# Entry\nE1", encoding="utf-8")
-    path1 = main.DATA_DIR / "2026-01-01.songs.json"
+    path1 = main.DATA_DIR / ".meta" / "2026-01-01.songs.json"
+    path1.parent.mkdir(exist_ok=True)
     path1.write_text(json.dumps([{"track": "b"}]), encoding="utf-8")
 
     md2 = main.DATA_DIR / "2026-01-02.md"
     md2.write_text("# Prompt\nP2\n\n# Entry\nE2", encoding="utf-8")
-    path2 = main.DATA_DIR / "2026-01-02.songs.json"
+    path2 = main.DATA_DIR / ".meta" / "2026-01-02.songs.json"
+    path2.parent.mkdir(exist_ok=True)
     path2.write_text(json.dumps([{"track": "a"}]), encoding="utf-8")
 
     resp = test_client.get("/archive", params={"sort_by": "songs"})
@@ -816,7 +823,8 @@ def test_view_entry_shows_media(test_client):
         {"title": "Ep1", "series": "Show"},
         {"title": "Movie", "series": ""},
     ]
-    json_path = main.DATA_DIR / "2027-01-01.media.json"
+    json_path = main.DATA_DIR / ".meta" / "2027-01-01.media.json"
+    json_path.parent.mkdir(exist_ok=True)
     json_path.write_text(json.dumps(media_items), encoding="utf-8")
 
     resp = test_client.get("/archive/2027-01-01")
@@ -830,7 +838,8 @@ def test_archive_filter_has_media(test_client):
 
     md1 = main.DATA_DIR / "2028-01-01.md"
     md1.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
-    media_path = main.DATA_DIR / "2028-01-01.media.json"
+    media_path = main.DATA_DIR / ".meta" / "2028-01-01.media.json"
+    media_path.parent.mkdir(exist_ok=True)
     media_path.write_text(json.dumps([{"title": "M"}]), encoding="utf-8")
 
     md2 = main.DATA_DIR / "2028-01-02.md"

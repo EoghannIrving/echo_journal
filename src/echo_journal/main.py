@@ -115,6 +115,7 @@ ENV_SETTING_KEYS = [
 handlers = [logging.StreamHandler()]
 try:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     handlers.append(
         RotatingFileHandler(
             LOG_FILE,
@@ -399,8 +400,9 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
 
 async def _load_extra_meta(md_file: Path, meta: dict) -> None:  # pylint: disable=too-many-branches
     """Populate ``meta`` with photo, song and media info if present."""
+    meta_dir = md_file.parent / ".meta"
     if meta.get("photos") in (None, [], "[]"):
-        json_path = md_file.with_suffix(".photos.json")
+        json_path = meta_dir / f"{md_file.stem}.photos.json"
         if json_path.exists():
             try:
                 async with aiofiles.open(json_path, "r", encoding=ENCODING) as jh:
@@ -410,7 +412,7 @@ async def _load_extra_meta(md_file: Path, meta: dict) -> None:  # pylint: disabl
             except (OSError, ValueError):
                 pass
     if not meta.get("songs"):
-        songs_path = md_file.with_suffix(".songs.json")
+        songs_path = meta_dir / f"{md_file.stem}.songs.json"
         if songs_path.exists():
             try:
                 async with aiofiles.open(songs_path, "r", encoding=ENCODING) as sh:
@@ -424,7 +426,7 @@ async def _load_extra_meta(md_file: Path, meta: dict) -> None:  # pylint: disabl
             except (OSError, ValueError):
                 pass
     if not meta.get("media"):
-        media_path = md_file.with_suffix(".media.json")
+        media_path = meta_dir / f"{md_file.stem}.media.json"
         if media_path.exists():
             try:
                 async with aiofiles.open(media_path, "r", encoding=ENCODING) as mh:
@@ -553,11 +555,12 @@ async def archive_entry(request: Request, entry_date: str):
     if not prompt and not entry:
         entry = body.strip()
 
-    photos = await load_json_file(file_path.with_suffix(".photos.json"))
+    meta_dir = file_path.parent / ".meta"
+    photos = await load_json_file(meta_dir / f"{file_path.stem}.photos.json")
 
-    songs = await load_json_file(file_path.with_suffix(".songs.json"))
+    songs = await load_json_file(meta_dir / f"{file_path.stem}.songs.json")
 
-    media = await load_json_file(file_path.with_suffix(".media.json"))
+    media = await load_json_file(meta_dir / f"{file_path.stem}.media.json")
 
     return templates.TemplateResponse(
         request,
@@ -824,7 +827,8 @@ async def backfill_song_metadata() -> dict:
     songs_logger.info("Starting song metadata backfill")
     added = 0
     for md_file in DATA_DIR.rglob("*.md"):
-        songs_path = md_file.with_suffix(".songs.json")
+        meta_dir = md_file.parent / ".meta"
+        songs_path = meta_dir / f"{md_file.stem}.songs.json"
         if songs_path.exists():
             songs_logger.debug("%s already has songs.json", md_file)
             continue

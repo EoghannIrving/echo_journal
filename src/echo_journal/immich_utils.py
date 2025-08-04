@@ -112,8 +112,10 @@ async def update_photo_metadata(date_str: str, journal_path: Path) -> None:
             }
         )
 
-    photo_path = journal_path.with_suffix(".photos.json")
+    meta_dir = journal_path.parent / ".meta"
     try:
+        meta_dir.mkdir(parents=True, exist_ok=True)
+        photo_path = meta_dir / f"{journal_path.stem}.photos.json"
         with open(photo_path, "w", encoding="utf-8") as f:
             json.dump(photo_metadata, f, indent=2)
         logger.info("Wrote %d photo records to %s", len(photo_metadata), photo_path)
