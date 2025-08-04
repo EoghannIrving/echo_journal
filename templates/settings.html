@@ -114,6 +114,101 @@ document.addEventListener("DOMContentLoaded", () => {
       Other: ['NOMINATIM_USER_AGENT'],
     };
 
+    const envKeyInfo = {
+      JOURNALS_DIR: {
+        label: 'Journals directory',
+        help: 'Path where journal files are stored',
+      },
+      DATA_DIR: {
+        label: 'Data directory',
+        help: 'Location for persistent data files',
+      },
+      APP_DIR: {
+        label: 'Application directory',
+        help: 'Root path of the Echo Journal installation',
+      },
+      PROMPTS_FILE: {
+        label: 'Prompts file',
+        help: 'YAML file containing writing prompts',
+      },
+      STATIC_DIR: {
+        label: 'Static directory',
+        help: 'Directory for static assets like images and CSS',
+      },
+      TEMPLATES_DIR: {
+        label: 'Templates directory',
+        help: 'Directory containing HTML templates',
+      },
+      WORDNIK_API_KEY: {
+        label: 'Wordnik API key',
+        help: 'Required for word of the day integration',
+      },
+      OPENAI_API_KEY: {
+        label: 'OpenAI API key',
+        help: 'Used for AI prompt features',
+      },
+      IMMICH_API_KEY: {
+        label: 'Immich API key',
+        help: 'Token for Immich API access',
+      },
+      JELLYFIN_API_KEY: {
+        label: 'Jellyfin API key',
+        help: 'Token for Jellyfin API access',
+      },
+      IMMICH_URL: {
+        label: 'Immich URL',
+        help: 'Base URL of your Immich instance',
+      },
+      IMMICH_TIME_BUFFER: {
+        label: 'Immich time buffer',
+        help: 'How far back to fetch photos in minutes',
+      },
+      JELLYFIN_URL: {
+        label: 'Jellyfin URL',
+        help: 'Base URL of your Jellyfin server',
+      },
+      JELLYFIN_USER_ID: {
+        label: 'Jellyfin user ID',
+        help: 'Identifier of your Jellyfin user account',
+      },
+      JELLYFIN_PAGE_SIZE: {
+        label: 'Jellyfin page size',
+        help: 'Number of items to fetch per request',
+      },
+      JELLYFIN_PLAY_THRESHOLD: {
+        label: 'Jellyfin play threshold',
+        help: 'Minimum play count required for inclusion',
+      },
+      LOG_LEVEL: {
+        label: 'Log level',
+        help: 'Logging verbosity (e.g., INFO, DEBUG)',
+      },
+      LOG_FILE: {
+        label: 'Log file',
+        help: 'File path for application logs',
+      },
+      LOG_MAX_BYTES: {
+        label: 'Log max bytes',
+        help: 'Maximum size of the log file before rotation',
+      },
+      LOG_BACKUP_COUNT: {
+        label: 'Log backup count',
+        help: 'Number of rotated log files to keep',
+      },
+      BASIC_AUTH_USERNAME: {
+        label: 'Basic auth username',
+        help: 'Username for HTTP basic authentication',
+      },
+      BASIC_AUTH_PASSWORD: {
+        label: 'Basic auth password',
+        help: 'Password for HTTP basic authentication',
+      },
+      NOMINATIM_USER_AGENT: {
+        label: 'Nominatim user agent',
+        help: 'User agent string for Nominatim requests',
+      },
+    };
+
     fetch('/api/settings')
       .then((r) => r.json())
       .then((settings) => {
@@ -143,16 +238,29 @@ document.addEventListener("DOMContentLoaded", () => {
           const grid = document.createElement('div');
           grid.className = 'grid gap-2 md:grid-cols-2';
           keys.forEach((key) => {
+            const info = envKeyInfo[key] || {};
+            const labelText = info.label || key;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'space-y-1';
             const label = document.createElement('label');
             label.className = 'flex items-center gap-2 justify-between';
-            label.textContent = key;
+            const span = document.createElement('span');
+            span.textContent = labelText;
+            label.appendChild(span);
             const input = document.createElement('input');
             input.type = 'text';
             input.id = `setting-${key}`;
             input.value = settings[key];
             input.className = 'flex-1 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400';
             label.appendChild(input);
-            grid.appendChild(label);
+            wrapper.appendChild(label);
+            if (info.help) {
+              const help = document.createElement('p');
+              help.className = 'text-xs text-gray-500 dark:text-gray-400';
+              help.textContent = info.help;
+              wrapper.appendChild(help);
+            }
+            grid.appendChild(wrapper);
           });
           fieldset.appendChild(grid);
           settingsFields.appendChild(fieldset);
