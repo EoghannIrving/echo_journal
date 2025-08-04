@@ -5,11 +5,21 @@ entries enriched with optional metadata like mood, energy, location, weather,
 photos and media. Daily prompts can be refreshed or even generated on demand
 with an AI helper. Below is the project roadmap and current feature set.
 
+- [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Environment variables](#environment-variables)
 - [Security considerations](#security-considerations)
+
+## Features
+
+- Markdown entries saved locally as `.md` files
+- Optional metadata for mood, energy, location, weather, photos, and media
+- Daily prompts from `prompts.yaml` with AI assistance and a “New Prompt” refresh
+- Archive view and stats dashboard for reviewing past entries
+- Per-browser toggles for Wordnik, Immich, and Jellyfin integrations
+- Optional HTTP Basic authentication for remote access
 
 ## Prerequisites
 
@@ -144,49 +154,6 @@ This allows the backend to score prompts based on numeric intensity.
 | `ok` | 3 |
 | `energized` | 4 |
 
-## Setup
-
-Echo Journal runs as a small FastAPI application. Create a `settings.yaml`
-file and edit paths or API keys before launching the server. This file is the
-authoritative source for configuration.
-
-### Docker Compose quick start
-
-```bash
-docker-compose up --build
-```
-
-This builds the CSS and starts the app on <http://localhost:8510>.
-
-The container defaults to UTC. To use your local timezone, set the
-`TZ` environment variable before starting:
-
-```bash
-TZ=America/Los_Angeles docker-compose up --build
-```
-
-You can also set `TZ=Your/Timezone` in `settings.yaml`. Restart the server for
-changes to take effect.
-
-### Running directly with Python
-
-1. Install dependencies:
-
-   ```bash
-   pip install .
-   # installs Echo Journal and its Python dependencies
-   npm install
-   npm run build:css
-   ```
-
-2. Launch the development server:
-
-   ```bash
-   uvicorn echo_journal.main:app --reload
-   # or
-   echo-journal
-   ```
-
 ### Environment variables
 
 Echo Journal automatically loads variables from a `.env` file at startup using
@@ -225,34 +192,6 @@ Set any of these variables in `settings.yaml` or your environment to tailor the
 app to your setup. The **Settings** page lists current values and lets you edit
 them; changes are written to `settings.yaml` and take effect after restarting
 the server.
-
-### Google Cloud service account credentials
-
-Some integrations require a Google Cloud service account. Provide the full JSON
-key downloaded from the Google Cloud console; it must include top-level fields
-like `type`, `client_email`, `token_uri`, and `private_key`. Keys that only
-contain a `"web"` section are OAuth client configs and will not work.
-
-```json
-{
-  "type": "service_account",
-  "project_id": "my-project",
-  "private_key_id": "abc123",
-  "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
-  "client_email": "my-service-account@my-project.iam.gserviceaccount.com",
-  "client_id": "1234567890",
-  "token_uri": "https://oauth2.googleapis.com/token"
-}
-```
-
-Set the path to this file before running the app:
-
-```bash
-export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
-```
-
-You can also set `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json`
-in `settings.yaml`. Restart the server after updating the file.
 
 ### Disabling integrations
 
