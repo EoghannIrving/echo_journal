@@ -28,6 +28,7 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
     """Return key/value pairs from a YAML settings file."""
     if path is None:
         path = SETTINGS_PATH
+    logger.debug("Loading settings from %s", path)
     try:
         with path.open("r", encoding="utf-8") as fh:
             data: Dict[str, Any] = yaml.safe_load(fh) or {}
@@ -50,14 +51,18 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
                     cleaned[str(k)] = "true" if v else "false"
                 else:
                     cleaned[str(k)] = str(v)
+            logger.debug("Loaded settings: %s", cleaned)
             return cleaned
     except FileNotFoundError:
+        logger.debug("Settings file %s not found", path)
         if (
             path == SETTINGS_PATH
             and os.getenv("SETTINGS_PATH") is None
             and (APP_DIR / "settings.yaml").exists()
         ):
-            with (APP_DIR / "settings.yaml").open("r", encoding="utf-8") as fh:
+            fallback = APP_DIR / "settings.yaml"
+            logger.debug("Falling back to default settings at %s", fallback)
+            with fallback.open("r", encoding="utf-8") as fh:
                 data = yaml.safe_load(fh) or {}
                 cleaned: Dict[str, str] = {}
                 for k, v in data.items():
@@ -67,6 +72,7 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
                         cleaned[str(k)] = "true" if v else "false"
                     else:
                         cleaned[str(k)] = str(v)
+                logger.debug("Loaded default settings: %s", cleaned)
                 return cleaned
         logger.warning(
             "No settings file found at %s; using environment variables only", path
@@ -81,8 +87,10 @@ def save_settings(values: Dict[str, str], path: Path | None = None) -> Dict[str,
     """Merge ``values`` into the settings file and return updated mapping."""
     if path is None:
         path = SETTINGS_PATH
+    logger.debug("Saving settings to %s: %s", path, values)
     data = load_settings(path)
     data.update(values)
+    logger.debug("Merged settings: %s", data)
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("w", encoding="utf-8") as fh:
@@ -90,8 +98,10 @@ def save_settings(values: Dict[str, str], path: Path | None = None) -> Dict[str,
     except OSError as exc:
         logger.error("Could not write %s: %s", path, exc)
     else:
+        logger.info("Settings written to %s", path)
         if path == SETTINGS_PATH:
             try:
+                logger.debug("Reloading configuration module")
                 config_module = importlib.import_module("echo_journal.config")
                 importlib.reload(config_module)
             except ImportError as exc:  # pragma: no cover - unexpected
