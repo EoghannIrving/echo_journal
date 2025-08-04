@@ -97,6 +97,20 @@ echo-journal
 
 Then open <http://localhost:8000> in your browser. You should see the Echo Journal interface and can create a test entry.
 
+## Testing
+
+Run the test suite to verify your setup:
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e .
+npm install
+npm run build:css
+pytest
+```
+
+The npm steps are required the first time or whenever dependencies change.
+
 ## Roadmap
 
 Echo Journal's development roadmap is maintained in [ROADMAP.md](ROADMAP.md). Highlights:
