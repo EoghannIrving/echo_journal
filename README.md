@@ -99,6 +99,70 @@ echo-journal
 
 Then open <http://localhost:8000> in your browser. You should see the Echo Journal interface and can create a test entry.
 
+## API and CLI reference
+
+### API endpoints
+
+These endpoints power the web UI. For a complete list see the FastAPI app in
+[`src/echo_journal/main.py`](src/echo_journal/main.py). *TODO: expand into a
+dedicated API guide.*
+
+- `GET /api/new_prompt` – return a journaling prompt.
+  ```bash
+  curl http://localhost:8000/api/new_prompt
+  ```
+  ```json
+  {"prompt": "Describe a recent moment that made you smile.", "category": "Gratitude"}
+  ```
+
+- `GET /api/ai_prompt?energy=3` – generate a prompt using the OpenAI API when
+  configured.
+  ```bash
+  curl 'http://localhost:8000/api/ai_prompt?energy=3'
+  ```
+  ```json
+  {"prompt": "What energized you today?", "source": "openai"}
+  ```
+
+- `GET /api/settings` – fetch current server settings.
+  ```bash
+  curl http://localhost:8000/api/settings
+  ```
+  ```json
+  {"JOURNALS_DIR": "/journals", "OPENAI_API_KEY": null, ...}
+  ```
+
+- `POST /api/settings` – update settings and persist them to `settings.yaml`.
+  ```bash
+  curl -X POST http://localhost:8000/api/settings \
+       -H 'Content-Type: application/json' \
+       -d '{"JOURNALS_DIR": "/journals"}'
+  ```
+  ```json
+  {"status": "ok"}
+  ```
+
+- `POST /api/backfill_songs` – re-scan existing entries for song and media
+  metadata.
+  ```bash
+  curl -X POST http://localhost:8000/api/backfill_songs
+  ```
+  ```json
+  {"songs_added": 0, "media_added": 0}
+  ```
+
+### CLI commands
+
+- `echo-journal` – start the application using Uvicorn.
+  ```bash
+  echo-journal
+  ```
+
+- `uvicorn echo_journal.main:app --reload` – run the development server with
+  auto reload.
+
+*TODO: flesh out CLI documentation as new commands are introduced.*
+
 ## Testing
 
 Run the test suite to verify your setup:
