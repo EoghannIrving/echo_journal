@@ -74,11 +74,43 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
 
 ### Run with Docker Compose
 
-```bash
-cp .env.example .env
-# adjust JOURNALS_DIR and other variables in .env
-docker-compose up --build
-```
+1. **Prepare a persistent journals directory and environment file:**
+
+   ```bash
+   mkdir -p data
+   cp .env.example .env
+   ```
+
+2. **Set required environment variables.** `docker-compose.yml` reads values
+   from `.env`. Point `JOURNALS_DIR` to the host directory created above and add
+   any other variables (API keys, `TZ`, etc.) either in `.env` or directly in
+   the compose file's `environment:` section:
+
+   ```bash
+   echo "JOURNALS_DIR=$(pwd)/data" >> .env
+   # e.g. echo "WORDNIK_API_KEY=your-key" >> .env
+   ```
+
+   The compose file then mounts your host directory:
+
+   ```yaml
+   volumes:
+     - ./data:/journals
+   ```
+
+3. **Start the container:**
+
+   ```bash
+   docker-compose up --build
+   ```
+
+4. **Stop the container while preserving data:**
+
+   ```bash
+   docker-compose down
+   ```
+
+   Journal files remain in the mounted `data` directory on the host.
 
 ## Example walkthrough
 
