@@ -75,8 +75,13 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const welcomeEl = document.getElementById("welcome-message");
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (welcomeEl) {
-    animateText(welcomeEl, 0, 60, 200);
+    if (prefersReducedMotion) {
+      welcomeEl.classList.remove('opacity-0');
+    } else {
+      animateText(welcomeEl, 0, 60, 200);
+    }
   }
 
     const settingsForm = document.getElementById('settings-form');
