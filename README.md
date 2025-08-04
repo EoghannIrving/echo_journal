@@ -238,6 +238,10 @@ restrict access to known networks. When exposing the app publicly, enable Basic
 Auth by setting `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` so unauthenticated
 requests are rejected with a `401` response.
 
+## Bugs and Issues
+
+Known issues are tracked in [BUGS.md](BUGS.md). If you run into a problem that's not listed there, please follow the guidance in that file to file a bug report or open a GitHub issue.
+
 ## Contributing
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to get started.
