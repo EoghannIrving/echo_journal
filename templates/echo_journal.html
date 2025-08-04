@@ -47,9 +47,9 @@
 <section id="prompt-section" class="hidden">
   <section class="w-full mx-auto space-y-2 p-4 rounded-xl text-left">
     <div class="p-4 mb-1 space-y-1">
-        <div class="flex items-center gap-2">
-          <p id="daily-prompt" class="font-sans leading-snug opacity-0 text-left">{{ prompt }}</p>
-          <div class="flex items-center gap-2 ml-auto">
+        <div class="flex items-center gap-2 w-full">
+          <p id="daily-prompt" class="font-sans leading-snug opacity-0 text-left flex-1 min-w-0">{{ prompt }}</p>
+          <div class="flex items-center gap-2">
             <button type="button" id="new-prompt" class="prompt-btn hidden" aria-label="New Prompt">Refresh</button>
             <button type="button" id="ai-prompt" class="prompt-btn hidden" aria-label="Need inspiration?">Need inspiration?</button>
             <button type="button" id="focus-toggle" class="prompt-btn hidden" aria-pressed="false" aria-label="Toggle focus mode">Focus</button>
