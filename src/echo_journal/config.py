@@ -21,11 +21,14 @@ STATIC_DIR = Path(_get_setting("STATIC_DIR", str(APP_DIR / "static")))
 TEMPLATES_DIR = Path(_get_setting("TEMPLATES_DIR", str(APP_DIR / "templates")))
 ENCODING = "utf-8"
 WORDNIK_API_KEY = _get_setting("WORDNIK_API_KEY")
+OPENAI_API_KEY = _get_setting("OPENAI_API_KEY")
 IMMICH_URL = _get_setting("IMMICH_URL")
 IMMICH_API_KEY = _get_setting("IMMICH_API_KEY")
+IMMICH_TIME_BUFFER = int(_get_setting("IMMICH_TIME_BUFFER", "15"))
 JELLYFIN_URL = _get_setting("JELLYFIN_URL")
 JELLYFIN_API_KEY = _get_setting("JELLYFIN_API_KEY")
 JELLYFIN_USER_ID = _get_setting("JELLYFIN_USER_ID")
+JELLYFIN_PAGE_SIZE = int(_get_setting("JELLYFIN_PAGE_SIZE", "200"))
 JELLYFIN_PLAY_THRESHOLD = int(_get_setting("JELLYFIN_PLAY_THRESHOLD", "90"))
 NOMINATIM_USER_AGENT = _get_setting(
     "NOMINATIM_USER_AGENT", "EchoJournal/1.0 (contact@example.com)"
