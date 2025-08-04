@@ -16,13 +16,13 @@
     <fieldset id="integration-settings" class="space-y-2 text-left">
       <legend class="font-semibold text-lg">Integrations</legend>
       <div class="grid gap-2 sm:grid-cols-2">
-        <label class="flex items-center gap-2 justify-start"><input type="checkbox" id="integration-wordnik" class="mr-2 accent-blue-600 dark:accent-blue-400">Wordnik word of the day</label>
-        <label class="flex items-center gap-2 justify-start"><input type="checkbox" id="integration-immich" class="mr-2 accent-blue-600 dark:accent-blue-400">Immich photos</label>
-        <label class="flex items-center gap-2 justify-start"><input type="checkbox" id="integration-jellyfin" class="mr-2 accent-blue-600 dark:accent-blue-400">Jellyfin media</label>
-        <label class="flex items-center gap-2 justify-start"><input type="checkbox" id="integration-fact" class="mr-2 accent-blue-600 dark:accent-blue-400">Fact of the day</label>
-      </div>
-    </fieldset>
-    <div id="settings-fields" class="grid gap-4 sm:grid-cols-2"></div>
+          <label class="flex items-center gap-2 justify-start"><input type="checkbox" id="integration-wordnik" class="mr-2 accent-blue-600 dark:accent-blue-400"><span>📖</span><span>Wordnik word of the day</span></label>
+          <label class="flex items-center gap-2 justify-start"><input type="checkbox" id="integration-immich" class="mr-2 accent-blue-600 dark:accent-blue-400"><span>📸</span><span>Immich photos</span></label>
+          <label class="flex items-center gap-2 justify-start"><input type="checkbox" id="integration-jellyfin" class="mr-2 accent-blue-600 dark:accent-blue-400"><span>🎬</span><span>Jellyfin media</span></label>
+          <label class="flex items-center gap-2 justify-start"><input type="checkbox" id="integration-fact" class="mr-2 accent-blue-600 dark:accent-blue-400"><span>❓</span><span>Fact of the day</span></label>
+        </div>
+      </fieldset>
+      <div id="settings-fields" class="grid gap-4 sm:grid-cols-2"></div>
     <button type="button" id="save-settings" class="mx-auto block bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400">Save</button>
     <p id="settings-message" class="text-center text-gray-500 dark:text-gray-400 mt-2" aria-live="polite" role="status"></p>
   </form>
