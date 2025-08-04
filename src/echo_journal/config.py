@@ -9,8 +9,18 @@ _SETTINGS = load_settings()
 
 
 def _get_setting(key: str, default: str | None = None) -> str | None:
-    """Return a configuration value from settings.yaml overriding environment variables."""
-    return _SETTINGS.get(key, os.getenv(key, default))
+    """Return a configuration value from settings.yaml overriding environment variables.
+
+    Empty strings in either source are treated as missing values so the
+    provided ``default`` is used instead. This prevents downstream code from
+    receiving empty strings when it expects ``None`` or a usable value.
+    """
+    value = _SETTINGS.get(key)
+    if value in (None, ""):
+        value = os.getenv(key, default)
+    if value == "":
+        return default
+    return value
 
 # Allow overriding important paths via environment variables for easier testing
 # and deployment in restricted environments.

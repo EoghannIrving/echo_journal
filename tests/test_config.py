@@ -24,3 +24,16 @@ def test_get_setting_default(monkeypatch):
     monkeypatch.setattr(config, "_SETTINGS", {})
     monkeypatch.delenv("C", raising=False)
     assert config._get_setting("C", "def") == "def"
+
+
+def test_get_setting_empty_strings(monkeypatch):
+    """Empty strings should fall back to the provided default."""
+    # Empty value in settings should not override the default
+    monkeypatch.setattr(config, "_SETTINGS", {"D": ""})
+    monkeypatch.delenv("D", raising=False)
+    assert config._get_setting("D", "def") == "def"
+
+    # Empty environment variable should also fall back to the default
+    monkeypatch.setattr(config, "_SETTINGS", {})
+    monkeypatch.setenv("E", "")
+    assert config._get_setting("E", "def") == "def"
