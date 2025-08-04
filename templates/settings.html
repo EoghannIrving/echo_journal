@@ -60,7 +60,7 @@
     </fieldset>
       <div id="settings-fields" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
     <button type="button" id="save-settings" class="mx-auto block bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400">Save</button>
-    <p id="settings-message" class="text-center text-gray-500 dark:text-gray-400 mt-2" aria-live="polite" role="status"></p>
+    <div id="settings-message" class="fixed top-4 right-4 z-50 hidden" aria-live="polite" role="status"></div>
   </form>
 </section>
 
@@ -154,6 +154,43 @@ document.addEventListener("DOMContentLoaded", () => {
       Logging: ['LOG_LEVEL', 'LOG_FILE', 'LOG_MAX_BYTES', 'LOG_BACKUP_COUNT'],
       Authentication: ['BASIC_AUTH_USERNAME', 'BASIC_AUTH_PASSWORD'],
       Other: ['NOMINATIM_USER_AGENT'],
+    };
+
+    let messageTimeout;
+    const showMessage = (text, type = 'info') => {
+      const messageEl = document.getElementById('settings-message');
+      if (!messageEl) return;
+      const base = 'flex items-center gap-2 p-4 rounded-md shadow-md border transition-opacity duration-300';
+      const colors = {
+        info: 'bg-blue-100 border-blue-200 text-blue-800',
+        success: 'bg-green-100 border-green-200 text-green-800',
+        error: 'bg-red-100 border-red-200 text-red-800',
+      };
+      messageEl.innerHTML = `
+        <div class="${base} ${colors[type]} opacity-0">
+          <span>${text}</span>
+          <button type="button" aria-label="Dismiss" class="ml-2 text-lg leading-none">&times;</button>
+        </div>
+      `;
+      messageEl.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        const alert = messageEl.querySelector('div');
+        if (alert) alert.classList.remove('opacity-0');
+      });
+      const hide = () => {
+        const alert = messageEl.querySelector('div');
+        if (alert) {
+          alert.classList.add('opacity-0');
+          setTimeout(() => {
+            messageEl.classList.add('hidden');
+            messageEl.innerHTML = '';
+          }, 300);
+        }
+      };
+      const btn = messageEl.querySelector('button');
+      if (btn) btn.addEventListener('click', hide);
+      clearTimeout(messageTimeout);
+      messageTimeout = setTimeout(hide, 4000);
     };
 
     const envKeyInfo = {
@@ -320,10 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .finally(() => loading.remove());
 
     settingsForm.querySelector('#save-settings').addEventListener('click', async () => {
-      const messageEl = document.getElementById('settings-message');
-      if (messageEl) {
-        messageEl.textContent = 'Saving…';
-      }
+      showMessage('Saving…', 'info');
       const updated = {};
       settingsFields.querySelectorAll('input').forEach((input) => {
         const k = input.id.replace('setting-', '');
@@ -344,13 +378,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!resp.ok) {
           throw new Error('Request failed');
         }
-        if (messageEl) {
-          messageEl.textContent = 'Settings saved';
-        }
+        showMessage('Settings saved', 'success');
       } catch (err) {
-        if (messageEl) {
-          messageEl.textContent = 'Error saving settings';
-        }
+        showMessage('Error saving settings', 'error');
       }
     });
   }
