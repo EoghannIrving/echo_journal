@@ -6,11 +6,14 @@ from datetime import date
 
 import yaml
 import aiofiles
+import logging
 
 from .config import PROMPTS_FILE, ENCODING
 
 _prompts_cache: dict = {"data": None, "mtime": None}
 _prompts_lock = asyncio.Lock()
+
+logger = logging.getLogger("ej.prompt")
 
 # Mapping of anchor types to (mood, energy) pairs
 ANCHOR_MOOD_ENERGY: dict[str, list[tuple[str, int]]] = {
@@ -34,6 +37,7 @@ ANCHOR_MOOD_ENERGY: dict[str, list[tuple[str, int]]] = {
 def _choose_anchor(mood: str | None, energy: int | None) -> str | None:
     """Return a random anchor value based on mood and energy."""
     if mood is None or energy is None:
+        logger.debug("No anchor: mood=%s energy=%s", mood, energy)
         return None
     mood_l = mood.lower()
     matches = [
@@ -42,8 +46,17 @@ def _choose_anchor(mood: str | None, energy: int | None) -> str | None:
         if (mood_l, energy) in pairs
     ]
     if not matches:
+        logger.debug("No anchor matches for mood=%s energy=%s", mood_l, energy)
         return None
-    return random.choice(matches)
+    anchor = random.choice(matches)
+    logger.debug(
+        "Selected anchor '%s' for mood=%s energy=%s from %s",
+        anchor,
+        mood_l,
+        energy,
+        matches,
+    )
+    return anchor
 
 
 async def load_prompts() -> list[dict]:
@@ -106,11 +119,13 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
     ``debug`` is ``True``, information about the selection process is returned
     under a ``debug`` key.
     """
+    logger.debug("Generating prompt for mood=%s energy=%s", mood, energy)
     today = date.today()
     weekday = today.strftime("%A")
     season = get_season(today)
 
     prompts = await load_prompts()
+    logger.debug("Loaded %d prompts", len(prompts) if isinstance(prompts, list) else 0)
     if not isinstance(prompts, list) or not prompts:
         result = {"category": None, "prompt": "Prompts file not found"}
         if debug:
@@ -122,15 +137,18 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
         return result
 
     candidates = prompts
+    logger.debug("Initial candidates: %s", [p.get("id") for p in candidates])
     debug_info: dict[str, object] = {}
     if debug:
         debug_info["initial"] = [p.get("id") for p in candidates]
 
     anchor = _choose_anchor(mood, energy)
+    logger.debug("Anchor after choice: %s", anchor)
     if anchor:
         candidates = [p for p in candidates if p.get("anchor") == anchor]
         if debug:
             debug_info["after_anchor"] = [p.get("id") for p in candidates]
+        logger.debug("Candidates after anchor filter: %s", [p.get("id") for p in candidates])
     elif debug:
         debug_info["after_anchor"] = [p.get("id") for p in candidates]
 
@@ -142,6 +160,7 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
         return result
 
     chosen = random.choice(candidates)
+    logger.debug("Chosen prompt: %s", chosen.get("id"))
     prompt_text = chosen.get("prompt", "")
     prompt_text = prompt_text.replace("{{weekday}}", weekday).replace("{{season}}", season)
 
@@ -171,4 +190,10 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
     if debug:
         debug_info["chosen"] = pid
         result["debug"] = debug_info
+    logger.debug(
+        "Result prompt id=%s category=%s anchor=%s",
+        pid,
+        result.get("category"),
+        result.get("anchor"),
+    )
     return result
