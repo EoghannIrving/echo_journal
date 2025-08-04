@@ -267,7 +267,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
-    settingsForm.querySelector('#save-settings').addEventListener('click', async () => {
+    const saveBtn = settingsForm.querySelector('#save-settings');
+    saveBtn.addEventListener('click', async () => {
+      const originalText = saveBtn.textContent;
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
       const updated = {};
       settingsFields.querySelectorAll('input').forEach((input) => {
         const k = input.id.replace('setting-', '');
@@ -279,11 +284,18 @@ document.addEventListener("DOMContentLoaded", () => {
         updated[settingKey] = cb && cb.checked ? 'true' : 'false';
       });
 
-      await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
-      });
+      try {
+        await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated),
+        });
+      } catch (err) {
+        console.error('Failed to save settings', err);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = originalText;
+      }
     });
   }
 });
