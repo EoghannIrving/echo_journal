@@ -22,7 +22,7 @@
           <label class="flex items-center gap-2 justify-start"><input type="checkbox" id="integration-fact" class="mr-2 accent-blue-600 dark:accent-blue-400"><span>❓</span><span>Fact of the day</span></label>
         </div>
       </fieldset>
-      <div id="settings-fields" class="grid gap-4 sm:grid-cols-2"></div>
+      <div id="settings-fields" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
     <button type="button" id="save-settings" class="mx-auto block bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400">Save</button>
     <p id="settings-message" class="text-center text-gray-500 dark:text-gray-400 mt-2" aria-live="polite" role="status"></p>
   </form>
@@ -236,21 +236,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         Object.entries(envSettingCategories).forEach(([category, keys]) => {
           const details = document.createElement('details');
-          details.className = 'paper-card space-y-2 text-left';
+          details.className = 'paper-card space-y-2 text-left w-full';
           details.open = true;
           const summary = document.createElement('summary');
           summary.textContent = category;
           summary.className = 'cursor-pointer font-semibold';
           details.appendChild(summary);
           const grid = document.createElement('div');
-          grid.className = 'grid gap-2 sm:grid-cols-2';
+          grid.className = 'grid gap-2 sm:grid-cols-2 lg:grid-cols-1 w-full';
           keys.forEach((key) => {
             const info = envKeyInfo[key] || {};
             const labelText = info.label || key;
             const wrapper = document.createElement('div');
-            wrapper.className = 'space-y-1';
+            wrapper.className = 'space-y-1 w-full';
             const label = document.createElement('label');
-            label.className = 'flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2';
+            label.className = 'flex flex-col md:flex-row md:items-center md:justify-between gap-2';
             const span = document.createElement('span');
             span.textContent = labelText;
             label.appendChild(span);
