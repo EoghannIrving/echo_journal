@@ -134,7 +134,7 @@ logging.basicConfig(
     handlers=handlers,
 )
 logger = logging.getLogger("ej.timing")
-songs_logger = logging.getLogger("ej.jellyfin")
+jellyfin_logger = logging.getLogger("ej.jellyfin")
 auth_logger = logging.getLogger("ej.auth")
 
 # Store recent request timings on the FastAPI state
@@ -822,27 +822,39 @@ async def update_settings(values: Dict[str, str]) -> Dict[str, str]:
 
 
 @app.post("/api/backfill_songs")
-async def backfill_song_metadata() -> dict:
-    """Generate missing songs.json files for existing journal entries."""
-    songs_logger.info("Starting song metadata backfill")
-    added = 0
+async def backfill_jellyfin_metadata() -> dict:
+    """Generate missing songs.json and media.json files for existing entries."""
+    jellyfin_logger.info("Starting Jellyfin metadata backfill")
+    songs_added = 0
+    media_added = 0
     for md_file in DATA_DIR.rglob("*.md"):
         meta_dir = md_file.parent / ".meta"
         songs_path = meta_dir / f"{md_file.stem}.songs.json"
-        if songs_path.exists():
-            songs_logger.debug("%s already has songs.json", md_file)
+        media_path = meta_dir / f"{md_file.stem}.media.json"
+        if songs_path.exists() and media_path.exists():
+            jellyfin_logger.debug("%s already has songs and media metadata", md_file)
             continue
         try:
             datetime.strptime(md_file.stem, "%Y-%m-%d")
         except ValueError:
-            songs_logger.debug("Skipping non-entry file %s", md_file)
+            jellyfin_logger.debug("Skipping non-entry file %s", md_file)
             continue
-        songs_logger.info("Backfilling songs for %s", md_file.stem)
-        await update_song_metadata(md_file.stem, md_file)
-        if songs_path.exists():
-            added += 1
-    songs_logger.info("Backfill complete; added %d files", added)
-    return {"added": added}
+        if not songs_path.exists():
+            jellyfin_logger.info("Backfilling songs for %s", md_file.stem)
+            await update_song_metadata(md_file.stem, md_file)
+            if songs_path.exists():
+                songs_added += 1
+        if not media_path.exists():
+            jellyfin_logger.info("Backfilling media for %s", md_file.stem)
+            await update_media_metadata(md_file.stem, md_file)
+            if media_path.exists():
+                media_added += 1
+    jellyfin_logger.info(
+        "Backfill complete; added %d song files and %d media files",
+        songs_added,
+        media_added,
+    )
+    return {"songs_added": songs_added, "media_added": media_added}
 
 
 def main() -> None:
