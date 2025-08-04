@@ -17,44 +17,52 @@
       <legend class="font-semibold text-lg">Integrations</legend>
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div class="p-4 rounded-xl paper-card flex items-center justify-between gap-4">
-          <div class="flex items-center gap-2">
+          <label for="integration-wordnik" class="flex items-center gap-2 cursor-pointer">
             <span class="text-2xl">📖</span>
             <span id="integration-wordnik-label" class="text-sm">Wordnik word of the day</span>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="integration-wordnik" aria-labelledby="integration-wordnik-label" class="sr-only peer">
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-400 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
           </label>
+          <input
+            type="checkbox"
+            id="integration-wordnik"
+            aria-labelledby="integration-wordnik-label"
+            class="h-5 w-5"
+          />
         </div>
         <div class="p-4 rounded-xl paper-card flex items-center justify-between gap-4">
-          <div class="flex items-center gap-2">
+          <label for="integration-immich" class="flex items-center gap-2 cursor-pointer">
             <span class="text-2xl">📸</span>
             <span id="integration-immich-label" class="text-sm">Immich photos</span>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="integration-immich" aria-labelledby="integration-immich-label" class="sr-only peer">
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-400 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
           </label>
+          <input
+            type="checkbox"
+            id="integration-immich"
+            aria-labelledby="integration-immich-label"
+            class="h-5 w-5"
+          />
         </div>
         <div class="p-4 rounded-xl paper-card flex items-center justify-between gap-4">
-          <div class="flex items-center gap-2">
+          <label for="integration-jellyfin" class="flex items-center gap-2 cursor-pointer">
             <span class="text-2xl">🎬</span>
             <span id="integration-jellyfin-label" class="text-sm">Jellyfin media</span>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="integration-jellyfin" aria-labelledby="integration-jellyfin-label" class="sr-only peer">
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-400 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
           </label>
+          <input
+            type="checkbox"
+            id="integration-jellyfin"
+            aria-labelledby="integration-jellyfin-label"
+            class="h-5 w-5"
+          />
         </div>
         <div class="p-4 rounded-xl paper-card flex items-center justify-between gap-4">
-          <div class="flex items-center gap-2">
+          <label for="integration-fact" class="flex items-center gap-2 cursor-pointer">
             <span class="text-2xl">❓</span>
             <span id="integration-fact-label" class="text-sm">Fact of the day</span>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="integration-fact" aria-labelledby="integration-fact-label" class="sr-only peer">
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-400 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
           </label>
+          <input
+            type="checkbox"
+            id="integration-fact"
+            aria-labelledby="integration-fact-label"
+            class="h-5 w-5"
+          />
         </div>
       </div>
     </fieldset>
