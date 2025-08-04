@@ -76,49 +76,52 @@ document.addEventListener("DOMContentLoaded", () => {
     animateText(welcomeEl, 0, 60, 200);
   }
 
-  const settingsForm = document.getElementById('settings-form');
-  if (settingsForm) {
-    const settingsFields = settingsForm.querySelector('#settings-fields');
-    const integrationKeys = {
-      wordnik: 'INTEGRATION_WORDNIK',
-      immich: 'INTEGRATION_IMMICH',
-      jellyfin: 'INTEGRATION_JELLYFIN',
-      fact: 'INTEGRATION_FACT',
+    const settingsForm = document.getElementById('settings-form');
+    if (settingsForm) {
+      const settingsFields = settingsForm.querySelector('#settings-fields');
+      const integrationKeys = {
+        wordnik: 'INTEGRATION_WORDNIK',
+        immich: 'INTEGRATION_IMMICH',
+        jellyfin: 'INTEGRATION_JELLYFIN',
+        fact: 'INTEGRATION_FACT',
+      };
+    const envSettingCategories = {
+      Paths: [
+        'JOURNALS_DIR',
+        'DATA_DIR',
+        'APP_DIR',
+        'PROMPTS_FILE',
+        'STATIC_DIR',
+        'TEMPLATES_DIR',
+      ],
+      'API Keys': [
+        'WORDNIK_API_KEY',
+        'OPENAI_API_KEY',
+        'IMMICH_API_KEY',
+        'JELLYFIN_API_KEY',
+      ],
+      Immich: ['IMMICH_URL', 'IMMICH_TIME_BUFFER'],
+      Jellyfin: [
+        'JELLYFIN_URL',
+        'JELLYFIN_USER_ID',
+        'JELLYFIN_PAGE_SIZE',
+        'JELLYFIN_PLAY_THRESHOLD',
+      ],
+      Logging: ['LOG_LEVEL', 'LOG_FILE', 'LOG_MAX_BYTES', 'LOG_BACKUP_COUNT'],
+      Authentication: ['BASIC_AUTH_USERNAME', 'BASIC_AUTH_PASSWORD'],
+      Other: ['NOMINATIM_USER_AGENT'],
     };
-    const envSettingKeys = [
-      'JOURNALS_DIR',
-      'DATA_DIR',
-      'APP_DIR',
-      'PROMPTS_FILE',
-      'STATIC_DIR',
-      'TEMPLATES_DIR',
-      'WORDNIK_API_KEY',
-      'OPENAI_API_KEY',
-      'IMMICH_URL',
-      'IMMICH_API_KEY',
-      'IMMICH_TIME_BUFFER',
-      'JELLYFIN_URL',
-      'JELLYFIN_API_KEY',
-      'JELLYFIN_USER_ID',
-      'JELLYFIN_PAGE_SIZE',
-      'JELLYFIN_PLAY_THRESHOLD',
-      'NOMINATIM_USER_AGENT',
-      'LOG_LEVEL',
-      'LOG_FILE',
-      'LOG_MAX_BYTES',
-      'LOG_BACKUP_COUNT',
-      'BASIC_AUTH_USERNAME',
-      'BASIC_AUTH_PASSWORD',
-    ];
 
     fetch('/api/settings')
       .then((r) => r.json())
       .then((settings) => {
-        envSettingKeys.forEach((key) => {
-          if (!(key in settings)) {
-            settings[key] = '';
-          }
-        });
+        Object.values(envSettingCategories)
+          .flat()
+          .forEach((key) => {
+            if (!(key in settings)) {
+              settings[key] = '';
+            }
+          });
 
         Object.entries(integrationKeys).forEach(([key, settingKey]) => {
           const cb = document.getElementById(`integration-${key}`);
@@ -128,26 +131,30 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
 
-        const entries = Object.entries(settings);
-        const batchSize = 10;
-        for (let i = 0; i < entries.length; i += batchSize) {
-          const batch = entries.slice(i, i + batchSize);
-          const batchDiv = document.createElement('div');
-          batchDiv.className = 'grid gap-2 md:grid-cols-2';
-          batch.forEach(([key, value]) => {
+        Object.entries(envSettingCategories).forEach(([category, keys]) => {
+          const fieldset = document.createElement('fieldset');
+          fieldset.className = 'space-y-2 text-left';
+          const legend = document.createElement('legend');
+          legend.textContent = category;
+          legend.className = 'font-semibold';
+          fieldset.appendChild(legend);
+          const grid = document.createElement('div');
+          grid.className = 'grid gap-2 md:grid-cols-2';
+          keys.forEach((key) => {
             const label = document.createElement('label');
             label.className = 'flex items-center gap-2 justify-between';
             label.textContent = key;
             const input = document.createElement('input');
             input.type = 'text';
             input.id = `setting-${key}`;
-            input.value = value;
+            input.value = settings[key];
             input.className = 'flex-1 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400';
             label.appendChild(input);
-            batchDiv.appendChild(label);
+            grid.appendChild(label);
           });
-          settingsFields.appendChild(batchDiv);
-        }
+          fieldset.appendChild(grid);
+          settingsFields.appendChild(fieldset);
+        });
       });
 
     settingsForm.querySelector('#save-settings').addEventListener('click', async () => {
