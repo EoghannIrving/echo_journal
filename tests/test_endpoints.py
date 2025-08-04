@@ -657,24 +657,33 @@ def test_jellyfin_disabled_skips_metadata(test_client, monkeypatch):
     assert not media_path.exists()
 
 
-def test_backfill_song_metadata(test_client, monkeypatch):
-    """Backfill endpoint creates songs.json for existing entries."""
+def test_backfill_jellyfin_metadata(test_client, monkeypatch):
+    """Backfill endpoint creates songs.json and media.json for existing entries."""
 
     md_path = main.DATA_DIR / "2023-06-06.md"
     md_path.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
 
-    async def fake_fetch(date_str: str):
+    async def fake_fetch_songs(date_str: str):
         assert date_str == "2023-06-06"
         return [{"track": "t", "artist": "a", "plays": 1}]
 
-    monkeypatch.setattr(jellyfin_utils, "fetch_top_songs", fake_fetch)
+    async def fake_fetch_media(date_str: str):
+        assert date_str == "2023-06-06"
+        return [{"title": "m", "series": ""}]
+
+    monkeypatch.setattr(jellyfin_utils, "fetch_top_songs", fake_fetch_songs)
+    monkeypatch.setattr(jellyfin_utils, "fetch_daily_media", fake_fetch_media)
 
     resp = test_client.post("/api/backfill_songs")
 
     assert resp.status_code == 200
-    assert resp.json()["added"] == 1
+    body = resp.json()
+    assert body["songs_added"] == 1
+    assert body["media_added"] == 1
     songs_path = main.DATA_DIR / ".meta" / "2023-06-06.songs.json"
+    media_path = main.DATA_DIR / ".meta" / "2023-06-06.media.json"
     assert songs_path.exists()
+    assert media_path.exists()
 
 
 def test_archive_shows_photo_icon(test_client, monkeypatch):
