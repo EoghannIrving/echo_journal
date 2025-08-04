@@ -197,94 +197,117 @@ document.addEventListener("DOMContentLoaded", () => {
       JOURNALS_DIR: {
         label: 'Journals directory',
         help: 'Path where journal files are stored',
+        placeholder: '/path/to/journals',
       },
       DATA_DIR: {
         label: 'Data directory',
         help: 'Location for persistent data files',
+        placeholder: '/path/to/data',
       },
       APP_DIR: {
         label: 'Application directory',
         help: 'Root path of the Echo Journal installation',
+        placeholder: '/path/to/app',
       },
       PROMPTS_FILE: {
         label: 'Prompts file',
         help: 'YAML file containing writing prompts',
+        placeholder: '/path/to/prompts.yaml',
       },
       STATIC_DIR: {
         label: 'Static directory',
         help: 'Directory for static assets like images and CSS',
+        placeholder: '/path/to/static',
       },
       TEMPLATES_DIR: {
         label: 'Templates directory',
         help: 'Directory containing HTML templates',
+        placeholder: '/path/to/templates',
       },
       WORDNIK_API_KEY: {
         label: 'Wordnik API key',
         help: 'Required for word of the day integration',
+        placeholder: 'your-wordnik-key',
       },
       OPENAI_API_KEY: {
         label: 'OpenAI API key',
         help: 'Used for AI prompt features',
+        placeholder: 'sk-XXXXXXXXXXXXXXXXXXXX',
       },
       IMMICH_API_KEY: {
         label: 'Immich API key',
         help: 'Token for Immich API access',
+        placeholder: 'your-immich-api-key',
       },
       JELLYFIN_API_KEY: {
         label: 'Jellyfin API key',
         help: 'Token for Jellyfin API access',
+        placeholder: 'your-jellyfin-api-key',
       },
       IMMICH_URL: {
         label: 'Immich URL',
         help: 'Base URL of your Immich instance',
+        placeholder: 'https://immich.example.com',
       },
       IMMICH_TIME_BUFFER: {
         label: 'Immich time buffer',
         help: 'How far back to fetch photos in minutes',
+        placeholder: '60',
       },
       JELLYFIN_URL: {
         label: 'Jellyfin URL',
         help: 'Base URL of your Jellyfin server',
+        placeholder: 'https://jellyfin.example.com',
       },
       JELLYFIN_USER_ID: {
         label: 'Jellyfin user ID',
         help: 'Identifier of your Jellyfin user account',
+        placeholder: 'your-user-id',
       },
       JELLYFIN_PAGE_SIZE: {
         label: 'Jellyfin page size',
         help: 'Number of items to fetch per request',
+        placeholder: '100',
       },
       JELLYFIN_PLAY_THRESHOLD: {
         label: 'Jellyfin play threshold',
         help: 'Minimum play count required for inclusion',
+        placeholder: '5',
       },
       LOG_LEVEL: {
         label: 'Log level',
         help: 'Logging verbosity (e.g., INFO, DEBUG)',
+        placeholder: 'INFO',
       },
       LOG_FILE: {
         label: 'Log file',
         help: 'File path for application logs',
+        placeholder: '/var/log/echo_journal.log',
       },
       LOG_MAX_BYTES: {
         label: 'Log max bytes',
         help: 'Maximum size of the log file before rotation',
+        placeholder: '1048576',
       },
       LOG_BACKUP_COUNT: {
         label: 'Log backup count',
         help: 'Number of rotated log files to keep',
+        placeholder: '3',
       },
       BASIC_AUTH_USERNAME: {
         label: 'Basic auth username',
         help: 'Username for HTTP basic authentication',
+        placeholder: 'username',
       },
       BASIC_AUTH_PASSWORD: {
         label: 'Basic auth password',
         help: 'Password for HTTP basic authentication',
+        placeholder: 'password',
       },
       NOMINATIM_USER_AGENT: {
         label: 'Nominatim user agent',
         help: 'User agent string for Nominatim requests',
+        placeholder: 'my-app/1.0',
       },
     };
     const loading = document.createElement('div');
@@ -336,7 +359,10 @@ document.addEventListener("DOMContentLoaded", () => {
             input.type = 'text';
             input.id = `setting-${key}`;
             input.value = settings[key];
-            input.className = 'w-full border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400';
+            if (info.placeholder) {
+              input.placeholder = info.placeholder;
+            }
+            input.className = 'w-full border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400';
             label.appendChild(input);
             wrapper.appendChild(label);
             if (info.help) {
