@@ -12,7 +12,7 @@ CHAT_URL = "https://api.openai.com/v1/chat/completions"
 AI_PROMPT_TEMPLATE = (
     "You are a journaling assistant for Echo Journal. Your job is to generate"
     " journaling prompts that match an anchor level of {anchor} and with 1-2"
-    " thematic strategies (tags).\n\n"
+    " thematic strategies (tags). All prompts have the goal of helping the writer connect better with the day they are writing about.\n\n"
     "Anchor Levels\n"
     "micro: Can be answered in one word, emoji, or phrase. Used when energy is very low.\n"
     "soft: Gentle observational or sensory prompts. Easy to start, low emotional load.\n"
