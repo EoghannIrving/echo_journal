@@ -40,6 +40,9 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
             # ``config._get_setting``.
             data = {str(k): "" if v is None else str(v) for k, v in data.items()}
             return data
+    except FileNotFoundError:
+        logger.warning("No settings file found at %s; using environment variables only", path)
+        return {}
     except OSError as exc:
         logger.error("Could not read %s: %s", path, exc)
         return {}
