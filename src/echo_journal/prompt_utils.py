@@ -1,12 +1,12 @@
 """Prompt loading and generation helpers."""
 
 import asyncio
+import logging
 import random
 from datetime import date
 
-import yaml
 import aiofiles
-import logging
+import yaml
 
 from .config import PROMPTS_FILE, ENCODING
 
@@ -26,9 +26,17 @@ def _choose_anchor(mood: str | None, energy: int | None) -> str | None:
     anchors: list[str] = []
 
     if energy == 1:
-        anchors = ["micro"] if mood_l in {"drained", "self-doubt", "sad"} else ["micro", "soft"]
+        anchors = (
+            ["micro"] if mood_l in {"drained", "self-doubt", "sad"} else ["micro", "soft"]
+        )
         anchor = random.choice(anchors)
-        logger.debug("Selected anchor '%s' for mood=%s energy=%s from %s", anchor, mood_l, energy, anchors)
+        logger.debug(
+            "Selected anchor '%s' for mood=%s energy=%s from %s",
+            anchor,
+            mood_l,
+            energy,
+            anchors,
+        )
         return anchor
 
     if energy == 2:
@@ -56,7 +64,13 @@ def _choose_anchor(mood: str | None, energy: int | None) -> str | None:
         return None
 
     anchor = random.choice(anchors)
-    logger.debug("Selected anchor '%s' for mood=%s energy=%s from %s", anchor, mood_l, energy, anchors)
+    logger.debug(
+        "Selected anchor '%s' for mood=%s energy=%s from %s",
+        anchor,
+        mood_l,
+        energy,
+        anchors,
+    )
     return anchor
 
 

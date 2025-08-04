@@ -1,5 +1,6 @@
 """Helpers for reading and writing ``settings.yaml`` files."""
 
+import importlib
 import logging
 import os
 from pathlib import Path
@@ -55,10 +56,8 @@ def save_settings(values: Dict[str, str], path: Path | None = None) -> Dict[str,
     else:
         if path == SETTINGS_PATH:
             try:
-                import importlib
-                from . import config as config_module
-
+                config_module = importlib.import_module("echo_journal.config")
                 importlib.reload(config_module)
-            except Exception as exc:  # pragma: no cover - unexpected
+            except ImportError as exc:  # pragma: no cover - unexpected
                 logger.error("Could not reload config: %s", exc)
     return data
