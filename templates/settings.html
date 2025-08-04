@@ -24,6 +24,7 @@
     </fieldset>
     <div id="settings-fields" class="grid gap-4 sm:grid-cols-2"></div>
     <button type="button" id="save-settings" class="mx-auto block bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400">Save</button>
+    <p id="settings-message" class="text-center text-gray-500 dark:text-gray-400 mt-2" aria-live="polite" role="status"></p>
   </form>
 </section>
 
@@ -268,6 +269,10 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
     settingsForm.querySelector('#save-settings').addEventListener('click', async () => {
+      const messageEl = document.getElementById('settings-message');
+      if (messageEl) {
+        messageEl.textContent = 'Saving…';
+      }
       const updated = {};
       settingsFields.querySelectorAll('input').forEach((input) => {
         const k = input.id.replace('setting-', '');
@@ -279,11 +284,23 @@ document.addEventListener("DOMContentLoaded", () => {
         updated[settingKey] = cb && cb.checked ? 'true' : 'false';
       });
 
-      await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
-      });
+      try {
+        const resp = await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated),
+        });
+        if (!resp.ok) {
+          throw new Error('Request failed');
+        }
+        if (messageEl) {
+          messageEl.textContent = 'Settings saved';
+        }
+      } catch (err) {
+        if (messageEl) {
+          messageEl.textContent = 'Error saving settings';
+        }
+      }
     });
   }
 });
