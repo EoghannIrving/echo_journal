@@ -250,6 +250,11 @@ document.addEventListener("DOMContentLoaded", () => {
         help: 'User agent string for Nominatim requests',
       },
     };
+    const loading = document.createElement('div');
+    loading.id = 'settings-loading';
+    loading.className = 'w-full flex justify-center py-8';
+    loading.innerHTML = '<div class="h-8 w-8 border-4 border-blue-600 dark:border-blue-500 border-t-transparent rounded-full animate-spin"></div>';
+    settingsFields.appendChild(loading);
 
     fetch('/api/settings')
       .then((r) => r.json())
@@ -311,7 +316,8 @@ document.addEventListener("DOMContentLoaded", () => {
           details.appendChild(grid);
           settingsFields.appendChild(details);
         });
-      });
+      })
+      .finally(() => loading.remove());
 
     settingsForm.querySelector('#save-settings').addEventListener('click', async () => {
       const messageEl = document.getElementById('settings-message');
