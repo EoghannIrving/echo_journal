@@ -85,7 +85,6 @@ elif BASIC_AUTH_USERNAME or BASIC_AUTH_PASSWORD:
 # Keys configurable via environment variables and editable from the settings page.
 # Values provided in ``settings.yaml`` override these defaults.
 ENV_SETTING_KEYS = [
-    "JOURNALS_DIR",
     "DATA_DIR",
     "APP_DIR",
     "PROMPTS_FILE",

@@ -57,11 +57,11 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
    npm run build:css
    ```
 
-2. Copy the example environment file and set `JOURNALS_DIR` and any other needed variables:
+2. Copy the example environment file and adjust variables if needed:
 
    ```bash
    cp .env.example .env
-   # edit .env to point JOURNALS_DIR to a writable path; it will be loaded on startup
+   # edit .env to adjust paths or API keys as needed
    ```
 
 3. Start the development server:
@@ -76,7 +76,7 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
 
 ```bash
 cp .env.example .env
-# adjust JOURNALS_DIR and other variables in .env
+# adjust variables in .env; optional JOURNALS_DIR controls the host path for journals
 docker-compose up --build
 ```
 
@@ -91,7 +91,7 @@ python -m venv .venv && source .venv/bin/activate
 pip install .  # installs Echo Journal and its Python dependencies
 npm install
 npm run build:css
-cp .env.example .env  # set JOURNALS_DIR inside
+cp .env.example .env
 uvicorn echo_journal.main:app --reload
 # or
 echo-journal
@@ -129,14 +129,14 @@ dedicated API guide.*
   curl http://localhost:8000/api/settings
   ```
   ```json
-  {"JOURNALS_DIR": "/journals", "OPENAI_API_KEY": null, ...}
+  {"DATA_DIR": "/journals", "OPENAI_API_KEY": null, ...}
   ```
 
 - `POST /api/settings` – update settings and persist them to `settings.yaml`.
   ```bash
   curl -X POST http://localhost:8000/api/settings \
        -H 'Content-Type: application/json' \
-       -d '{"JOURNALS_DIR": "/journals"}'
+       -d '{"DATA_DIR": "/journals"}'
   ```
   ```json
   {"status": "ok"}
@@ -248,7 +248,6 @@ values:
 
 | Variable | Purpose | Notes / Defaults |
 | --- | --- | --- |
-| `JOURNALS_DIR` | Host directory for your Markdown entries. | Set to a writable path. |
 | `DATA_DIR` | Internal application path. | Default `/journals`. |
 | `APP_DIR` | Internal application directory. | Default `/app`. |
 | `PROMPTS_FILE` | Location of YAML prompts file. | Default `/app/prompts.yaml`. |
