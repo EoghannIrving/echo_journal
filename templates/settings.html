@@ -343,7 +343,29 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
 
-        Object.entries(envSettingCategories).forEach(([category, keys]) => {
+        const categorized = {};
+        // Ensure all categories are initialised
+        Object.keys(envSettingCategories).forEach((cat) => {
+          categorized[cat] = [];
+        });
+        Object.keys(settings).forEach((key) => {
+          let category = 'Miscellaneous';
+          for (const [cat, keys] of Object.entries(envSettingCategories)) {
+            if (keys.includes(key)) {
+              category = cat;
+              break;
+            }
+          }
+          if (!categorized[category]) {
+            categorized[category] = [];
+          }
+          categorized[category].push(key);
+        });
+
+        const categoryOrder = [...Object.keys(envSettingCategories), 'Miscellaneous'];
+        categoryOrder.forEach((category) => {
+          const keys = categorized[category];
+          if (!keys || keys.length === 0) return;
           const details = document.createElement('details');
           details.className = 'paper-card space-y-2 text-left w-full';
           details.open = true;
