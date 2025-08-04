@@ -60,6 +60,7 @@
         {% else %}
         <p id="prompt-category" class="italic hidden"></p>
         {% endif %}
+        <p id="prompt-anchor" class="italic hidden">{{ anchor }}</p>
         <p id="intro-tagline" class="text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">Echo Journal is <strong>your</strong> space. Let the words come naturally.</p>
       </details>
     </div>
@@ -100,6 +101,7 @@
         entryDate: "{{ date }}",
         prompt: {{ prompt | tojson }},
         category: {{ category | tojson }},
+        anchor: {{ anchor | tojson }},
         readonly: {{ 'true' if readonly else 'false' }},
         integrations: {{ integrations | tojson }} {# includes ai integration key #}
       };
