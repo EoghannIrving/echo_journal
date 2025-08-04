@@ -13,9 +13,13 @@ load_dotenv()
 
 # ``settings.yaml`` should live alongside the journal data so that it persists
 # outside of the application container.  Default to ``/journals`` but allow the
-# location to be overridden via the ``DATA_DIR`` environment variable.
+# location to be overridden via the ``DATA_DIR`` environment variable.  The
+# entire path can also be overridden via ``SETTINGS_PATH``.  When the default
+# data directory does not contain a settings file we fall back to looking inside
+# ``APP_DIR`` so that bundled defaults can be used on first run.
 DATA_DIR = Path(os.getenv("DATA_DIR", "/journals"))
-SETTINGS_PATH = DATA_DIR / "settings.yaml"
+APP_DIR = Path(os.getenv("APP_DIR", "/app"))
+SETTINGS_PATH = Path(os.getenv("SETTINGS_PATH", DATA_DIR / "settings.yaml"))
 
 logger = logging.getLogger("ej.settings")
 
@@ -41,7 +45,18 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
             data = {str(k): "" if v is None else str(v) for k, v in data.items()}
             return data
     except FileNotFoundError:
-        logger.warning("No settings file found at %s; using environment variables only", path)
+        if (
+            path == SETTINGS_PATH
+            and os.getenv("SETTINGS_PATH") is None
+            and (APP_DIR / "settings.yaml").exists()
+        ):
+            with (APP_DIR / "settings.yaml").open("r", encoding="utf-8") as fh:
+                data = yaml.safe_load(fh) or {}
+                data = {str(k): "" if v is None else str(v) for k, v in data.items()}
+                return data
+        logger.warning(
+            "No settings file found at %s; using environment variables only", path
+        )
         return {}
     except OSError as exc:
         logger.error("Could not read %s: %s", path, exc)

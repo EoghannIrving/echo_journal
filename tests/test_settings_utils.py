@@ -84,3 +84,42 @@ def test_save_settings_reloads_config(tmp_path, monkeypatch):
     # Reset modules for subsequent tests
     monkeypatch.setattr(settings_utils, "SETTINGS_PATH", orig_path)
     importlib.reload(config)
+
+
+def test_settings_path_can_be_overridden(tmp_path, monkeypatch):
+    """``SETTINGS_PATH`` env var should override default location."""
+    custom = tmp_path / "custom.yaml"
+    monkeypatch.setenv("SETTINGS_PATH", str(custom))
+    importlib.reload(settings_utils)
+
+    settings_utils.save_settings({"A": "1"})
+    assert yaml.safe_load(custom.read_text(encoding="utf-8")) == {"A": "1"}
+    assert settings_utils.load_settings() == {"A": "1"}
+
+    # Reset module to default state for other tests
+    monkeypatch.delenv("SETTINGS_PATH")
+    importlib.reload(settings_utils)
+
+
+def test_load_settings_falls_back_to_app_dir(tmp_path, monkeypatch):
+    """When ``DATA_DIR`` lacks settings fallback to ``APP_DIR``."""
+    app_dir = tmp_path / "app"
+    data_dir = tmp_path / "data"
+    app_dir.mkdir()
+    (app_dir / "settings.yaml").write_text("A: a\n", encoding="utf-8")
+
+    monkeypatch.setenv("APP_DIR", str(app_dir))
+    monkeypatch.setenv("DATA_DIR", str(data_dir))
+    importlib.reload(settings_utils)
+
+    data = settings_utils.load_settings()
+    assert data == {"A": "a"}
+
+    settings_utils.save_settings({"B": "b"})
+    expected = data_dir / "settings.yaml"
+    assert yaml.safe_load(expected.read_text(encoding="utf-8")) == {"A": "a", "B": "b"}
+
+    # Reset module to default state for other tests
+    monkeypatch.delenv("APP_DIR")
+    monkeypatch.delenv("DATA_DIR")
+    importlib.reload(settings_utils)
