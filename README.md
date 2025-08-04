@@ -239,8 +239,12 @@ This allows the backend to score prompts based on numeric intensity.
 Echo Journal automatically loads variables from a `.env` file at startup using
 [`python-dotenv`](https://pypi.org/project/python-dotenv/).
 
-The `settings.yaml` file configures optional integrations and runtime paths. It
-is the authoritative source for these values:
+On startup the application looks for a `settings.yaml` file in
+`<DATA_DIR>/settings.yaml` (default `/journals/settings.yaml`). If it is
+missing a warning is logged noting the expected path and the app falls back to
+environment variables. The `settings.yaml` file configures optional
+integrations and runtime paths. It is the authoritative source for these
+values:
 
 | Variable | Purpose | Notes / Defaults |
 | --- | --- | --- |

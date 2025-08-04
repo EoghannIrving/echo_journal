@@ -36,10 +36,10 @@ def test_save_settings_merges(tmp_path):
     assert yaml.safe_load(p.read_text(encoding="utf-8")) == {"A": "a", "B": "b"}
 
 
-def test_load_settings_logs_error(tmp_path, caplog):
-    """Missing files should log an error and return an empty dict."""
+def test_load_settings_logs_missing_warning(tmp_path, caplog):
+    """Missing files should log a warning with the expected path."""
     p = tmp_path / "missing.yaml"
-    with caplog.at_level(logging.ERROR, logger="ej.settings"):
+    with caplog.at_level(logging.WARNING, logger="ej.settings"):
         data = settings_utils.load_settings(p)
     assert data == {}
     assert any(str(p) in r.getMessage() for r in caplog.records)
