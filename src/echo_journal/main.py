@@ -733,7 +733,8 @@ async def ai_prompt(
     prompts = await load_prompts()
     prompts.append(result)
     async with aiofiles.open(PROMPTS_FILE, "w", encoding=ENCODING) as fh:
-        yaml.safe_dump(prompts, fh, allow_unicode=True, sort_keys=False)
+        dump_text = yaml.safe_dump(prompts, allow_unicode=True, sort_keys=False)
+        await fh.write(dump_text)
     return {
         "prompt": result.get("prompt", ""),
         "anchor": result.get("anchor", ""),
