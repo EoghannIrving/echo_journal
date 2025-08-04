@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         Object.entries(envSettingCategories).forEach(([category, keys]) => {
           const details = document.createElement('details');
-          details.className = 'space-y-2 text-left';
+          details.className = 'paper-card space-y-2 text-left';
           details.open = true;
           const summary = document.createElement('summary');
           summary.textContent = category;
