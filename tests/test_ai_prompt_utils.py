@@ -24,6 +24,7 @@ class FakeClient:
     async def post(self, url, headers=None, json=None, timeout=None):
         self.captured["url"] = url
         self.captured["headers"] = headers
+        self.captured["json"] = json
 
         class Response:
             def __init__(self, data):
@@ -41,32 +42,35 @@ class FakeClient:
 def test_no_api_key(monkeypatch):
     """When no API key is set, ``fetch_ai_prompt`` returns ``None``."""
     monkeypatch.setattr(config, "OPENAI_API_KEY", None)
-    assert asyncio.run(ai.fetch_ai_prompt()) is None
+    assert asyncio.run(ai.fetch_ai_prompt("soft")) is None
 
 
 def test_fetch_ai_prompt(monkeypatch):
-    """Valid responses should return trimmed prompt text."""
-    client = FakeClient({"choices": [{"text": "  Hello\n"}]})
+    """Valid responses should return parsed prompt dict."""
+    yaml_str = "- id: tag-001\n  prompt: Hi\n  tags:\n    - mood\n  anchor: soft"
+    client = FakeClient({"choices": [{"message": {"content": yaml_str}}]})
     monkeypatch.setattr(config, "OPENAI_API_KEY", "x")
     monkeypatch.setattr(ai.httpx, "AsyncClient", lambda: client)
 
-    prompt = asyncio.run(ai.fetch_ai_prompt())
+    prompt = asyncio.run(ai.fetch_ai_prompt("soft"))
 
-    assert prompt == "Hello"
-    assert client.captured["url"] == ai.OPENAI_URL
+    assert prompt == {"id": "tag-001", "prompt": "Hi", "tags": ["mood"], "anchor": "soft"}
+    assert client.captured["url"] == ai.CHAT_URL
     assert client.captured["headers"]["Authorization"] == "Bearer x"
+    assert "soft" in client.captured["json"]["messages"][0]["content"]
 
 
 def test_fetch_ai_prompt_from_settings(monkeypatch):
     """API key provided via settings.yaml should be used."""
-    client = FakeClient({"choices": [{"text": "Hi"}]})
+    yaml_str = "- id: tag-001\n  prompt: Hi\n  tags:\n    - mood\n  anchor: soft"
+    client = FakeClient({"choices": [{"message": {"content": yaml_str}}]})
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setattr(config, "_SETTINGS", {"OPENAI_API_KEY": "from_settings"})
     monkeypatch.setattr(config, "OPENAI_API_KEY", config._get_setting("OPENAI_API_KEY"))
     monkeypatch.setattr(ai, "config", config)
     monkeypatch.setattr(ai.httpx, "AsyncClient", lambda: client)
 
-    prompt = asyncio.run(ai.fetch_ai_prompt())
+    prompt = asyncio.run(ai.fetch_ai_prompt("soft"))
 
-    assert prompt == "Hi"
+    assert prompt["prompt"] == "Hi"
     assert client.captured["headers"]["Authorization"] == "Bearer from_settings"

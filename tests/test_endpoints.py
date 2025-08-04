@@ -1172,7 +1172,9 @@ def test_ai_prompt_missing_key(test_client, monkeypatch):
     """AI endpoint returns 503 when API key is missing."""
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     token = base64.b64encode(b"user:pass").decode()
-    resp = test_client.get("/api/ai_prompt", headers={"Authorization": f"Basic {token}"})
+    resp = test_client.get(
+        "/api/ai_prompt?mood=meh&energy=2", headers={"Authorization": f"Basic {token}"}
+    )
     assert resp.status_code == 503
 
 
@@ -1180,10 +1182,12 @@ def test_ai_prompt_external_failure(test_client, monkeypatch):
     """AI endpoint returns 503 when external service fails."""
     monkeypatch.setenv("OPENAI_API_KEY", "dummy")
 
-    async def fake_fetch():
+    async def fake_fetch(anchor):
         return None
 
     monkeypatch.setattr(ai_prompt_utils, "fetch_ai_prompt", fake_fetch)
     token = base64.b64encode(b"user:pass").decode()
-    resp = test_client.get("/api/ai_prompt", headers={"Authorization": f"Basic {token}"})
+    resp = test_client.get(
+        "/api/ai_prompt?mood=meh&energy=2", headers={"Authorization": f"Basic {token}"}
+    )
     assert resp.status_code == 503

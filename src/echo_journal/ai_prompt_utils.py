@@ -1,44 +1,84 @@
 """Utility functions for generating prompts via an AI API."""
 
-from typing import Optional
+from typing import Optional, Dict, Any
 
 import httpx
+import yaml
 
 from . import config
 
-OPENAI_URL = "https://api.openai.com/v1/completions"
+CHAT_URL = "https://api.openai.com/v1/chat/completions"
+
+AI_PROMPT_TEMPLATE = (
+    "You are a journaling assistant for Echo Journal. Your job is to generate"
+    " journaling prompts that match an anchor level of {anchor} and with 1-2"
+    " thematic strategies (tags).\n\n"
+    "Anchor Levels\n"
+    "micro: Can be answered in one word, emoji, or phrase. Used when energy is very low.\n"
+    "soft: Gentle observational or sensory prompts. Easy to start, low emotional load.\n"
+    "moderate: Encourages reflection or meaning-making, but not emotionally intense.\n"
+    "strong: Deep, personal, or narrative-based prompts. Requires emotional readiness.\n\n"
+    "Strategy Tags\n"
+    "Each prompt should align with 1–2 of these:\n\n"
+    "senses: describe sensory detail (touch, sound, smell, color)\n"
+    "context: what led to something, location, environment\n"
+    "scene: describe a moment visually or like a painting\n"
+    "contrast: explore difference or opposites\n"
+    "list: list things with elaboration (e.g. \"3 things and why\")\n"
+    "mood: explore feelings and what caused them\n"
+    "hypothetical: imagined or alternate scenarios\n"
+    "deep: reflection on meaning, significance, values\n"
+    "temporal: linked to time — morning, today, now, earlier\n"
+    "narrative: tells a story, sequence of events, interaction\n\n"
+    "Format\n"
+    "Return the result in strict YAML:\n\n"
+    "- id: <tag>-<3-digit number>\n"
+    "  prompt: \"<journal prompt>\"\n"
+    "  tags:\n"
+    "    - tag1\n"
+    "    - tag2\n"
+    "  anchor: <anchor>"
+)
 
 
-async def fetch_ai_prompt() -> Optional[str]:
-    """Return a generated prompt from an AI service if available.
+async def fetch_ai_prompt(anchor: str | None) -> Optional[Dict[str, Any]]:
+    """Return a generated prompt as a dict from an AI service.
 
     Uses ``config.OPENAI_API_KEY`` which may be provided via ``settings.yaml`` or
-    environment variables. Returns ``None`` if the key is missing or the request
-    fails for any reason.
+    environment variables. Returns ``None`` if the key is missing, ``anchor`` is
+    ``None`` or the request fails for any reason.
     """
 
     api_key = config.OPENAI_API_KEY
-    if not api_key:
+    if not api_key or not anchor:
         return None
 
     headers = {"Authorization": f"Bearer {api_key}"}
+    prompt_text = AI_PROMPT_TEMPLATE.format(anchor=anchor)
     payload = {
-        "model": "gpt-3.5-turbo-instruct",
-        "prompt": "Give me a short journaling prompt.",
-        "max_tokens": 60,
+        "model": "gpt-3.5-turbo",
+        "messages": [{"role": "user", "content": prompt_text}],
+        "max_tokens": 200,
     }
 
     try:
         async with httpx.AsyncClient() as client:
-            resp = await client.post(OPENAI_URL, headers=headers, json=payload, timeout=10)
+            resp = await client.post(CHAT_URL, headers=headers, json=payload, timeout=10)
             resp.raise_for_status()
             data = resp.json()
             choices = data.get("choices")
-            if isinstance(choices, list) and choices:
-                text = choices[0].get("text")
-                if isinstance(text, str):
-                    return text.strip()
-    except (httpx.HTTPError, ValueError, KeyError):
+            if not isinstance(choices, list) or not choices:
+                return None
+            message = choices[0].get("message", {})
+            content = message.get("content")
+            if not isinstance(content, str):
+                return None
+            parsed = yaml.safe_load(content)
+            if isinstance(parsed, list) and parsed:
+                first = parsed[0]
+                if isinstance(first, dict):
+                    return first
+    except (httpx.HTTPError, ValueError, KeyError, yaml.YAMLError):
         return None
 
     return None
