@@ -144,13 +144,13 @@
       const removeNotice = () => restartNotice.remove();
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         restartNotice.classList.remove('opacity-0');
-        setTimeout(removeNotice, 5000);
+        setTimeout(removeNotice, 7000);
       } else {
         requestAnimationFrame(() => restartNotice.classList.remove('opacity-0'));
         setTimeout(() => {
           restartNotice.classList.add('opacity-0');
           setTimeout(removeNotice, 1000);
-        }, 4000);
+        }, 6000);
       }
     }
     if (welcomeEl) {
