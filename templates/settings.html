@@ -235,12 +235,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         Object.entries(envSettingCategories).forEach(([category, keys]) => {
-          const fieldset = document.createElement('fieldset');
-          fieldset.className = 'space-y-2 text-left';
-          const legend = document.createElement('legend');
-          legend.textContent = category;
-          legend.className = 'font-semibold';
-          fieldset.appendChild(legend);
+          const details = document.createElement('details');
+          details.className = 'space-y-2 text-left';
+          details.open = true;
+          const summary = document.createElement('summary');
+          summary.textContent = category;
+          summary.className = 'cursor-pointer font-semibold';
+          details.appendChild(summary);
           const grid = document.createElement('div');
           grid.className = 'grid gap-2 sm:grid-cols-2';
           keys.forEach((key) => {
@@ -271,8 +272,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             grid.appendChild(wrapper);
           });
-          fieldset.appendChild(grid);
-          settingsFields.appendChild(fieldset);
+          details.appendChild(grid);
+          settingsFields.appendChild(details);
         });
       });
 
