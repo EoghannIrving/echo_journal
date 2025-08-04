@@ -31,10 +31,10 @@ NOMINATIM_USER_AGENT = _get_setting(
     "NOMINATIM_USER_AGENT", "EchoJournal/1.0 (contact@example.com)"
 )
 
-# File logging path - defaults to ``DATA_DIR/.log/echo_journal.log`` but can
+# File logging path - defaults to ``DATA_DIR/.logs/echo_journal.log`` but can
 # be overridden via the ``LOG_FILE`` environment variable.
 LOG_FILE = Path(
-    _get_setting("LOG_FILE", str(DATA_DIR / ".log" / "echo_journal.log"))
+    _get_setting("LOG_FILE", str(DATA_DIR / ".logs" / "echo_journal.log"))
 )
 
 # Log level for the application. Defaults to ``DEBUG`` so development
