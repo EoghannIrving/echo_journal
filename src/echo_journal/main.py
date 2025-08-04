@@ -42,6 +42,7 @@ from .config import (
     BASIC_AUTH_USERNAME,
     BASIC_AUTH_PASSWORD,
     NOMINATIM_USER_AGENT,
+    OPENAI_API_KEY,
 )
 from .file_utils import (
     safe_entry_path,
@@ -229,7 +230,7 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         "jellyfin": settings.get("INTEGRATION_JELLYFIN", "true").lower() != "false",
         "fact": settings.get("INTEGRATION_FACT", "true").lower() != "false",
     }
-    integrations["ai"] = bool(os.getenv("OPENAI_API_KEY"))
+    integrations["ai"] = bool(OPENAI_API_KEY)
 
     return templates.TemplateResponse(
         request,
