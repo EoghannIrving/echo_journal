@@ -1,5 +1,7 @@
 # Echo Journal
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/OWNER/echo_journal/actions/workflows/pytest.yml/badge.svg)](https://github.com/OWNER/echo_journal/actions/workflows/pytest.yml) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-blue)
+
 Echo Journal is a minimalist FastAPI journaling app that stores Markdown
 entries enriched with optional metadata like mood, energy, location, weather,
 photos and media. Daily prompts can be refreshed or even generated on demand
