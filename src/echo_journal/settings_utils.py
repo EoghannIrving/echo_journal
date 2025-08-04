@@ -52,4 +52,13 @@ def save_settings(values: Dict[str, str], path: Path | None = None) -> Dict[str,
             yaml.safe_dump(data, fh, allow_unicode=True, default_flow_style=False)
     except OSError as exc:
         logger.error("Could not write %s: %s", path, exc)
+    else:
+        if path == SETTINGS_PATH:
+            try:
+                import importlib
+                from . import config as config_module
+
+                importlib.reload(config_module)
+            except Exception as exc:  # pragma: no cover - unexpected
+                logger.error("Could not reload config: %s", exc)
     return data

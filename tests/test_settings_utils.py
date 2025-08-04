@@ -65,3 +65,22 @@ def test_settings_path_relative_to_data_dir(tmp_path, monkeypatch):
     # Reset module to default state for other tests
     monkeypatch.delenv("DATA_DIR")
     importlib.reload(settings_utils)
+
+
+def test_save_settings_reloads_config(tmp_path, monkeypatch):
+    """Saving to the default path should reload the configuration module."""
+    settings_file = tmp_path / "settings.yaml"
+    orig_path = settings_utils.SETTINGS_PATH
+    monkeypatch.setattr(settings_utils, "SETTINGS_PATH", settings_file)
+
+    from echo_journal import config
+
+    importlib.reload(config)
+    assert config.WORDNIK_API_KEY is None
+
+    settings_utils.save_settings({"WORDNIK_API_KEY": "abc"})
+    assert config.WORDNIK_API_KEY == "abc"
+
+    # Reset modules for subsequent tests
+    monkeypatch.setattr(settings_utils, "SETTINGS_PATH", orig_path)
+    importlib.reload(config)
