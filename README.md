@@ -148,7 +148,7 @@ dedicated API guide.*
   ```
 
 - `GET /api/ai_prompt?energy=3` – generate a prompt using the OpenAI API when
-  configured.
+  configured. Mood and energy parameters are optional; if omitted, the service defaults to a gentle "soft" anchor.
   ```bash
   curl 'http://localhost:8000/api/ai_prompt?energy=3'
   ```

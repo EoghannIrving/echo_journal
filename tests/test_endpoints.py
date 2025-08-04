@@ -1191,3 +1191,19 @@ def test_ai_prompt_external_failure(test_client, monkeypatch):
         "/api/ai_prompt?mood=meh&energy=2", headers={"Authorization": f"Basic {token}"}
     )
     assert resp.status_code == 503
+
+
+def test_ai_prompt_defaults_anchor(test_client, monkeypatch):
+    """Endpoint falls back to a 'soft' anchor when params are missing."""
+    async def fake_fetch(anchor):
+        fake_fetch.called_with = anchor
+        return {"prompt": "hi", "anchor": anchor, "tags": [], "id": "x"}
+
+    monkeypatch.setattr(ai_prompt_utils, "fetch_ai_prompt", fake_fetch)
+    monkeypatch.setattr(main, "fetch_ai_prompt", fake_fetch)
+    monkeypatch.setattr(main, "PROMPTS_FILE", PROMPTS_FILE)
+    token = base64.b64encode(b"user:pass").decode()
+    resp = test_client.get("/api/ai_prompt", headers={"Authorization": f"Basic {token}"})
+    assert resp.status_code == 200
+    assert resp.json()["anchor"] == "soft"
+    assert fake_fetch.called_with == "soft"
