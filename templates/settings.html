@@ -257,8 +257,11 @@ document.addEventListener("DOMContentLoaded", () => {
             wrapper.appendChild(label);
             if (info.help) {
               const help = document.createElement('p');
+              const helpId = `setting-${key}-help`;
+              help.id = helpId;
               help.className = 'text-xs text-gray-500 dark:text-gray-400';
               help.textContent = info.help;
+              input.setAttribute('aria-describedby', helpId);
               wrapper.appendChild(help);
             }
             grid.appendChild(wrapper);
