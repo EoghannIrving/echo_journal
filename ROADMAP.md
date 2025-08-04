@@ -45,10 +45,8 @@
 
 ## Phase 5: Enrichment and polish (in progress)
 - Document YAML frontmatter structure in the README ✅ Completed
-- Add optional "Fact of the Day" integration
-- Provide an AI-assisted prompt helper ✅ Completed
-- Allow refreshing the prompt via a "New Prompt" link ✅ Completed
 - Evaluate secure remote access options and toggles for integrations ✅ Completed
+- Add optional "Fact of the Day" integration
 
 
 ### Backdated journaling support
@@ -65,25 +63,11 @@
 
 ### Enrichment and UX Enhancements
 - Gentle restart reminder if yesterday's entry is missing ✅
-- **Auto-generated prompt selection**
-  - Add What you watched (from Jellyfin) to the metadata ✅
-  - Uses contextual signals (Jellyfin, Immich, Last.fm, local time, weather)
-  - Backend rules or scoring engine selects from `prompts.yaml`
-  - Contextual input logged into `.meta.json` or frontmatter
-  - AI-assisted prompts (“Need inspiration?” feature) ✅
-  - Optional "New Prompt" link to gently refresh the daily suggestion if it doesn't resonate ✅
-    - Subtle secondary text that fades in on hover/tap.
-    - Client-side localStorage ensures the prompt stays consistent after saving. ✅
-  - Optional secure remote access (auth, VPN/reverse proxy) ✅
 - **Minimalist journal screen mode** ✅
   - One visible prompt only ✅
   - No toolbar or menus ✅
   - Prompt gently faded in for clarity✅
   - Triggered by URL query or persistent setting
-- **Expanded 10-second journaling mode**
-  - No refresh or formatting
-  - Designed for raw, low-pressure reflection
-  - Auto-save on blur or idle timeout (optional)
 - **Full ambient metadata capture** ✅
   - Mood, time block, weather, Jellyfin/Last.fm/Immich content ✅
   - Files created under `.meta/`: `<date>.songs.json`, `<date>.media.json`, `<date>.photos.json`, `<date>.meta.json`✅
@@ -96,6 +80,21 @@
     photos: 2
     tv: ["Doctor Who"]
     ```
+- **Auto-generated prompt selection**
+  - Add What you watched (from Jellyfin) to the metadata ✅
+  - AI-assisted prompts (“Need inspiration?” feature) ✅
+  - Optional "New Prompt" link to gently refresh the daily suggestion if it doesn't resonate ✅
+    - Client-side localStorage ensures the prompt stays consistent after saving. ✅
+    - Subtle secondary text that fades in on hover/tap.
+  - Uses contextual signals (Jellyfin, Immich, Last.fm, local time, weather)
+  - Backend rules or scoring engine selects from `prompts.yaml`
+  - Contextual input logged into `.meta.json` or frontmatter
+- **Expanded 10-second journaling mode**
+  - No refresh or formatting
+  - Designed for raw, low-pressure reflection
+  - Auto-save on blur or idle timeout (optional)
+  - Minimal UI for 1–3 word entries, emoji, or tags
+  - Saves stub with timestamp and optional metadata
 - **Smart append-to-entry mode**
   - Detects existing entry for the day
   - Inserts separator (`---` or timestamp) for each append
@@ -107,22 +106,19 @@
 - Mood + energy tagging (stored client-side) ✅
   - UI toggle with emoji **and** visible text labels ✅
   - Example: 😔 Sad · 😐 Meh · 😊 Okay · 😍 Joyful · 🧠 Focused · ⚡ Energized · 🪫 Drained ✅
-  - Optional text-only mode (toggleable via localStorage or user settings)
   - Optional dropdown UI for accessibility ✅
+  - Optional text-only mode (toggleable via localStorage or user settings)
 - Prompt strategy matched to mood/energy✅
   - Use categorized prompt sets (gentle, sensory, contrast, etc.) ✅
   - Add "Prompt Style" dropdown or auto-match by tag
-- 10-second journaling mode
-  - Minimal UI for 1–3 word entries, emoji, or tags
-  - Saves stub with timestamp and optional metadata
-- Time-contextual prompt variations
-  - Add frames like “This morning…”, “Looking back…”, “To Future You…”
 - Quick tag reactions ✅
   - Visual + textual buttons: e.g., 😔 Sad, ⚡ Energized, 🪫 Drained ✅
   - Enable archive filtering and stats
 - Streak disruption softness ✅ Completed
   - If no entry exists for yesterday, show gentle “Restart from today?” message ✅
   - Avoid shaming or pressure ✅
+- Time-contextual prompt variations
+  - Add frames like “This morning…”, “Looking back…”, “To Future You…”
 - Prompt explanation tooltips
   - Optional: hover or tap to explain what kind of prompts each mood receives
 
@@ -131,8 +127,8 @@
 - Save to `<date>.media.json` or embed into frontmatter ✅ Completed
 - Surface watched content optionally below entry or in archive ✅ Completed
 - Support for optional filtering: “Show entries with movies/TV” ✅ Completed
-- Add “Today I watched…” or “This story reminded me of…” prompts if media exists
 - Reuse Jellyfin API setup already in use for music enrichment ✅ Completed
+- Add “Today I watched…” or “This story reminded me of…” prompts if media exists
 
 ## Phase 6: Insight, Patterning, and Personalization (planned)
 - Filter archive view by mood, energy, tags
