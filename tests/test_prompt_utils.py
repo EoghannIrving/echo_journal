@@ -29,7 +29,7 @@ def test_generate_prompt_uses_anchor(tmp_path, monkeypatch):
     prompt_utils._prompts_cache = {"data": None, "mtime": None}
     monkeypatch.setattr(prompt_utils.random, "choice", lambda seq: seq[0])
 
-    res = asyncio.run(prompt_utils.generate_prompt(mood="meh", energy=1))
+    res = asyncio.run(prompt_utils.generate_prompt(mood="meh", energy=2))
 
     assert res["prompt"] == "A"
     assert res["category"] == "Cat"
@@ -57,10 +57,22 @@ def test_generate_prompt_debug(tmp_path, monkeypatch):
     prompt_utils._prompts_cache = {"data": None, "mtime": None}
     monkeypatch.setattr(prompt_utils.random, "choice", lambda seq: seq[0])
 
-    res = asyncio.run(prompt_utils.generate_prompt(mood="meh", energy=1, debug=True))
+    res = asyncio.run(prompt_utils.generate_prompt(mood="meh", energy=2, debug=True))
 
     assert res["id"] == "cat-001"
     assert res["debug"]["initial"] == ["cat-001", "dog_001"]
     assert res["debug"]["after_anchor"] == ["cat-001", "dog_001"]
     assert res["debug"]["chosen"] == "cat-001"
     assert set(res["debug"].keys()) == {"initial", "after_anchor", "chosen"}
+
+
+def test_choose_anchor_self_doubt(monkeypatch):
+    """_choose_anchor prioritizes micro for self-doubt."""
+    monkeypatch.setattr(prompt_utils.random, "choice", lambda seq: seq[0])
+    assert prompt_utils._choose_anchor("self-doubt", 2) == "micro"
+
+
+def test_choose_anchor_joyful_high_energy(monkeypatch):
+    """_choose_anchor can return strong for joyful mood."""
+    monkeypatch.setattr(prompt_utils.random, "choice", lambda seq: seq[-1])
+    assert prompt_utils._choose_anchor("joyful", 3) == "strong"

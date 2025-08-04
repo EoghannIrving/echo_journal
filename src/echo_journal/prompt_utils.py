@@ -15,47 +15,48 @@ _prompts_lock = asyncio.Lock()
 
 logger = logging.getLogger("ej.prompt")
 
-# Mapping of anchor types to (mood, energy) pairs
-ANCHOR_MOOD_ENERGY: dict[str, list[tuple[str, int]]] = {
-    "soft": [
-        ("sad", 1), ("meh", 1), ("drained", 1), ("self-doubt", 1),
-        ("self-doubt", 2), ("okay", 2),
-    ],
-    "moderate": [
-        ("meh", 2), ("okay", 3), ("joyful", 3), ("self-doubt", 3),
-        ("focused", 3), ("energized", 3),
-    ],
-    "strong": [
-        ("joyful", 4), ("focused", 4), ("energized", 4),
-    ],
-    "micro": [
-        ("sad", 1), ("drained", 1), ("self-doubt", 1),
-    ],
-}
-
 
 def _choose_anchor(mood: str | None, energy: int | None) -> str | None:
-    """Return a random anchor value based on mood and energy."""
+    """Return an anchor value based on mood and energy."""
     if mood is None or energy is None:
         logger.debug("No anchor: mood=%s energy=%s", mood, energy)
         return None
+
     mood_l = mood.lower()
-    matches = [
-        anchor
-        for anchor, pairs in ANCHOR_MOOD_ENERGY.items()
-        if (mood_l, energy) in pairs
-    ]
-    if not matches:
+    anchors: list[str] = []
+
+    if energy == 1:
+        anchors = ["micro"] if mood_l in {"drained", "self-doubt", "sad"} else ["micro", "soft"]
+        anchor = random.choice(anchors)
+        logger.debug("Selected anchor '%s' for mood=%s energy=%s from %s", anchor, mood_l, energy, anchors)
+        return anchor
+
+    if energy == 2:
+        if mood_l in {"sad", "meh", "self-doubt", "drained"}:
+            anchors.append("soft")
+        else:
+            anchors.extend(["soft", "moderate"])
+
+    if energy == 3:
+        anchors.append("moderate")
+        if mood_l in {"joyful", "focused", "energized"}:
+            anchors.append("strong")
+
+    if energy >= 4:
+        anchors.extend(["moderate", "strong"])
+
+    if mood_l in {"sad", "meh", "self-doubt"} and "soft" not in anchors:
+        anchors.insert(0, "soft")
+
+    if mood_l == "self-doubt" and "micro" not in anchors:
+        anchors.insert(0, "micro")
+
+    if not anchors:
         logger.debug("No anchor matches for mood=%s energy=%s", mood_l, energy)
         return None
-    anchor = random.choice(matches)
-    logger.debug(
-        "Selected anchor '%s' for mood=%s energy=%s from %s",
-        anchor,
-        mood_l,
-        energy,
-        matches,
-    )
+
+    anchor = random.choice(anchors)
+    logger.debug("Selected anchor '%s' for mood=%s energy=%s from %s", anchor, mood_l, energy, anchors)
     return anchor
 
 
@@ -114,10 +115,9 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
 ) -> dict:
     """Select and return a prompt for the current day.
 
-    ``mood`` and ``energy`` are used only to derive an ``anchor`` value via
-    :data:`ANCHOR_MOOD_ENERGY`. Prompts are filtered solely by this anchor. If
-    ``debug`` is ``True``, information about the selection process is returned
-    under a ``debug`` key.
+    ``mood`` and ``energy`` are used only to derive an ``anchor`` value. Prompts
+    are filtered solely by this anchor. If ``debug`` is ``True``, information
+    about the selection process is returned under a ``debug`` key.
     """
     logger.debug("Generating prompt for mood=%s energy=%s", mood, energy)
     today = date.today()
