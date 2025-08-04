@@ -5,7 +5,7 @@ import logging
 
 import yaml
 
-from echo_journal import settings_utils
+from echo_journal import config, settings_utils
 
 
 def test_load_settings_returns_strings(tmp_path):
@@ -72,8 +72,6 @@ def test_save_settings_reloads_config(tmp_path, monkeypatch):
     settings_file = tmp_path / "settings.yaml"
     orig_path = settings_utils.SETTINGS_PATH
     monkeypatch.setattr(settings_utils, "SETTINGS_PATH", settings_file)
-
-    from echo_journal import config
 
     importlib.reload(config)
     assert config.WORDNIK_API_KEY is None
