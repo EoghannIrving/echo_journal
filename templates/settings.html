@@ -10,13 +10,13 @@
 
 {% block content %}
 
-<section class="w-full max-w-5xl mx-auto space-y-4 bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100 p-4 rounded-xl paper-card">
+<section class="w-full max-w-5xl mx-auto space-y-4 bg-black dark:bg-transparent text-gray-100 p-4 rounded-xl">
   <form id="settings-form" class="w-full text-sm space-y-4">
     <p class="text-center text-gray-500 dark:text-gray-400">Enable or disable optional integrations and edit server settings. Values are saved to <code>settings.yaml</code>. Changes require a restart.</p>
     <fieldset id="integration-settings" class="space-y-2 text-left">
       <legend class="font-semibold text-lg">Integrations</legend>
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="p-4 rounded-xl paper-card flex items-center justify-between gap-4">
+        <div class="meta-card flex items-center justify-between gap-4">
           <label for="integration-wordnik" class="flex items-center gap-2 cursor-pointer">
             <span class="text-2xl">📖</span>
             <span id="integration-wordnik-label" class="text-sm">Wordnik word of the day</span>
@@ -28,7 +28,7 @@
             class="h-5 w-5"
           />
         </div>
-        <div class="p-4 rounded-xl paper-card flex items-center justify-between gap-4">
+        <div class="meta-card flex items-center justify-between gap-4">
           <label for="integration-immich" class="flex items-center gap-2 cursor-pointer">
             <span class="text-2xl">📸</span>
             <span id="integration-immich-label" class="text-sm">Immich photos</span>
@@ -40,7 +40,7 @@
             class="h-5 w-5"
           />
         </div>
-        <div class="p-4 rounded-xl paper-card flex items-center justify-between gap-4">
+        <div class="meta-card flex items-center justify-between gap-4">
           <label for="integration-jellyfin" class="flex items-center gap-2 cursor-pointer">
             <span class="text-2xl">🎬</span>
             <span id="integration-jellyfin-label" class="text-sm">Jellyfin media</span>
@@ -52,7 +52,7 @@
             class="h-5 w-5"
           />
         </div>
-        <div class="p-4 rounded-xl paper-card flex items-center justify-between gap-4">
+        <div class="meta-card flex items-center justify-between gap-4">
           <label for="integration-fact" class="flex items-center gap-2 cursor-pointer">
             <span class="text-2xl">❓</span>
             <span id="integration-fact-label" class="text-sm">Fact of the day</span>
@@ -361,7 +361,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const keys = categorized[category];
           if (!keys || keys.length === 0) return;
           const details = document.createElement('details');
-          details.className = 'paper-card space-y-2 text-left w-full';
+          details.className = 'meta-card space-y-2 text-left w-full';
           details.open = true;
           const summary = document.createElement('summary');
           summary.textContent = category;
