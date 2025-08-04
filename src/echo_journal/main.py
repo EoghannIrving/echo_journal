@@ -208,11 +208,13 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         if not prompt and not entry:
             entry = body.strip()
         category = meta.get("category", "")
+        anchor = meta.get("anchor", "")
         wotd = meta.get("wotd", "")
         wotd_def = meta.get("wotd_def", "")
     else:
         prompt = ""
         category = ""
+        anchor = ""
         entry = ""
         wotd = ""
         wotd_def = ""
@@ -236,6 +238,7 @@ async def index(request: Request):  # pylint: disable=too-many-locals
             "request": request,
             "prompt": prompt,
             "category": category,
+            "anchor": anchor,
             "date": date_str,
             "content": entry,
             "readonly": False,  # Explicit

@@ -3,6 +3,7 @@
   const entryDate = cfg.entryDate || "";
   let currentPrompt = cfg.prompt || "";
   let currentCategory = cfg.category || "";
+  let currentAnchor = cfg.anchor || "";
   const promptKey = `ej-prompt-${entryDate}`;
   const readonly = cfg.readonly === true || cfg.readonly === "true";
   const energyLevels = { drained: 1, low: 2, ok: 3, energized: 4 };
@@ -157,6 +158,7 @@
 
     const promptEl = document.getElementById('daily-prompt');
     const catEl = document.getElementById('prompt-category');
+    const anchorEl = document.getElementById('prompt-anchor');
     const textarea = document.getElementById('journal-text');
     const stored = localStorage.getItem(promptKey);
     if (stored) {
@@ -164,6 +166,7 @@
         const data = JSON.parse(stored);
         currentPrompt = data.prompt || currentPrompt;
         currentCategory = data.category || currentCategory;
+        currentAnchor = data.anchor || currentAnchor;
       } catch (_) {}
     }
     const revealPrompt = (startDelay = delay + 300) => {
@@ -185,6 +188,10 @@
       if (catEl) {
         catEl.textContent = currentCategory || '';
         catEl.classList.toggle('hidden', !currentCategory);
+      }
+      if (anchorEl) {
+        anchorEl.textContent = currentAnchor || '';
+        anchorEl.classList.toggle('hidden', !currentAnchor);
       }
     };
 
@@ -223,9 +230,10 @@
           const data = await res.json();
           currentPrompt = data.prompt;
           currentCategory = data.category || '';
+          currentAnchor = data.anchor || '';
           revealPrompt(0);
           promptShown = true;
-          localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
+          localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory, anchor: currentAnchor }));
         }
       } catch (_) {}
     };
@@ -319,12 +327,17 @@
             const data = await res.json();
             currentPrompt = data.prompt;
             currentCategory = data.category || '';
+            currentAnchor = data.anchor || '';
             promptEl.textContent = currentPrompt;
             if (catEl) {
               catEl.textContent = currentCategory;
               catEl.classList.toggle('hidden', !currentCategory);
             }
-            localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
+            if (anchorEl) {
+              anchorEl.textContent = currentAnchor;
+              anchorEl.classList.toggle('hidden', !currentAnchor);
+            }
+            localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory, anchor: currentAnchor }));
           }
         } catch (_) {}
       });
@@ -339,12 +352,17 @@
             const data = await res.json();
             currentPrompt = data.prompt;
             currentCategory = '';
+            currentAnchor = '';
             promptEl.textContent = currentPrompt;
             if (catEl) {
               catEl.textContent = '';
               catEl.classList.add('hidden');
             }
-            localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory }));
+            if (anchorEl) {
+              anchorEl.textContent = '';
+              anchorEl.classList.add('hidden');
+            }
+            localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory, anchor: currentAnchor }));
           } else {
             alert('Failed to fetch AI prompt.');
           }
