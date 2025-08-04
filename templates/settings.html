@@ -10,7 +10,7 @@
 
 {% block content %}
 
-<section class="w-full max-w-3xl mx-auto space-y-4 bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100 p-4 rounded-xl paper-card">
+<section class="w-full max-w-5xl mx-auto space-y-4 bg-gray-100 dark:bg-[#222] text-gray-800 dark:text-gray-100 p-4 rounded-xl paper-card">
   <form id="settings-form" class="w-full text-sm space-y-4">
     <p class="text-center text-gray-500 dark:text-gray-400">Enable or disable optional integrations and edit server settings. Values are saved to <code>settings.yaml</code>. Changes require a restart.</p>
     <fieldset id="integration-settings" class="space-y-2 text-left">
@@ -22,12 +22,12 @@
         <label class="flex items-center gap-2 justify-start"><input type="checkbox" id="integration-fact" class="mr-2 accent-blue-600 dark:accent-blue-400">Fact of the day</label>
       </div>
     </fieldset>
-    <div id="settings-fields" class="space-y-4"></div>
+    <div id="settings-fields" class="grid gap-4 sm:grid-cols-2"></div>
     <button type="button" id="save-settings" class="mx-auto block bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400">Save</button>
   </form>
 </section>
 
-<footer class="w-full max-w-3xl mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">
+<footer class="w-full max-w-5xl mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">
   <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
   Echo Journal
 </footer>
@@ -236,14 +236,14 @@ document.addEventListener("DOMContentLoaded", () => {
           legend.className = 'font-semibold';
           fieldset.appendChild(legend);
           const grid = document.createElement('div');
-          grid.className = 'space-y-2';
+          grid.className = 'grid gap-2 sm:grid-cols-2';
           keys.forEach((key) => {
             const info = envKeyInfo[key] || {};
             const labelText = info.label || key;
             const wrapper = document.createElement('div');
             wrapper.className = 'space-y-1';
             const label = document.createElement('label');
-            label.className = 'flex items-center justify-between gap-2';
+            label.className = 'flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2';
             const span = document.createElement('span');
             span.textContent = labelText;
             label.appendChild(span);
@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
             input.type = 'text';
             input.id = `setting-${key}`;
             input.value = settings[key];
-            input.className = 'ml-auto w-64 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400';
+            input.className = 'w-full border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-blue-400';
             label.appendChild(input);
             wrapper.appendChild(label);
             if (info.help) {
