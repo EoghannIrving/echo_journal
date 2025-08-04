@@ -360,21 +360,28 @@
     if (aiBtn && promptEl) {
       aiBtn.addEventListener('click', async (e) => {
         e.preventDefault();
+        const mood = moodSelect ? moodSelect.value : '';
+        const energyStr = energySelect ? energySelect.value : '';
+        const energy = getEnergyValue(energyStr);
+        const params = new URLSearchParams();
+        if (mood) params.append('mood', mood);
+        if (energy) params.append('energy', energy);
+        const url = `/api/ai_prompt${params.toString() ? `?${params.toString()}` : ''}`;
         try {
-          const res = await fetch('/api/ai_prompt');
+          const res = await fetch(url);
           if (res.ok) {
             const data = await res.json();
             currentPrompt = data.prompt;
             currentCategory = '';
-            currentAnchor = '';
+            currentAnchor = data.anchor || '';
             promptEl.textContent = currentPrompt;
             if (catEl) {
               catEl.textContent = '';
               catEl.classList.add('hidden');
             }
             if (anchorEl) {
-              anchorEl.textContent = '';
-              anchorEl.classList.add('hidden');
+              anchorEl.textContent = currentAnchor;
+              anchorEl.classList.toggle('hidden', !currentAnchor);
             }
             localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory, anchor: currentAnchor }));
           } else {
