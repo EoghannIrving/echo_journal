@@ -42,8 +42,15 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
             # strings without injecting environment values here.  Any missing
             # keys will continue to fall back to ``os.getenv`` in
             # ``config._get_setting``.
-            data = {str(k): "" if v is None else str(v) for k, v in data.items()}
-            return data
+            cleaned: Dict[str, str] = {}
+            for k, v in data.items():
+                if v is None:
+                    cleaned[str(k)] = ""
+                elif isinstance(v, bool):
+                    cleaned[str(k)] = "true" if v else "false"
+                else:
+                    cleaned[str(k)] = str(v)
+            return cleaned
     except FileNotFoundError:
         if (
             path == SETTINGS_PATH
@@ -52,8 +59,15 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
         ):
             with (APP_DIR / "settings.yaml").open("r", encoding="utf-8") as fh:
                 data = yaml.safe_load(fh) or {}
-                data = {str(k): "" if v is None else str(v) for k, v in data.items()}
-                return data
+                cleaned: Dict[str, str] = {}
+                for k, v in data.items():
+                    if v is None:
+                        cleaned[str(k)] = ""
+                    elif isinstance(v, bool):
+                        cleaned[str(k)] = "true" if v else "false"
+                    else:
+                        cleaned[str(k)] = str(v)
+                return cleaned
         logger.warning(
             "No settings file found at %s; using environment variables only", path
         )

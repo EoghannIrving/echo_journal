@@ -16,6 +16,14 @@ def test_load_settings_returns_strings(tmp_path):
     assert data == {"A": "1", "B": "test"}
 
 
+def test_load_settings_normalizes_boolean_values(tmp_path):
+    """Boolean values should be returned as lowercase strings."""
+    p = tmp_path / "settings.yaml"
+    p.write_text("A: true\nB: False\n", encoding="utf-8")
+    data = settings_utils.load_settings(p)
+    assert data == {"A": "true", "B": "false"}
+
+
 def test_load_settings_prefers_file_over_env_for_blank_values(tmp_path, monkeypatch):
     """Blank values in settings should override environment variables."""
     p = tmp_path / "settings.yaml"
