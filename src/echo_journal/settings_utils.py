@@ -28,13 +28,17 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
         with path.open("r", encoding="utf-8") as fh:
             data: Dict[str, Any] = yaml.safe_load(fh) or {}
             # Ensure keys and values are strings
+            #
+            # ``settings.yaml`` entries should always take precedence over
+            # environment variables, even when the value in the file is blank.
+            # Previously blank values would be replaced with those from the
+            # environment which meant a value supplied via ``.env`` could
+            # override an explicit setting in ``settings.yaml``.  To honor the
+            # precedence of ``settings.yaml`` we simply coerce values to
+            # strings without injecting environment values here.  Any missing
+            # keys will continue to fall back to ``os.getenv`` in
+            # ``config._get_setting``.
             data = {str(k): "" if v is None else str(v) for k, v in data.items()}
-            # Fill in blank values from environment variables
-            for key, value in list(data.items()):
-                if value == "":
-                    env_val = os.getenv(key)
-                    if env_val:
-                        data[key] = env_val
             return data
     except OSError as exc:
         logger.error("Could not read %s: %s", path, exc)

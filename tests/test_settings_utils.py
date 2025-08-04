@@ -16,13 +16,15 @@ def test_load_settings_returns_strings(tmp_path):
     assert data == {"A": "1", "B": "test"}
 
 
-def test_load_settings_uses_env_for_blank_values(tmp_path, monkeypatch):
-    """Blank values in settings should fall back to environment variables."""
+def test_load_settings_prefers_file_over_env_for_blank_values(tmp_path, monkeypatch):
+    """Blank values in settings should override environment variables."""
     p = tmp_path / "settings.yaml"
     p.write_text("A:\nB: existing\n", encoding="utf-8")
     monkeypatch.setenv("A", "from_env")
     data = settings_utils.load_settings(p)
-    assert data == {"A": "from_env", "B": "existing"}
+    # Because ``A`` is explicitly present in ``settings.yaml`` with a blank
+    # value it should not be replaced by the environment variable.
+    assert data == {"A": "", "B": "existing"}
 
 
 def test_save_settings_merges(tmp_path):

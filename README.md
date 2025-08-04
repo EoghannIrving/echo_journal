@@ -269,9 +269,11 @@ is the authoritative source for these values:
 | `BASIC_AUTH_PASSWORD` | Password for optional HTTP Basic authentication. | |
 
 Set any of these variables in `settings.yaml` or your environment to tailor the
-app to your setup. The **Settings** page lists current values and lets you edit
-them; changes are written to `settings.yaml` and take effect after restarting
-the server.
+app to your setup. When both sources provide a value, the entry in
+`settings.yaml` takes precedence over environment variables (including those
+loaded from a `.env` file). The **Settings** page lists current values and lets
+you edit them; changes are written to `settings.yaml` and take effect after
+restarting the server.
 
 ### Disabling integrations
 
