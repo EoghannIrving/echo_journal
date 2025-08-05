@@ -26,7 +26,7 @@ with an AI helper. Below is the project roadmap and current feature set.
 ## Prerequisites
 
 - **Python** 3.10+
-- **Node.js** 18+ and npm for building Tailwind CSS assets
+- *(Optional)* **Node.js** 18+ and npm if you plan to modify Tailwind CSS. A prebuilt `static/tailwind.css` is included for immediate use.
 - **Docker** and **Docker Compose** (optional, for containerized deployment). If the `docker compose` command is unavailable, install the [Docker Compose plugin](https://docs.docker.com/compose/install/).
 
 ## Installation
@@ -38,9 +38,9 @@ git clone https://github.com/<your_user>/echo_journal.git
 cd echo_journal
 python -m venv .venv && source .venv/bin/activate
 pip install .  # installs Echo Journal and its Python dependencies
-npm install
-npm run build:css
 ```
+
+The repository bundles a compiled `static/tailwind.css`, so Node.js and npm are only needed if you want to change styles. Running `npm install` will automatically rebuild the CSS via the `postinstall` script.
 
 Python dependencies are defined in `pyproject.toml` and installed with `pip install .`.
 
@@ -53,8 +53,7 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
    ```bash
    python -m venv .venv && source .venv/bin/activate
    pip install .
-   npm install
-   npm run build:css
+   # npm install  # only needed if modifying Tailwind styles
    ```
 
 2. Start the development server:
@@ -98,8 +97,6 @@ git clone https://github.com/<your_user>/echo_journal.git
 cd echo_journal
 python -m venv .venv && source .venv/bin/activate
 pip install .  # installs Echo Journal and its Python dependencies
-npm install
-npm run build:css
 uvicorn echo_journal.main:app --reload
 # or
 echo-journal
@@ -178,12 +175,10 @@ Run the test suite to verify your setup:
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -e .
-npm install
-npm run build:css
 pytest
 ```
 
-The npm steps are required the first time or whenever dependencies change.
+If you modify `tailwind_src.css`, run `npm install` to rebuild `static/tailwind.css` (the postinstall script handles the build).
 
 ## Roadmap
 
