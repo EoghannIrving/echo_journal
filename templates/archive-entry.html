@@ -52,7 +52,7 @@
       {% if mood or energy or weather or location %}
       {% set mood_map = {'sad': ['😔', 'Sad'], 'self-doubt': ['😶', 'Self-doubt'], 'meh': ['😐', 'Meh'], 'okay': ['😊', 'Okay'], 'joyful': ['😍', 'Joyful']} %}
       {% set energy_map = {'drained': ['🪫', 'Drained'], 'low': ['😴', 'Low'], 'ok': ['🙂', 'OK'], 'energized': ['⚡', 'Energized']} %}
-      <div id="inline-meta" class="flex flex-wrap gap-4 mt-4 text-2xl">
+      <div id="inline-meta" class="flex flex-wrap gap-4 mt-4 text-2xl justify-center">
         {% set mood_data = mood_map.get(mood) %}
         {% if mood_data %}
         <span id="mood-display" class="flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500" title="Mood: {{ mood_data[1] }}">{{ mood_data[0] }}</span>
@@ -62,7 +62,7 @@
         <span id="energy-display" class="flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500" title="Energy: {{ energy_data[1] }}">{{ energy_data[0] }}</span>
         {% endif %}
         {% if weather %}
-        <span id="weather-display" class="flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500" title="{{ weather_raw }}">{{ weather }}</span>
+        <span id="weather-display" class="flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500" title="Weather: {{ weather_desc }}">{{ weather }}</span>
         {% endif %}
         {% if location %}
         <span id="location-display" class="flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500" title="Location: {{ location }}">📍</span>

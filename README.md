@@ -219,7 +219,7 @@ photos: []
 | Field | Purpose | Application usage |
 | ----- | ------- | ----------------- |
 | `location` | Human readable label from browser geolocation. | Shown with a 📍 icon in archive and entry views. |
-| `weather` | Temperature and weather code from Open‑Meteo. | Parsed by `format_weather` to show an icon and temperature. |
+| `weather` | Temperature and weather code from Open‑Meteo. | Parsed by `format_weather` to show an icon; codes are mapped to words for mouseover titles. |
 | `save_time` | Morning/Afternoon/Evening/Night recorded at save time. | Provides context for when the entry was written. |
 | `wotd` | Wordnik word of the day. | Displayed in the entry sidebar and as an icon in the archive list. |
 | `wotd_def` | Definition for the word of the day. | Shown alongside the word in entry views. |

@@ -99,37 +99,46 @@ async def load_json_file(file_path: Path) -> List[Dict[str, Any]]:
         return []
 
 
-WEATHER_ICONS = {
-    0: "☀️",
-    1: "🌤️",
-    2: "⛅",
-    3: "☁️",
-    45: "🌫️",
-    48: "🌫️",
-    51: "🌦️",
-    53: "🌦️",
-    55: "🌦️",
-    61: "🌧️",
-    63: "🌧️",
-    65: "🌧️",
-    71: "❄️",
-    73: "❄️",
-    75: "❄️",
-    80: "🌦️",
-    81: "🌦️",
-    82: "🌧️",
-    95: "⛈️",
-    96: "⛈️",
-    99: "⛈️",
+WEATHER_CODES = {
+    0: ("☀️", "Clear"),
+    1: ("🌤️", "Mostly clear"),
+    2: ("⛅", "Partly cloudy"),
+    3: ("☁️", "Overcast"),
+    45: ("🌫️", "Fog"),
+    48: ("🌫️", "Fog"),
+    51: ("🌦️", "Drizzle"),
+    53: ("🌦️", "Drizzle"),
+    55: ("🌦️", "Drizzle"),
+    61: ("🌧️", "Rain"),
+    63: ("🌧️", "Rain"),
+    65: ("🌧️", "Heavy rain"),
+    71: ("❄️", "Snow"),
+    73: ("❄️", "Snow"),
+    75: ("❄️", "Snow"),
+    80: ("🌦️", "Showers"),
+    81: ("🌦️", "Showers"),
+    82: ("🌧️", "Heavy showers"),
+    95: ("⛈️", "Thunderstorm"),
+    96: ("⛈️", "Thunderstorm"),
+    99: ("⛈️", "Thunderstorm"),
 }
 
 
 def format_weather(weather: str) -> str:
-    """Return a formatted weather string like ``☀️ 20°C`` from frontmatter."""
+    """Return only the weather icon from ``weather`` frontmatter."""
     match = re.search(r"(-?\d+(?:\.\d+)?)°C code (\d+)", weather)
     if not match:
         return weather
-    temp = match.group(1)
     code = int(match.group(2))
-    icon = WEATHER_ICONS.get(code, "")
-    return f"{icon} {temp}°C".strip()
+    icon, _ = WEATHER_CODES.get(code, ("", ""))
+    return icon
+
+
+def weather_description(weather: str) -> str:
+    """Return a textual description from ``weather`` frontmatter."""
+    match = re.search(r"(-?\d+(?:\.\d+)?)°C code (\d+)", weather)
+    if not match:
+        return weather
+    code = int(match.group(2))
+    _, desc = WEATHER_CODES.get(code, ("", ""))
+    return desc
