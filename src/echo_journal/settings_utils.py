@@ -3,6 +3,7 @@
 import importlib
 import logging
 import os
+from importlib.resources import files
 from pathlib import Path
 from typing import Any, Dict
 
@@ -16,7 +17,11 @@ import yaml
 # data directory does not contain a settings file we fall back to looking
 # inside ``APP_DIR`` so that bundled defaults can be used on first run.
 DATA_DIR = Path(os.getenv("DATA_DIR", "/journals"))
-APP_DIR = Path(os.getenv("APP_DIR", "/app"))
+# Derive ``APP_DIR`` from the installed package location so the application can
+# locate bundled resources without requiring manual configuration. Advanced
+# deployments can still override this via the ``APP_DIR`` environment variable.
+DEFAULT_APP_DIR = files("echo_journal").parent
+APP_DIR = Path(os.getenv("APP_DIR", DEFAULT_APP_DIR))
 SETTINGS_PATH = Path(
     os.getenv("SETTINGS_PATH", DATA_DIR / ".settings" / "settings.yaml")
 )

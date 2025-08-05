@@ -1,5 +1,6 @@
 """Core application paths and configuration constants."""
 
+from importlib.resources import files
 from pathlib import Path
 import os
 
@@ -22,9 +23,14 @@ def _get_setting(key: str, default: str | None = None) -> str | None:
         return default
     return value
 
+# Derive the application directory from the installed package location.  This
+# allows the code to run from arbitrary paths without requiring users to set
+# ``APP_DIR`` manually.  An environment variable can still override the value
+# for advanced scenarios such as tests or non-standard deployments.
+DEFAULT_APP_DIR = files("echo_journal").parent
 # Allow overriding important paths via environment variables for easier testing
 # and deployment in restricted environments.
-APP_DIR = Path(_get_setting("APP_DIR", "/app"))
+APP_DIR = Path(_get_setting("APP_DIR", str(DEFAULT_APP_DIR)))
 DATA_DIR = Path(_get_setting("DATA_DIR", "/journals"))
 PROMPTS_FILE = Path(_get_setting("PROMPTS_FILE", str(APP_DIR / "prompts.yaml")))
 STATIC_DIR = Path(_get_setting("STATIC_DIR", str(APP_DIR / "static")))
