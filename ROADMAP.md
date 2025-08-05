@@ -129,6 +129,7 @@
 - Support for optional filtering: “Show entries with movies/TV” ✅ Completed
 - Reuse Jellyfin API setup already in use for music enrichment ✅ Completed
 - Add “Today I watched…” or “This story reminded me of…” prompts if media exists
+- Refine how music is displayed, maybe highlight a song with an album picture.
 
 ## Phase 6: Insight, Patterning, and Personalization (planned)
 - Filter archive view by mood, energy, tags
@@ -146,6 +147,15 @@
 - Micro-nudge fallback when text area is empty
   - After 5s of inactivity in an empty editor, show subtle “Need a seed?” link
   - Clicking inserts a gentle one-line starter or pulls a random prompt
+- Multi-user support
+- Encrypt journal entries
+- Plugin Support
+  - Develop a plugin architecture to support alternate meta-data sources
+    - Google Photos
+    - SIMKL
+    - Last.fm
+    - Trackt.tv
+    - Others? 
 
 ## Design Guardrails
 - Prioritize warmth and ultra-low friction above all else.
