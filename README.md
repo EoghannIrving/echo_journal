@@ -27,7 +27,7 @@ with an AI helper. Below is the project roadmap and current feature set.
 
 - **Python** 3.10+
 - **Node.js** 18+ and npm for building Tailwind CSS assets
-- **Docker** and **Docker Compose** (optional, for containerized deployment)
+- **Docker** and **Docker Compose** (optional, for containerized deployment). If the `docker compose` command is unavailable, install the [Docker Compose plugin](https://docs.docker.com/compose/install/).
 
 ## Installation
 
@@ -67,6 +67,8 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
 
 ### Run with Docker Compose
 
+> Note: The following commands use Docker Compose v2. If `docker compose` is unavailable, install the [Docker Compose plugin](https://docs.docker.com/compose/install/).
+
 1. **Prepare a persistent journals directory:**
 
    ```bash
@@ -76,13 +78,13 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
 2. **Start the container:**
 
    ```bash
-   docker-compose up --build
+   docker compose up --build
    ```
 
 3. **Stop the container while preserving data:**
 
    ```bash
-   docker-compose down
+   docker compose down
    ```
 
    Journal files remain in the mounted `data` directory on the host.
