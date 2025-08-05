@@ -11,7 +11,7 @@ with an AI helper. Below is the project roadmap and current feature set.
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Environment variables](#environment-variables)
+- [Configuration](#configuration)
 - [Security considerations](#security-considerations)
 
 ## Features
@@ -57,14 +57,7 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
    npm run build:css
    ```
 
-2. Copy the example environment file and adjust variables if needed:
-
-   ```bash
-   cp .env.example .env
-   # edit .env to adjust paths or API keys as needed
-   ```
-
-3. Start the development server:
+2. Start the development server:
 
    ```bash
    uvicorn echo_journal.main:app --reload
@@ -74,37 +67,19 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
 
 ### Run with Docker Compose
 
-1. **Prepare a persistent journals directory and environment file:**
+1. **Prepare a persistent journals directory:**
 
    ```bash
    mkdir -p data
-   cp .env.example .env
    ```
 
-2. **Set required environment variables.** `docker-compose.yml` reads values
-   from `.env`. Point `JOURNALS_DIR` to the host directory created above and add
-   any other variables (API keys, `TZ`, etc.) either in `.env` or directly in
-   the compose file's `environment:` section:
-
-   ```bash
-   echo "JOURNALS_DIR=$(pwd)/data" >> .env
-   # e.g. echo "WORDNIK_API_KEY=your-key" >> .env
-   ```
-
-   The compose file then mounts your host directory:
-
-   ```yaml
-   volumes:
-     - ./data:/journals
-   ```
-
-3. **Start the container:**
+2. **Start the container:**
 
    ```bash
    docker-compose up --build
    ```
 
-4. **Stop the container while preserving data:**
+3. **Stop the container while preserving data:**
 
    ```bash
    docker-compose down
@@ -123,7 +98,6 @@ python -m venv .venv && source .venv/bin/activate
 pip install .  # installs Echo Journal and its Python dependencies
 npm install
 npm run build:css
-cp .env.example .env
 uvicorn echo_journal.main:app --reload
 # or
 echo-journal
@@ -266,10 +240,7 @@ This allows the backend to score prompts based on numeric intensity.
 | `ok` | 3 |
 | `energized` | 4 |
 
-### Environment variables
-
-Echo Journal automatically loads variables from a `.env` file at startup using
-[`python-dotenv`](https://pypi.org/project/python-dotenv/).
+### Configuration
 
 On startup the application looks for a `settings.yaml` file in
 `<DATA_DIR>/settings.yaml` (default `/journals/settings.yaml`). If it is
@@ -303,12 +274,11 @@ values:
 | `BASIC_AUTH_USERNAME` | Username for optional HTTP Basic authentication. | |
 | `BASIC_AUTH_PASSWORD` | Password for optional HTTP Basic authentication. | |
 
-Set any of these variables in `settings.yaml` or your environment to tailor the
-app to your setup. When both sources provide a value, the entry in
-`settings.yaml` takes precedence over environment variables (including those
-loaded from a `.env` file). The **Settings** page lists current values and lets
-you edit them; changes are written to `settings.yaml` and take effect after
-restarting the server.
+Set any of these variables in `settings.yaml` to tailor the app to your setup.
+Values provided via environment variables can override the defaults, but
+`settings.yaml` takes precedence. The **Settings** page lists current values
+and lets you edit them; changes are written to `settings.yaml` and take effect
+after restarting the server.
 
 ### Disabling integrations
 

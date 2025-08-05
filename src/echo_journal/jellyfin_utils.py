@@ -6,7 +6,6 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, AsyncIterator
-import os
 
 import httpx
 
@@ -14,14 +13,13 @@ from .config import (
     JELLYFIN_URL,
     JELLYFIN_API_KEY,
     JELLYFIN_USER_ID,
+    JELLYFIN_PAGE_SIZE,
     JELLYFIN_PLAY_THRESHOLD,
 )
 
 logger = logging.getLogger("ej.jellyfin")
 
 # Number of items to request per page when fetching play history.
-JELLYFIN_PAGE_SIZE = int(os.getenv("JELLYFIN_PAGE_SIZE", "200"))
-
 
 async def _iter_items(
     date_str: str, headers: Dict[str, str], url: str, base_params: Dict[str, str]

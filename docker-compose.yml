@@ -6,13 +6,4 @@ services:
     volumes:
       - ./static:/app/static
       - ./prompts.yaml:/app/prompts.yaml
-      - ${JOURNALS_DIR:-/mnt/nas/journals}:/journals
-    environment:
-      - TZ=${TZ:-UTC}
-      # Optional API keys for extra features
-      - WORDNIK_API_KEY=${WORDNIK_API_KEY:-}
-      - IMMICH_URL=${IMMICH_URL:-}
-      - IMMICH_API_KEY=${IMMICH_API_KEY:-}
-      - JELLYFIN_URL=${JELLYFIN_URL:-}
-      - JELLYFIN_API_KEY=${JELLYFIN_API_KEY:-}
-      - JELLYFIN_USER_ID=${JELLYFIN_USER_ID:-}
+      - ./data:/journals

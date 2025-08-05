@@ -2,10 +2,11 @@
 
 # pylint: disable=duplicate-code
 
-import os
 from typing import Optional, Tuple
 
 import httpx
+
+from .config import WORDNIK_API_KEY
 
 WORDNIK_URL = "https://api.wordnik.com/v4/words.json/wordOfTheDay"
 
@@ -13,7 +14,7 @@ WORDNIK_URL = "https://api.wordnik.com/v4/words.json/wordOfTheDay"
 async def fetch_word_of_day() -> Optional[Tuple[str, str]]:
     """Return today's Wordnik word of the day and definition if available."""
 
-    api_key = os.getenv("WORDNIK_API_KEY")
+    api_key = WORDNIK_API_KEY
     if not api_key:
         return None
     try:
