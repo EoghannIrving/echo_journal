@@ -480,12 +480,21 @@
     document.querySelectorAll('[data-chip]').forEach((chip) => {
       const label = chip.querySelector('.chip-label');
       if (!label) return;
-      const toggle = (e) => {
+      const togglePersist = (e) => {
         e.preventDefault();
-        label.classList.toggle('hidden');
+        const persist = chip.classList.toggle('chip-persist');
+        label.classList.toggle('hidden', !persist);
       };
-      chip.addEventListener('click', toggle);
-      chip.addEventListener('touchstart', toggle);
+      chip.addEventListener('click', togglePersist);
+      chip.addEventListener('touchstart', togglePersist);
+      chip.addEventListener('mouseenter', () => {
+        label.classList.remove('hidden');
+      });
+      chip.addEventListener('mouseleave', () => {
+        if (!chip.classList.contains('chip-persist')) {
+          label.classList.add('hidden');
+        }
+      });
     });
 
     if (!readonly) {

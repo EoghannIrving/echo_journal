@@ -20,22 +20,23 @@
     <summary class="md:hidden cursor-pointer font-medium mb-2">Extras</summary>
     <div>
       <div id="meta-tabs" class="flex justify-center gap-2 border-b border-gray-300 dark:border-gray-600">
-        <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="fact-tab" {% if not fact %}hidden{% endif %}>Fact</button>
-        <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="wotd-tab" {% if not wotd %}hidden{% endif %}>Word</button>
-        <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="tv-tab" {% if not media %}hidden{% endif %}>Movies/TV</button>
+        <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="trivia-tab" {% if not (fact or wotd) %}hidden{% endif %}>Trivia</button>
+        <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="media-tab" {% if not media %}hidden{% endif %}>Media</button>
         <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="music-tab" {% if not songs %}hidden{% endif %}>Music</button>
       </div>
-      <div id="fact-tab" class="tab-content mt-2 {% if not fact %}hidden{% endif %}">
+      <div id="trivia-tab" class="tab-content mt-2 {% if not (fact or wotd) %}hidden{% endif %}">
+        {% if fact %}
         <div id="fact-display" class="text-sm text-gray-600 dark:text-gray-300 italic">
-          {% if fact %}📅 {{ fact }}{% endif %}
+          📅 {{ fact }}
         </div>
-      </div>
-      <div id="wotd-tab" class="tab-content mt-2 {% if not wotd %}hidden{% endif %}">
-        <div id="wotd-display" class="text-sm text-gray-600 dark:text-gray-300 italic">
-          {% if wotd %}📖 {{ wotd }}{% if wotd_def %} — {{ wotd_def }}{% endif %}{% endif %}
+        {% endif %}
+        {% if wotd %}
+        <div id="wotd-display" class="text-sm text-gray-600 dark:text-gray-300 italic mt-2">
+          📖 {{ wotd }}{% if wotd_def %} — {{ wotd_def }}{% endif %}
         </div>
+        {% endif %}
       </div>
-      <div id="tv-tab" class="tab-content mt-2 {% if not media %}hidden{% endif %}">
+      <div id="media-tab" class="tab-content mt-2 {% if not media %}hidden{% endif %}">
         <ul class="text-xs text-gray-600 dark:text-gray-300 list-disc list-inside pl-4 mt-1">
           {% for m in media %}
           <li>{% if m.series %}{{ m.series }} - {{ m.title }}{% else %}{{ m.title }}{% endif %}</li>
