@@ -71,8 +71,18 @@ async def fetch_ai_prompt(anchor: str | None) -> Optional[Dict[str, Any]]:
                 return None
             message = choices[0].get("message", {})
             content = message.get("content")
-            if not isinstance(content, str):
+
+            if isinstance(content, list):
+                text_parts = [
+                    part.get("text", "")
+                    for part in content
+                    if isinstance(part, dict) and part.get("type") == "text"
+                ]
+                content = "".join(text_parts)
+
+            if not isinstance(content, str) or not content.strip():
                 return None
+
             parsed = yaml.safe_load(content)
             if isinstance(parsed, list) and parsed:
                 first = parsed[0]
