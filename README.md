@@ -271,6 +271,10 @@ values:
 | `LOG_FILE` | Path to log file. | Default `/journals/.logs/echo_journal.log`; if empty, logs to stderr. |
 | `LOG_MAX_BYTES` | Max size before log rotation. | Default `1,048,576`. |
 | `LOG_BACKUP_COUNT` | Number of rotated log files. | Default `3`. |
+| `ECHO_JOURNAL_HOST` | Network interface to bind to. | Default `127.0.0.1`; set to `0.0.0.0` when using a reverse proxy. |
+| `ECHO_JOURNAL_PORT` | Port to listen on. | Default `8000`. |
+| `ECHO_JOURNAL_SSL_KEYFILE` | Path to TLS key file. | Used with `ECHO_JOURNAL_SSL_CERTFILE` to enable HTTPS. |
+| `ECHO_JOURNAL_SSL_CERTFILE` | Path to TLS certificate. | Used with `ECHO_JOURNAL_SSL_KEYFILE` to enable HTTPS. |
 | `BASIC_AUTH_USERNAME` | Username for optional HTTP Basic authentication. | |
 | `BASIC_AUTH_PASSWORD` | Password for optional HTTP Basic authentication. | |
 
@@ -305,11 +309,34 @@ frontmatter.
 
 ### Serving behind a VPN or reverse proxy
 
-For secure remote access, run Echo Journal behind your VPN (e.g. WireGuard) or a
-reverse proxy such as Nginx or Caddy. The proxy can handle TLS termination and
-restrict access to known networks. When exposing the app publicly, enable Basic
-Auth by setting `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` so unauthenticated
-requests are rejected with a `401` response.
+Echo Journal binds to `127.0.0.1` by default so it's only reachable from the
+local machine. To make it available elsewhere, run it behind your VPN
+(e.g. WireGuard) or a reverse proxy such as Nginx or Caddy. The proxy can handle
+TLS termination and restrict access to known networks. Set
+`ECHO_JOURNAL_HOST=0.0.0.0` if the proxy needs to reach the app over the
+network.
+
+Example Nginx configuration terminating TLS and proxying requests:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name journal.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/journal.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/journal.example.com/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+
+When exposing the app publicly, enable Basic Auth by setting
+`BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` so unauthenticated requests are
+rejected with a `401` response.
 
 ## Bugs and Issues
 

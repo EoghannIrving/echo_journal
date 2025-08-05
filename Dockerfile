@@ -13,4 +13,6 @@ RUN pip install --no-cache-dir .
 # Copy only the built CSS artifact from the build stage
 COPY --from=build /app/static/tailwind.css ./static/tailwind.css
 EXPOSE 8000
-CMD ["uvicorn", "echo_journal.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENV ECHO_JOURNAL_HOST=0.0.0.0
+ENV ECHO_JOURNAL_PORT=8000
+CMD ["python", "-m", "echo_journal.main"]
