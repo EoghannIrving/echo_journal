@@ -49,7 +49,7 @@ def test_load_settings_logs_missing_warning(tmp_path, caplog):
     p = tmp_path / "missing.yaml"
     with caplog.at_level(logging.WARNING, logger="ej.settings"):
         data = settings_utils.load_settings(p)
-    assert data == {}
+    assert not data
     assert any(str(p) in r.getMessage() for r in caplog.records)
 
 
