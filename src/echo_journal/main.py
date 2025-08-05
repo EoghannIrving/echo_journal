@@ -23,7 +23,7 @@ import markdown
 import yaml
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Query
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -59,7 +59,7 @@ from .file_utils import (
 from .immich_utils import update_photo_metadata
 from .jellyfin_utils import update_media_metadata, update_song_metadata
 from .prompt_utils import generate_prompt, _choose_anchor, load_prompts
-from .settings_utils import load_settings, save_settings
+from .settings_utils import load_settings, save_settings, SETTINGS_PATH
 from .weather_utils import build_frontmatter, time_of_day_label
 from .numbers_utils import fetch_date_fact
 
@@ -155,6 +155,14 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
+def _needs_initial_setup() -> bool:
+    """Return True when essential paths or settings are missing."""
+    for path in (DATA_DIR, PROMPTS_FILE, SETTINGS_PATH):
+        if not path.exists():
+            return True
+    return False
+
+
 @app.middleware("http")
 async def basic_auth_middleware(request: Request, call_next):
     """Enforce optional HTTP Basic authentication."""
@@ -197,6 +205,8 @@ async def timing_middleware(request: Request, call_next):
 @app.get("/")
 async def index(request: Request):  # pylint: disable=too-many-locals
     """Render the journal entry page for the current day."""
+    if _needs_initial_setup():
+        return RedirectResponse(url="/settings", status_code=307)
     today = date.today()
     date_str = today.isoformat()
     file_path = safe_entry_path(date_str, DATA_DIR)

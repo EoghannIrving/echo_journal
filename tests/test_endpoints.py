@@ -42,6 +42,11 @@ DATA_ROOT.mkdir(parents=True, exist_ok=True)
 # copy prompts file if not already
 if not PROMPTS_FILE.exists():
     shutil.copy(ROOT / "prompts.yaml", PROMPTS_FILE)
+# ensure settings file exists so the app doesn't redirect during tests
+SETTINGS_PATH = DATA_ROOT / ".settings" / "settings.yaml"
+SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
+if not SETTINGS_PATH.exists():
+    SETTINGS_PATH.write_text("{}", encoding="utf-8")
 
 # Make sure the package source directory is on ``sys.path`` so modules can be imported
 sys.path.insert(0, str(ROOT / "src"))
@@ -66,6 +71,10 @@ def test_client(tmp_path, monkeypatch):
         return "test fact"
     monkeypatch.setattr(main, "fetch_date_fact", fake_fact)
     monkeypatch.setattr(numbers_utils, "fetch_date_fact", fake_fact)
+    # ensure settings file exists in case other tests removed it
+    main.SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    if not main.SETTINGS_PATH.exists():
+        main.SETTINGS_PATH.write_text("{}", encoding="utf-8")
     return TestClient(main.app)
 
 
@@ -90,6 +99,22 @@ def test_restart_notice_absent_when_yesterday_exists(test_client):
     (main.DATA_DIR / f"{yesterday}.md").write_text("entry", encoding="utf-8")
     resp = test_client.get("/")
     assert "Restart from today?" not in resp.text
+
+
+def test_redirect_to_settings_when_prompts_missing(test_client, monkeypatch):
+    """Missing prompts file should redirect to the settings page."""
+    monkeypatch.setattr(main, "PROMPTS_FILE", Path("/nonexistent.yaml"))
+    resp = test_client.get("/", follow_redirects=False)
+    assert resp.status_code == 307
+    assert resp.headers["location"] == "/settings"
+
+
+def test_redirect_to_settings_when_settings_missing(test_client, monkeypatch):
+    """Missing settings file should redirect to the settings page."""
+    monkeypatch.setattr(main, "SETTINGS_PATH", Path("/no/settings.yaml"))
+    resp = test_client.get("/", follow_redirects=False)
+    assert resp.status_code == 307
+    assert resp.headers["location"] == "/settings"
 
 
 def test_save_entry_creates_file(test_client):

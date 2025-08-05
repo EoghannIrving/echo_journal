@@ -15,7 +15,7 @@
     <p class="text-center text-gray-500 dark:text-gray-400">Enable or disable optional integrations and edit server settings. Values are saved to <code>settings.yaml</code>. Changes require a restart.</p>
     <fieldset id="integration-settings" class="space-y-2 text-left">
       <legend class="font-semibold text-lg">Integrations</legend>
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div class="meta-card flex items-center justify-between gap-4">
           <label for="integration-wordnik" class="flex items-center gap-2 cursor-pointer">
             <span class="text-2xl">📖</span>
@@ -66,7 +66,7 @@
         </div>
       </div>
     </fieldset>
-      <div id="settings-fields" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
+      <div id="settings-fields" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
     <button type="button" id="save-settings" class="mx-auto block bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400">Save</button>
     <div id="settings-message" class="fixed top-4 right-4 z-50 hidden" aria-live="polite" role="status"></div>
   </form>
