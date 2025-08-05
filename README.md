@@ -1,6 +1,6 @@
 # Echo Journal
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/OWNER/echo_journal/actions/workflows/pytest.yml/badge.svg)](https://github.com/OWNER/echo_journal/actions/workflows/pytest.yml) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-blue)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml/badge.svg)](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-blue)
 
 Echo Journal is a minimalist FastAPI journaling app that stores Markdown
 entries enriched with optional metadata like mood, energy, location, weather,
@@ -13,6 +13,8 @@ with an AI helper. Below is the project roadmap and current feature set.
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Security considerations](#security-considerations)
+- [CLI commands](#cli-commands)
+- [API reference](#api-reference)
 
 ## Features
 
@@ -34,7 +36,7 @@ with an AI helper. Below is the project roadmap and current feature set.
 ### Automated setup
 
 ```bash
-git clone https://github.com/<your_user>/echo_journal.git
+git clone https://github.com/EoghannIrving/echo_journal.git
 cd echo_journal
 ./scripts/setup.sh
 ```
@@ -44,7 +46,7 @@ The `setup.sh` script creates a `.venv`, installs Python dependencies, runs `npm
 ### Manual setup
 
 ```bash
-git clone https://github.com/<your_user>/echo_journal.git
+git clone https://github.com/EoghannIrving/echo_journal.git
 cd echo_journal
 python -m venv .venv && source .venv/bin/activate
 pip install .  # installs Echo Journal and its Python dependencies
@@ -122,7 +124,7 @@ cp settings.example.yaml settings.yaml
 To verify the app runs, try the following sequence:
 
 ```bash
-git clone https://github.com/<your_user>/echo_journal.git
+git clone https://github.com/EoghannIrving/echo_journal.git
 cd echo_journal
 python -m venv .venv && source .venv/bin/activate
 pip install .  # installs Echo Journal and its Python dependencies
@@ -133,69 +135,30 @@ echo-journal
 
 Then open <http://localhost:8510> in your browser. You should see the Echo Journal interface and can create a test entry.
 
-## API and CLI reference
+## API reference
 
-### API endpoints
+See [docs/API.md](docs/API.md) for a full list of available endpoints.
 
-These endpoints power the web UI. For a complete list see the FastAPI app in
-[`src/echo_journal/main.py`](src/echo_journal/main.py). *TODO: expand into a
-dedicated API guide.*
+## CLI commands
 
-- `GET /api/new_prompt` – return a journaling prompt.
-  ```bash
-  curl http://localhost:8510/api/new_prompt
-  ```
-  ```json
-  {"prompt": "Describe a recent moment that made you smile.", "category": "Gratitude"}
-  ```
+`echo-journal` starts the application using Uvicorn.
 
-- `GET /api/ai_prompt?energy=3` – generate a prompt using the OpenAI API when
-  configured. Mood and energy parameters are optional; if omitted, the service defaults to a gentle "soft" anchor.
-  ```bash
-  curl 'http://localhost:8510/api/ai_prompt?energy=3'
-  ```
-  ```json
-  {"prompt": "What energized you today?", "source": "openai"}
-  ```
+```bash
+echo-journal
+```
 
-- `GET /api/settings` – fetch current server settings.
-  ```bash
-  curl http://localhost:8510/api/settings
-  ```
-  ```json
-  {"DATA_DIR": "/journals", "OPENAI_API_KEY": null, ...}
-  ```
+Set environment variables to change host, port, or enable TLS:
 
-- `POST /api/settings` – update settings and persist them to `settings.yaml`.
-  ```bash
-  curl -X POST http://localhost:8510/api/settings \
-       -H 'Content-Type: application/json' \
-       -d '{"DATA_DIR": "/journals"}'
-  ```
-  ```json
-  {"status": "ok"}
-  ```
+```bash
+ECHO_JOURNAL_HOST=0.0.0.0 ECHO_JOURNAL_PORT=8510 echo-journal
+ECHO_JOURNAL_SSL_KEYFILE=path/to/key.pem ECHO_JOURNAL_SSL_CERTFILE=path/to/cert.pem echo-journal
+```
 
-- `POST /api/backfill_songs` – re-scan existing entries for song and media
-  metadata.
-  ```bash
-  curl -X POST http://localhost:8510/api/backfill_songs
-  ```
-  ```json
-  {"songs_added": 0, "media_added": 0}
-  ```
+For development with auto reload:
 
-### CLI commands
-
-- `echo-journal` – start the application using Uvicorn.
-  ```bash
-  echo-journal
-  ```
-
-- `uvicorn echo_journal.main:app --reload` – run the development server with
-  auto reload.
-
-*TODO: flesh out CLI documentation as new commands are introduced.*
+```bash
+uvicorn echo_journal.main:app --reload
+```
 
 ## Testing
 
