@@ -53,6 +53,7 @@ from .file_utils import (
     split_frontmatter,
     parse_frontmatter,
     format_weather,
+    weather_description,
     load_json_file,
 )
 from .immich_utils import update_photo_metadata
@@ -580,9 +581,9 @@ async def archive_entry(request: Request, entry_date: str):
             "prompt": prompt,
             "location": meta.get("location", ""),
             "weather": format_weather(meta["weather"]) if meta.get("weather") else "",
+            "weather_desc": weather_description(meta["weather"]) if meta.get("weather") else "",
             "mood": meta.get("mood", ""),
             "energy": meta.get("energy", ""),
-            "weather_raw": meta.get("weather", ""),
             "wotd": meta.get("wotd", ""),
             "wotd_def": meta.get("wotd_def", ""),
             "photos": photos,
