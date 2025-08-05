@@ -336,16 +336,14 @@ def test_view_entry_uses_frontmatter(test_client):
 
 
 def test_view_entry_no_metadata_hidden(test_client):
-    """Location and weather divs are hidden without metadata."""
+    """No location or weather chips are shown without metadata."""
     (main.DATA_DIR / "2020-09-10.md").write_text(
         "# Prompt\nP\n\n# Entry\nE", encoding="utf-8"
     )
     resp = test_client.get("/archive/2020-09-10")
     assert resp.status_code == 200
-    assert 'id="location-display"' in resp.text
-    assert "hidden" in resp.text.split('id="location-display"')[1].split(">")[0]
-    assert 'id="weather-display"' in resp.text
-    assert "hidden" in resp.text.split('id="weather-display"')[1].split(">")[0]
+    assert 'id="location-display"' not in resp.text
+    assert 'id="weather-display"' not in resp.text
 
 
 def test_save_entry_invalid_date(test_client):
