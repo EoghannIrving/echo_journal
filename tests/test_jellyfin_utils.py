@@ -78,7 +78,7 @@ def test_fetch_top_songs_lastplayed(monkeypatch):
     assert songs[0]["track"] == "Song1"
     assert songs[0]["artist"] == "Artist1"
     assert songs[0]["plays"] == 4
-    assert len(client.calls) == 3
+    assert len(client.calls) == 2
 
 
 def test_fetch_top_songs_tiebreak(monkeypatch):
@@ -179,3 +179,30 @@ def test_fetch_daily_media(monkeypatch):
 
     assert len(media) == 1
     assert media[0]["title"] == "Movie"
+
+
+def test_static_pages_stop_iteration(monkeypatch):
+    """Unchanging pages should not cause an infinite loop."""
+    items = [
+        {
+            "Name": "Song1",
+            "ArtistItems": [{"Name": "Artist1"}],
+            "UserData": {"LastPlayedDate": "2025-07-25T12:00:00Z"},
+        },
+        {
+            "Name": "Song1",
+            "ArtistItems": [{"Name": "Artist1"}],
+            "UserData": {"LastPlayedDate": "2025-07-25T12:00:00Z"},
+        },
+    ]
+
+    client = FakeClient(items)
+    monkeypatch.setattr(jellyfin_utils.httpx, "AsyncClient", lambda: client)
+    monkeypatch.setattr(jellyfin_utils, "JELLYFIN_URL", "http://example")
+    monkeypatch.setattr(jellyfin_utils, "JELLYFIN_USER_ID", "uid")
+    monkeypatch.setattr(jellyfin_utils, "JELLYFIN_PAGE_SIZE", 2)
+
+    songs = asyncio.run(jellyfin_utils.fetch_top_songs("2025-07-25"))
+
+    assert len(client.calls) == 2
+    assert songs[0]["plays"] == 4
