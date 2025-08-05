@@ -24,5 +24,8 @@ dependencies = [
 [project.scripts]
 "echo-journal" = "echo_journal.main:main"
 
+[tool.setuptools]
+include-package-data = true
+
 [tool.setuptools.packages.find]
 where = ["src"]
