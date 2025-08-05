@@ -48,7 +48,9 @@ def test_no_api_key(monkeypatch):
 def test_fetch_ai_prompt(monkeypatch):
     """Valid responses should return parsed prompt dict."""
     yaml_str = "- id: tag-001\n  prompt: Hi\n  tags:\n    - mood\n  anchor: soft"
-    client = FakeClient({"choices": [{"message": {"content": yaml_str}}]})
+    client = FakeClient(
+        {"choices": [{"message": {"content": [{"type": "text", "text": yaml_str}]}}]}
+    )
     monkeypatch.setattr(config, "OPENAI_API_KEY", "x")
     monkeypatch.setattr(ai.httpx, "AsyncClient", lambda: client)
 
@@ -62,10 +64,24 @@ def test_fetch_ai_prompt(monkeypatch):
     assert "soft" in client.captured["json"]["messages"][0]["content"]
 
 
+def test_fetch_ai_prompt_string_content(monkeypatch):
+    """String responses from older APIs should also work."""
+    yaml_str = "- id: tag-001\n  prompt: Hi\n  tags:\n    - mood\n  anchor: soft"
+    client = FakeClient({"choices": [{"message": {"content": yaml_str}}]})
+    monkeypatch.setattr(config, "OPENAI_API_KEY", "x")
+    monkeypatch.setattr(ai.httpx, "AsyncClient", lambda: client)
+
+    prompt = asyncio.run(ai.fetch_ai_prompt("soft"))
+
+    assert prompt["prompt"] == "Hi"
+
+
 def test_fetch_ai_prompt_from_settings(monkeypatch):
     """API key provided via settings.yaml should be used."""
     yaml_str = "- id: tag-001\n  prompt: Hi\n  tags:\n    - mood\n  anchor: soft"
-    client = FakeClient({"choices": [{"message": {"content": yaml_str}}]})
+    client = FakeClient(
+        {"choices": [{"message": {"content": [{"type": "text", "text": yaml_str}]}}]}
+    )
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setattr(config, "_SETTINGS", {"OPENAI_API_KEY": "from_settings"})
     monkeypatch.setattr(config, "OPENAI_API_KEY", config._get_setting("OPENAI_API_KEY"))
