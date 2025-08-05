@@ -37,6 +37,8 @@ async def _iter_items(
 ) -> AsyncIterator[Dict[str, Any]]:
     """Yield Jellyfin play history items until ``date_str`` is passed."""
     start_index = 0
+    last_page_date: str | None = None
+    last_page_index: int = -1
     async with httpx.AsyncClient() as client:
         while True:
             params = {
@@ -60,9 +62,12 @@ async def _iter_items(
             last_played = page_items[-1].get("DatePlayed") or page_items[-1].get(
                 "UserData", {}
             ).get("LastPlayedDate")
+            current_page = start_index
             start_index += JELLYFIN_PAGE_SIZE
             if not last_played:
-                logger.debug("No last played date in page starting %d", start_index)
+                logger.debug(
+                    "No last played date in page starting %d", current_page
+                )
                 continue
             try:
                 last_date = (
@@ -73,6 +78,17 @@ async def _iter_items(
             except ValueError:
                 logger.debug("Could not parse last played date: %s", last_played)
                 continue
+            if len(page_items) == JELLYFIN_PAGE_SIZE and (
+                last_page_date == last_date or last_page_index == current_page
+            ):
+                logger.debug(
+                    "Stopping iteration: page starting %d did not advance past %s",
+                    current_page,
+                    last_date,
+                )
+                break
+            last_page_date = last_date
+            last_page_index = current_page
             if last_date < date_str or len(page_items) < JELLYFIN_PAGE_SIZE:
                 logger.debug(
                     "Stopping iteration: last_date=%s, page_len=%d",
