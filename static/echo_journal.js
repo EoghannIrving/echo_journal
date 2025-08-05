@@ -474,6 +474,17 @@
       }
     });
 
+    document.querySelectorAll('[data-chip]').forEach((chip) => {
+      const label = chip.querySelector('.chip-label');
+      if (!label) return;
+      const toggle = (e) => {
+        e.preventDefault();
+        label.classList.toggle('hidden');
+      };
+      chip.addEventListener('click', toggle);
+      chip.addEventListener('touchstart', toggle);
+    });
+
     if (!readonly) {
       fetchGeolocationDetails();
     }
