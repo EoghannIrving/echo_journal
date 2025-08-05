@@ -433,7 +433,10 @@
         try {
           const response = await fetch('/entry', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': cfg.csrfToken,
+            },
             body: JSON.stringify({ date, content, prompt, category, location, weather, mood, energy, integrations: integrationSettings })
           });
 

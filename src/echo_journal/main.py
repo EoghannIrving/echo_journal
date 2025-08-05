@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import time
+import secrets
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 from logging.handlers import RotatingFileHandler
@@ -237,6 +238,25 @@ async def basic_auth_middleware(request: Request, call_next):
     return await call_next(request)
 
 
+CSRF_COOKIE_NAME = "csrftoken"
+
+
+@app.middleware("http")
+async def csrf_middleware(request: Request, call_next):
+    """Simple CSRF protection using a cookie + header token."""
+    token = request.cookies.get(CSRF_COOKIE_NAME)
+    if not token:
+        token = secrets.token_urlsafe(32)
+    request.state.csrf_token = token
+    if request.method not in {"GET", "HEAD", "OPTIONS", "TRACE"}:
+        header_token = request.headers.get("X-CSRF-Token")
+        if not header_token or not hmac.compare_digest(token, header_token):
+            return JSONResponse(status_code=403, content={"detail": "Invalid CSRF token"})
+    response = await call_next(request)
+    response.set_cookie(CSRF_COOKIE_NAME, token, httponly=True, samesite="lax")
+    return response
+
+
 @app.middleware("http")
 async def timing_middleware(request: Request, call_next):
     """Record processing time for each request and attach header."""
@@ -314,6 +334,7 @@ async def index(request: Request):  # pylint: disable=too-many-locals
             "wotd_def": wotd_def,
             "missing_yesterday": missing_yesterday,
             "integrations": integrations,
+            "csrf_token": request.state.csrf_token,
         },
     )
 
@@ -675,7 +696,11 @@ async def settings_page(request: Request):
     return templates.TemplateResponse(
         request,
         "settings.html",
-        {"request": request, "active_page": "settings"},
+        {
+            "request": request,
+            "active_page": "settings",
+            "csrf_token": request.state.csrf_token,
+        },
     )
 
 
