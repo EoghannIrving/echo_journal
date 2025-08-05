@@ -56,9 +56,9 @@ async def fetch_ai_prompt(anchor: str | None) -> Optional[Dict[str, Any]]:
     headers = {"Authorization": f"Bearer {api_key}"}
     prompt_text = AI_PROMPT_TEMPLATE.format(anchor=anchor)
     payload = {
-        "model": "gpt-3.5-turbo",
+        "model": "gpt-4o-mini",
         "messages": [{"role": "user", "content": prompt_text}],
-        "max_tokens": 200,
+        "max_tokens": 300,
     }
 
     try:

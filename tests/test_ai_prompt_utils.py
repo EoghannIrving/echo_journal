@@ -57,6 +57,8 @@ def test_fetch_ai_prompt(monkeypatch):
     assert prompt == {"id": "tag-001", "prompt": "Hi", "tags": ["mood"], "anchor": "soft"}
     assert client.captured["url"] == ai.CHAT_URL
     assert client.captured["headers"]["Authorization"] == "Bearer x"
+    assert client.captured["json"]["model"] == "gpt-4o-mini"
+    assert client.captured["json"]["max_tokens"] == 300
     assert "soft" in client.captured["json"]["messages"][0]["content"]
 
 
