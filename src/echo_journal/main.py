@@ -15,6 +15,8 @@ from datetime import date, datetime, timedelta
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Dict
+import re
+from urllib.parse import urlparse
 
 import aiofiles
 import bleach
@@ -68,12 +70,14 @@ PROMPTS_FILE = config.PROMPTS_FILE
 IMMICH_URL = config.IMMICH_URL
 IMMICH_API_KEY = config.IMMICH_API_KEY
 NOMINATIM_USER_AGENT = config.NOMINATIM_USER_AGENT
+IMMICH_ALLOWED_HOSTS = {"immich", "localhost"}
 
 AUTH_ENABLED = False
 logger: logging.Logger
 jellyfin_logger: logging.Logger
 auth_logger: logging.Logger
 ai_logger: logging.Logger
+immich_logger: logging.Logger
 templates: Jinja2Templates
 
 
@@ -123,11 +127,12 @@ def _configure_logging() -> None:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
         handlers=handlers,
     )
-    global logger, jellyfin_logger, auth_logger, ai_logger
+    global logger, jellyfin_logger, auth_logger, ai_logger, immich_logger
     logger = logging.getLogger("ej.timing")
     jellyfin_logger = logging.getLogger("ej.jellyfin")
     auth_logger = logging.getLogger("ej.auth")
     ai_logger = logging.getLogger("ej.ai_prompt")
+    immich_logger = logging.getLogger("ej.immich")
 
 
 def _configure_mounts_and_templates() -> None:
@@ -183,6 +188,22 @@ app.state.request_timings = []
 
 # Locks for concurrent saves keyed by entry path
 SAVE_LOCKS = defaultdict(asyncio.Lock)
+
+ASSET_ID_RE = re.compile(r"^[a-fA-F0-9-]+$")
+
+
+def _validate_proxy_params(asset_id: str, base_url: str) -> None:
+    """Validate asset ID and Immich base URL before proxying requests."""
+    if not ASSET_ID_RE.fullmatch(asset_id):
+        immich_logger.warning("Invalid asset id requested: %s", asset_id)
+        raise HTTPException(status_code=400, detail="Invalid asset ID")
+    try:
+        host = urlparse(base_url).hostname
+    except ValueError:
+        host = None
+    if not host or host not in IMMICH_ALLOWED_HOSTS:
+        immich_logger.warning("Blocked Immich host: %s", base_url)
+        raise HTTPException(status_code=400, detail="Invalid Immich host")
 
 
 
@@ -850,10 +871,11 @@ async def proxy_thumbnail(asset_id: str, size: str = "thumbnail"):
     """Fetch an asset thumbnail from Immich using the API key."""
     if not config.IMMICH_URL:
         raise HTTPException(status_code=404, detail="Immich not configured")
+    _validate_proxy_params(asset_id, config.IMMICH_URL)
     headers = {"x-api-key": config.IMMICH_API_KEY} if config.IMMICH_API_KEY else {}
     url = f"{config.IMMICH_URL}/assets/{asset_id}/thumbnail?size={size}"
     async with httpx.AsyncClient() as client:
-        resp = await client.get(url, headers=headers)
+        resp = await client.get(url, headers=headers, timeout=10)
     if resp.status_code != 200:
         raise HTTPException(
             status_code=resp.status_code, detail="Thumbnail fetch failed"
@@ -867,10 +889,11 @@ async def proxy_asset(asset_id: str):
     """Fetch a full-size asset from Immich using the API key."""
     if not config.IMMICH_URL:
         raise HTTPException(status_code=404, detail="Immich not configured")
+    _validate_proxy_params(asset_id, config.IMMICH_URL)
     headers = {"x-api-key": config.IMMICH_API_KEY} if config.IMMICH_API_KEY else {}
     url = f"{config.IMMICH_URL}/assets/{asset_id}/original"
     async with httpx.AsyncClient() as client:
-        resp = await client.get(url, headers=headers)
+        resp = await client.get(url, headers=headers, timeout=10)
     if resp.status_code != 200:
         raise HTTPException(status_code=resp.status_code, detail="Asset fetch failed")
     content_type = resp.headers.get("content-type", "application/octet-stream")

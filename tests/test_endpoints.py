@@ -921,6 +921,7 @@ def test_asset_proxy_download(test_client, monkeypatch):
         def __init__(self):
             self.request_url = None
             self.request_headers = None
+            self.request_timeout = None
 
         async def __aenter__(self):
             return self
@@ -928,10 +929,11 @@ def test_asset_proxy_download(test_client, monkeypatch):
         async def __aexit__(self, exc_type, exc, tb):
             return False
 
-        async def get(self, url, headers=None):
+        async def get(self, url, headers=None, timeout=None):
             """Record request details and return a fake image response."""
             self.request_url = url
             self.request_headers = headers
+            self.request_timeout = timeout
 
             class Resp:  # pylint: disable=too-few-public-methods
                 """Minimal response stub returned by ``FakeClient``."""
@@ -948,6 +950,7 @@ def test_asset_proxy_download(test_client, monkeypatch):
     monkeypatch.setattr(main, "IMMICH_API_KEY", "secret")
     monkeypatch.setattr(main.config, "IMMICH_URL", "http://example/api")
     monkeypatch.setattr(main.config, "IMMICH_API_KEY", "secret")
+    monkeypatch.setattr(main, "IMMICH_ALLOWED_HOSTS", {"example"})
 
     resp = test_client.get("/api/asset/abc")
 
@@ -956,6 +959,103 @@ def test_asset_proxy_download(test_client, monkeypatch):
     assert resp.headers["content-type"] == "image/jpeg"
     assert client.request_url == "http://example/api/assets/abc/original"
     assert client.request_headers == {"x-api-key": "secret"}
+    assert client.request_timeout == 10
+
+
+def test_asset_proxy_invalid_asset_id(test_client, monkeypatch, caplog):
+    """Invalid asset identifiers should return a 400 error."""
+
+    monkeypatch.setattr(main, "IMMICH_URL", "http://example/api")
+    monkeypatch.setattr(main.config, "IMMICH_URL", "http://example/api")
+    monkeypatch.setattr(main, "IMMICH_ALLOWED_HOSTS", {"example"})
+
+    class BoomClient:
+        async def __aenter__(self):  # pragma: no cover - should not run
+            raise AssertionError("client should not be created")
+
+        async def __aexit__(self, exc_type, exc, tb):  # pragma: no cover
+            return False
+
+    monkeypatch.setattr(main.httpx, "AsyncClient", BoomClient)
+
+    with caplog.at_level(logging.WARNING):
+        resp = test_client.get("/api/asset/invalid!id")
+
+    assert resp.status_code == 400
+    assert "Invalid asset id" in caplog.text
+
+
+def test_asset_proxy_disallowed_host(test_client, monkeypatch, caplog):
+    """Requests should be blocked when IMMICH_URL host is not allowed."""
+
+    monkeypatch.setattr(main, "IMMICH_URL", "http://badhost/api")
+    monkeypatch.setattr(main.config, "IMMICH_URL", "http://badhost/api")
+    monkeypatch.setattr(main, "IMMICH_ALLOWED_HOSTS", {"example"})
+
+    class BoomClient:
+        async def __aenter__(self):  # pragma: no cover - should not run
+            raise AssertionError("client should not be created")
+
+        async def __aexit__(self, exc_type, exc, tb):  # pragma: no cover
+            return False
+
+    monkeypatch.setattr(main.httpx, "AsyncClient", BoomClient)
+
+    with caplog.at_level(logging.WARNING):
+        resp = test_client.get("/api/asset/abc")
+
+    assert resp.status_code == 400
+    assert "Blocked Immich host" in caplog.text
+
+
+def test_thumbnail_proxy_download(test_client, monkeypatch):
+    """Thumbnail proxy endpoint should fetch thumbnail from Immich."""
+
+    class FakeClient:
+        """Async HTTP client stub used to capture requests."""
+
+        def __init__(self):
+            self.request_url = None
+            self.request_headers = None
+            self.request_timeout = None
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+
+        async def get(self, url, headers=None, timeout=None):
+            self.request_url = url
+            self.request_headers = headers
+            self.request_timeout = timeout
+
+            class Resp:
+                status_code = 200
+                headers = {"content-type": "image/jpeg"}
+                content = b"img"
+
+            return Resp()
+
+    client = FakeClient()
+    monkeypatch.setattr(main.httpx, "AsyncClient", lambda: client)
+    monkeypatch.setattr(main, "IMMICH_URL", "http://example/api")
+    monkeypatch.setattr(main, "IMMICH_API_KEY", "secret")
+    monkeypatch.setattr(main.config, "IMMICH_URL", "http://example/api")
+    monkeypatch.setattr(main.config, "IMMICH_API_KEY", "secret")
+    monkeypatch.setattr(main, "IMMICH_ALLOWED_HOSTS", {"example"})
+
+    resp = test_client.get("/api/thumbnail/abc", params={"size": "preview"})
+
+    assert resp.status_code == 200
+    assert resp.content == b"img"
+    assert resp.headers["content-type"] == "image/jpeg"
+    assert (
+        client.request_url
+        == "http://example/api/assets/abc/thumbnail?size=preview"
+    )
+    assert client.request_headers == {"x-api-key": "secret"}
+    assert client.request_timeout == 10
 
 
 def test_reverse_geocode_network_error(test_client, monkeypatch):
