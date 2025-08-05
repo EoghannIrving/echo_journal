@@ -31,3 +31,8 @@ def test_parse_frontmatter_invalid_returns_empty():
     fm = "bad: [unclosed"
     meta = file_utils.parse_frontmatter(fm)
     assert meta == {}
+
+
+def test_weather_description_includes_temp():
+    """``weather_description`` should include condition and temperature."""
+    assert file_utils.weather_description("12°C code 1") == "Mostly clear, 12°C"
