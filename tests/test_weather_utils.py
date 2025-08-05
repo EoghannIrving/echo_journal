@@ -5,6 +5,8 @@
 import asyncio
 from datetime import datetime
 
+import yaml
+
 from echo_journal import weather_utils
 
 class FakeClient:
@@ -68,3 +70,25 @@ def test_build_frontmatter(monkeypatch):
     assert "wotd: word" in lines
     assert "wotd_def: definition" in lines
     assert all("photos" not in line for line in lines)
+
+
+def test_build_frontmatter_multiline_definition(monkeypatch):
+    """Multi-line definitions should be preserved in full."""
+    async def fake_fetch_weather(lat, lon):
+        return "10\u00b0C code 2"
+
+    async def fake_wotd():
+        return ("word", "first line\nsecond line")
+
+    monkeypatch.setattr(weather_utils, "fetch_weather", fake_fetch_weather)
+    monkeypatch.setattr(weather_utils, "fetch_word_of_day", fake_wotd)
+    monkeypatch.setattr(weather_utils, "time_of_day_label", lambda: "Morning")
+
+    fm = asyncio.run(
+        weather_utils.build_frontmatter(
+            {"lat": 1, "lon": 2, "label": "Town"},
+            integrations={"immich": False},
+        )
+    )
+    parsed = yaml.safe_load(fm)
+    assert parsed["wotd_def"] == "first line second line"
