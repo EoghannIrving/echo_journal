@@ -16,7 +16,7 @@ Thank you for your interest in improving Echo Journal! This project welcomes pul
    npm install
    npm run build:css
    ```
-   Alternatively, running the project with Docker Compose (`docker-compose up --build`) will perform the above setup steps automatically.
+   Alternatively, running the project with Docker Compose (`docker compose up --build`) will perform the above setup steps automatically. If `docker compose` is unavailable, install the [Docker Compose plugin](https://docs.docker.com/compose/install/).
 4. Run the application locally and verify your changes.
 
 ## Style and testing
