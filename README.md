@@ -364,6 +364,14 @@ When exposing the app publicly, enable Basic Auth by setting
 `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` so unauthenticated requests are
 rejected with a `401` response.
 
+## Testing
+
+Run the test suite with:
+
+```bash
+pytest
+```
+
 ## Bugs and Issues
 
 Known issues are tracked in [BUGS.md](BUGS.md). If you run into a problem that's not listed there, please follow the guidance in that file to file a bug report or open a GitHub issue.
