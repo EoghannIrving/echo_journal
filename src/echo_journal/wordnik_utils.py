@@ -6,9 +6,17 @@ from typing import Optional, Tuple
 
 import httpx
 
-from .config import WORDNIK_API_KEY
+from . import config
 
+# Expose API key for tests while deriving from configuration
+WORDNIK_API_KEY = config.WORDNIK_API_KEY
 WORDNIK_URL = "https://api.wordnik.com/v4/words.json/wordOfTheDay"
+
+
+def refresh_config() -> None:
+    """Refresh module-level configuration aliases."""
+    global WORDNIK_API_KEY
+    WORDNIK_API_KEY = config.WORDNIK_API_KEY
 
 
 async def fetch_word_of_day() -> Optional[Tuple[str, str]]:

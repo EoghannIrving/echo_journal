@@ -26,26 +26,10 @@ from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse, Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.routing import Mount
 
-from . import config as config_module
+from . import config
 from .ai_prompt_utils import fetch_ai_prompt
-from .config import (
-    DATA_DIR,
-    STATIC_DIR,
-    TEMPLATES_DIR,
-    ENCODING,
-    IMMICH_URL,
-    IMMICH_API_KEY,
-    LOG_FILE,
-    LOG_LEVEL,
-    LOG_MAX_BYTES,
-    LOG_BACKUP_COUNT,
-    BASIC_AUTH_USERNAME,
-    BASIC_AUTH_PASSWORD,
-    NOMINATIM_USER_AGENT,
-    OPENAI_API_KEY,
-    PROMPTS_FILE,
-)
 from .file_utils import (
     safe_entry_path,
     parse_entry,
@@ -78,14 +62,94 @@ if not hasattr(Path, "is_relative_to"):
 
 app = FastAPI()
 
-# Determine whether Basic Auth should be enforced.
+# Aliases for configuration values to maintain compatibility for external imports
+DATA_DIR = config.DATA_DIR
+PROMPTS_FILE = config.PROMPTS_FILE
+IMMICH_URL = config.IMMICH_URL
+IMMICH_API_KEY = config.IMMICH_API_KEY
+NOMINATIM_USER_AGENT = config.NOMINATIM_USER_AGENT
+
 AUTH_ENABLED = False
-if BASIC_AUTH_USERNAME and BASIC_AUTH_PASSWORD:
-    AUTH_ENABLED = True
-elif BASIC_AUTH_USERNAME or BASIC_AUTH_PASSWORD:
-    logging.warning(
-        "Both BASIC_AUTH_USERNAME and BASIC_AUTH_PASSWORD must be set; disabling auth"
+logger: logging.Logger
+jellyfin_logger: logging.Logger
+auth_logger: logging.Logger
+ai_logger: logging.Logger
+templates: Jinja2Templates
+
+
+def _refresh_config_vars() -> None:
+    """Refresh module-level aliases to configuration values."""
+    global DATA_DIR, PROMPTS_FILE, IMMICH_URL, IMMICH_API_KEY, NOMINATIM_USER_AGENT
+    DATA_DIR = config.DATA_DIR
+    PROMPTS_FILE = config.PROMPTS_FILE
+    IMMICH_URL = config.IMMICH_URL
+    IMMICH_API_KEY = config.IMMICH_API_KEY
+    NOMINATIM_USER_AGENT = config.NOMINATIM_USER_AGENT
+
+
+def _configure_auth() -> None:
+    """Determine whether Basic Auth should be enforced."""
+    global AUTH_ENABLED
+    AUTH_ENABLED = False
+    if config.BASIC_AUTH_USERNAME and config.BASIC_AUTH_PASSWORD:
+        AUTH_ENABLED = True
+    elif config.BASIC_AUTH_USERNAME or config.BASIC_AUTH_PASSWORD:
+        logging.warning(
+            "Both BASIC_AUTH_USERNAME and BASIC_AUTH_PASSWORD must be set; disabling auth"
+        )
+
+
+def _configure_logging() -> None:
+    """Configure application logging handlers and loggers."""
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+    handlers = [logging.StreamHandler()]
+    try:
+        config.DATA_DIR.mkdir(parents=True, exist_ok=True)
+        config.LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        handlers.append(
+            RotatingFileHandler(
+                config.LOG_FILE,
+                encoding="utf-8",
+                maxBytes=config.LOG_MAX_BYTES,
+                backupCount=config.LOG_BACKUP_COUNT,
+            )
+        )
+    except OSError:
+        pass
+
+    logging.basicConfig(
+        level=getattr(logging, config.LOG_LEVEL, logging.DEBUG),
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+        handlers=handlers,
     )
+    global logger, jellyfin_logger, auth_logger, ai_logger
+    logger = logging.getLogger("ej.timing")
+    jellyfin_logger = logging.getLogger("ej.jellyfin")
+    auth_logger = logging.getLogger("ej.auth")
+    ai_logger = logging.getLogger("ej.ai_prompt")
+
+
+def _configure_mounts_and_templates() -> None:
+    """Mount static files and initialize templates using current settings."""
+    global templates
+    for route in list(app.routes):
+        if isinstance(route, Mount) and route.path == "/static":
+            app.routes.remove(route)
+    app.mount("/static", StaticFiles(directory=config.STATIC_DIR), name="static")
+    templates = Jinja2Templates(directory=str(config.TEMPLATES_DIR))
+
+
+def reload_from_config() -> None:
+    """Reinitialize globals derived from configuration values."""
+    _refresh_config_vars()
+    _configure_auth()
+    _configure_logging()
+    _configure_mounts_and_templates()
+
+
+# Initialize components on module import
+reload_from_config()
 
 # Keys configurable via environment variables and editable from the settings page.
 # Values provided in ``settings.yaml`` override these defaults.
@@ -113,34 +177,6 @@ ENV_SETTING_KEYS = [
     "BASIC_AUTH_PASSWORD",
 ]
 
-
-# Setup logging to both the console and a rotating file under ``DATA_DIR``
-handlers = [logging.StreamHandler()]
-try:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
-    handlers.append(
-        RotatingFileHandler(
-            LOG_FILE,
-            encoding="utf-8",
-            maxBytes=LOG_MAX_BYTES,
-            backupCount=LOG_BACKUP_COUNT,
-        )
-    )
-except OSError:
-    # Fall back to console-only logging if file creation fails
-    pass
-
-logging.basicConfig(
-    level=getattr(logging, LOG_LEVEL, logging.DEBUG),
-    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    handlers=handlers,
-)
-logger = logging.getLogger("ej.timing")
-jellyfin_logger = logging.getLogger("ej.jellyfin")
-auth_logger = logging.getLogger("ej.auth")
-ai_logger = logging.getLogger("ej.ai_prompt")
-
 # Store recent request timings on the FastAPI state
 MAX_TIMINGS = 50
 app.state.request_timings = []
@@ -148,16 +184,11 @@ app.state.request_timings = []
 # Locks for concurrent saves keyed by entry path
 SAVE_LOCKS = defaultdict(asyncio.Lock)
 
-# Mount all static files
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
-# Setup templates
-templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
 def _needs_initial_setup() -> bool:
     """Return True when essential paths or settings are missing."""
-    for path in (DATA_DIR, PROMPTS_FILE, SETTINGS_PATH):
+    for path in (config.DATA_DIR, config.PROMPTS_FILE, SETTINGS_PATH):
         if not path.exists():
             return True
     return False
@@ -178,8 +209,8 @@ async def basic_auth_middleware(request: Request, call_next):
             auth_logger.warning("Invalid Basic auth header: %s", exc)
             return Response(status_code=401, headers={"WWW-Authenticate": "Basic"})
         if not (
-            hmac.compare_digest(username, BASIC_AUTH_USERNAME)
-            and hmac.compare_digest(password, BASIC_AUTH_PASSWORD)
+            hmac.compare_digest(username, config.BASIC_AUTH_USERNAME)
+            and hmac.compare_digest(password, config.BASIC_AUTH_PASSWORD)
         ):
             return Response(status_code=401, headers={"WWW-Authenticate": "Basic"})
     return await call_next(request)
@@ -209,11 +240,11 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         return RedirectResponse(url="/settings", status_code=307)
     today = date.today()
     date_str = today.isoformat()
-    file_path = safe_entry_path(date_str, DATA_DIR)
+    file_path = safe_entry_path(date_str, config.DATA_DIR)
 
     if file_path.exists():
         try:
-            async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+            async with aiofiles.open(file_path, "r", encoding=config.ENCODING) as fh:
                 md_content = await fh.read()
         except OSError as exc:
             raise HTTPException(status_code=500, detail="Could not read entry") from exc
@@ -234,7 +265,7 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         wotd = ""
         wotd_def = ""
 
-    gap = _days_since_last_entry(DATA_DIR, today)
+    gap = _days_since_last_entry(config.DATA_DIR, today)
     missing_yesterday = gap is None or gap > 1
 
     settings = load_settings()
@@ -244,7 +275,7 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         "jellyfin": settings.get("INTEGRATION_JELLYFIN", "true").lower() != "false",
         "fact": settings.get("INTEGRATION_FACT", "true").lower() != "false",
     }
-    integrations["ai"] = bool(OPENAI_API_KEY)
+    integrations["ai"] = bool(config.OPENAI_API_KEY)
 
     return templates.TemplateResponse(
         request,
@@ -266,8 +297,11 @@ async def index(request: Request):  # pylint: disable=too-many-locals
     )
 
 
-def _days_since_last_entry(data_dir: Path = DATA_DIR, today: date | None = None) -> int | None:
+def _days_since_last_entry(
+    data_dir: Path | None = None, today: date | None = None
+) -> int | None:
     """Return days since the most recent entry prior to ``today``."""
+    data_dir = data_dir or config.DATA_DIR
     today = today or date.today()
     last_entry: date | None = None
     for file in data_dir.glob("*.md"):
@@ -369,11 +403,11 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
             content={"status": "error", "message": "Missing fields"},
         )
 
-    # Ensure /journals exists before attempting to save
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    # Ensure DATA_DIR exists before attempting to save
+    config.DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     try:
-        file_path = safe_entry_path(entry_date, DATA_DIR)
+        file_path = safe_entry_path(entry_date, config.DATA_DIR)
     except ValueError:
         return JSONResponse(
             status_code=400,
@@ -407,7 +441,7 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
 
     lock = SAVE_LOCKS[str(file_path)]
     async with lock:
-        async with aiofiles.open(file_path, "w", encoding=ENCODING) as fh:
+        async with aiofiles.open(file_path, "w", encoding=config.ENCODING) as fh:
             await fh.write(md_text)
 
     if integrations.get("immich", True):
@@ -426,7 +460,7 @@ async def _load_extra_meta(md_file: Path, meta: dict) -> None:  # pylint: disabl
         json_path = meta_dir / f"{md_file.stem}.photos.json"
         if json_path.exists():
             try:
-                async with aiofiles.open(json_path, "r", encoding=ENCODING) as jh:
+                async with aiofiles.open(json_path, "r", encoding=config.ENCODING) as jh:
                     photos_text = await jh.read()
                 if json.loads(photos_text):
                     meta["photos"] = "1"
@@ -436,7 +470,7 @@ async def _load_extra_meta(md_file: Path, meta: dict) -> None:  # pylint: disabl
         songs_path = meta_dir / f"{md_file.stem}.songs.json"
         if songs_path.exists():
             try:
-                async with aiofiles.open(songs_path, "r", encoding=ENCODING) as sh:
+                async with aiofiles.open(songs_path, "r", encoding=config.ENCODING) as sh:
                     songs_text = await sh.read()
                 songs_data = json.loads(songs_text)
                 if songs_data:
@@ -450,7 +484,7 @@ async def _load_extra_meta(md_file: Path, meta: dict) -> None:  # pylint: disabl
         media_path = meta_dir / f"{md_file.stem}.media.json"
         if media_path.exists():
             try:
-                async with aiofiles.open(media_path, "r", encoding=ENCODING) as mh:
+                async with aiofiles.open(media_path, "r", encoding=config.ENCODING) as mh:
                     media_text = await mh.read()
                 media_data = json.loads(media_text)
                 if media_data:
@@ -462,14 +496,14 @@ async def _load_extra_meta(md_file: Path, meta: dict) -> None:  # pylint: disabl
 async def _collect_entries() -> list[dict]:
     """Return a list of entries found under ``DATA_DIR``."""
     entries: list[dict] = []
-    for file in DATA_DIR.rglob("*.md"):
+    for file in config.DATA_DIR.rglob("*.md"):
         name = file.stem
         try:
             entry_date = datetime.strptime(name, "%Y-%m-%d").date()
         except ValueError:
             entry_date = None
         try:
-            async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
+            async with aiofiles.open(file, "r", encoding=config.ENCODING) as fh:
                 content = await fh.read(8192)
         except OSError:
             continue
@@ -556,7 +590,7 @@ async def archive_view(  # pylint: disable=too-many-branches
 async def archive_entry(request: Request, entry_date: str):
     """Display a previously written journal entry."""
     try:
-        file_path = safe_entry_path(entry_date, DATA_DIR)
+        file_path = safe_entry_path(entry_date, config.DATA_DIR)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail="Entry not found") from exc
     if not file_path.exists():
@@ -565,7 +599,7 @@ async def archive_entry(request: Request, entry_date: str):
     await update_photo_metadata(entry_date, file_path)
 
     try:
-        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+        async with aiofiles.open(file_path, "r", encoding=config.ENCODING) as fh:
             frontmatter, body = split_frontmatter(await fh.read())
     except OSError as exc:
         raise HTTPException(status_code=500, detail="Could not read entry") from exc
@@ -641,7 +675,7 @@ async def _gather_entry_stats() -> tuple[dict, int, int, list[date]]:
     total_entries = 0
     entry_dates: list[date] = []
 
-    for file in DATA_DIR.rglob("*.md"):
+    for file in config.DATA_DIR.rglob("*.md"):
         try:
             entry_date = datetime.strptime(file.stem, "%Y-%m-%d").date()
         except ValueError:
@@ -650,7 +684,7 @@ async def _gather_entry_stats() -> tuple[dict, int, int, list[date]]:
         entry_dates.append(entry_date)
 
         try:
-            async with aiofiles.open(file, "r", encoding=ENCODING) as fh:
+            async with aiofiles.open(file, "r", encoding=config.ENCODING) as fh:
                 content = await fh.read()
         except OSError:
             continue
@@ -759,7 +793,7 @@ async def ai_prompt(
 
     prompts = await load_prompts()
     prompts.append(result)
-    async with aiofiles.open(PROMPTS_FILE, "w", encoding=ENCODING) as fh:
+    async with aiofiles.open(config.PROMPTS_FILE, "w", encoding=config.ENCODING) as fh:
         dump_text = yaml.safe_dump(prompts, allow_unicode=True, sort_keys=False)
         await fh.write(dump_text)
     ai_logger.info("Received AI prompt id=%s", result.get("id"))
@@ -791,7 +825,7 @@ async def reverse_geocode(lat: float, lon: float):
         "format": "json",
         "zoom": 18,
     }
-    headers = {"User-Agent": NOMINATIM_USER_AGENT}
+    headers = {"User-Agent": config.NOMINATIM_USER_AGENT}
 
     try:
         async with httpx.AsyncClient() as client:
@@ -814,10 +848,10 @@ async def reverse_geocode(lat: float, lon: float):
 @app.get("/api/thumbnail/{asset_id}")
 async def proxy_thumbnail(asset_id: str, size: str = "thumbnail"):
     """Fetch an asset thumbnail from Immich using the API key."""
-    if not IMMICH_URL:
+    if not config.IMMICH_URL:
         raise HTTPException(status_code=404, detail="Immich not configured")
-    headers = {"x-api-key": IMMICH_API_KEY} if IMMICH_API_KEY else {}
-    url = f"{IMMICH_URL}/assets/{asset_id}/thumbnail?size={size}"
+    headers = {"x-api-key": config.IMMICH_API_KEY} if config.IMMICH_API_KEY else {}
+    url = f"{config.IMMICH_URL}/assets/{asset_id}/thumbnail?size={size}"
     async with httpx.AsyncClient() as client:
         resp = await client.get(url, headers=headers)
     if resp.status_code != 200:
@@ -831,10 +865,10 @@ async def proxy_thumbnail(asset_id: str, size: str = "thumbnail"):
 @app.get("/api/asset/{asset_id}")
 async def proxy_asset(asset_id: str):
     """Fetch a full-size asset from Immich using the API key."""
-    if not IMMICH_URL:
+    if not config.IMMICH_URL:
         raise HTTPException(status_code=404, detail="Immich not configured")
-    headers = {"x-api-key": IMMICH_API_KEY} if IMMICH_API_KEY else {}
-    url = f"{IMMICH_URL}/assets/{asset_id}/original"
+    headers = {"x-api-key": config.IMMICH_API_KEY} if config.IMMICH_API_KEY else {}
+    url = f"{config.IMMICH_URL}/assets/{asset_id}/original"
     async with httpx.AsyncClient() as client:
         resp = await client.get(url, headers=headers)
     if resp.status_code != 200:
@@ -849,7 +883,7 @@ async def get_settings() -> Dict[str, str]:
 
     values: Dict[str, str] = {}
     for key in ENV_SETTING_KEYS:
-        value = getattr(config_module, key, os.getenv(key, ""))
+        value = getattr(config, key, os.getenv(key, ""))
         if value is None:
             value = ""
         elif not isinstance(value, str):
@@ -880,7 +914,7 @@ async def backfill_jellyfin_metadata() -> dict:
     jellyfin_logger.info("Starting Jellyfin metadata backfill")
     songs_added = 0
     media_added = 0
-    for md_file in DATA_DIR.rglob("*.md"):
+    for md_file in config.DATA_DIR.rglob("*.md"):
         meta_dir = md_file.parent / ".meta"
         songs_path = meta_dir / f"{md_file.stem}.songs.json"
         media_path = meta_dir / f"{md_file.stem}.media.json"

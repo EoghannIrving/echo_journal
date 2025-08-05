@@ -9,13 +9,24 @@ from typing import Any, Dict, List, AsyncIterator
 
 import httpx
 
-from .config import (
-    JELLYFIN_URL,
-    JELLYFIN_API_KEY,
-    JELLYFIN_USER_ID,
-    JELLYFIN_PAGE_SIZE,
-    JELLYFIN_PLAY_THRESHOLD,
-)
+from . import config
+
+# Expose configuration values for tests while deriving from configuration
+JELLYFIN_URL = config.JELLYFIN_URL
+JELLYFIN_API_KEY = config.JELLYFIN_API_KEY
+JELLYFIN_USER_ID = config.JELLYFIN_USER_ID
+JELLYFIN_PAGE_SIZE = config.JELLYFIN_PAGE_SIZE
+JELLYFIN_PLAY_THRESHOLD = config.JELLYFIN_PLAY_THRESHOLD
+
+
+def refresh_config() -> None:
+    """Refresh module-level configuration aliases."""
+    global JELLYFIN_URL, JELLYFIN_API_KEY, JELLYFIN_USER_ID, JELLYFIN_PAGE_SIZE, JELLYFIN_PLAY_THRESHOLD
+    JELLYFIN_URL = config.JELLYFIN_URL
+    JELLYFIN_API_KEY = config.JELLYFIN_API_KEY
+    JELLYFIN_USER_ID = config.JELLYFIN_USER_ID
+    JELLYFIN_PAGE_SIZE = config.JELLYFIN_PAGE_SIZE
+    JELLYFIN_PLAY_THRESHOLD = config.JELLYFIN_PLAY_THRESHOLD
 
 logger = logging.getLogger("ej.jellyfin")
 

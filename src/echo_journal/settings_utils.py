@@ -104,6 +104,22 @@ def save_settings(values: Dict[str, str], path: Path | None = None) -> Dict[str,
                 logger.debug("Reloading configuration module")
                 config_module = importlib.import_module("echo_journal.config")
                 importlib.reload(config_module)
+                try:
+                    from echo_journal import (
+                        main as main_module,
+                        prompt_utils,
+                        wordnik_utils,
+                        immich_utils,
+                        jellyfin_utils,
+                    )
+
+                    if hasattr(main_module, "reload_from_config"):
+                        main_module.reload_from_config()
+                    for mod in (prompt_utils, wordnik_utils, immich_utils, jellyfin_utils):
+                        if hasattr(mod, "refresh_config"):
+                            mod.refresh_config()
+                except Exception as exc:  # pragma: no cover - unexpected
+                    logger.error("Could not reinitialize app: %s", exc)
             except ImportError as exc:  # pragma: no cover - unexpected
                 logger.error("Could not reload config: %s", exc)
     return data

@@ -67,6 +67,7 @@ def test_client(tmp_path, monkeypatch):
     journals = tmp_path / "journals"
     journals.mkdir()
     monkeypatch.setattr(main, "DATA_DIR", journals)
+    monkeypatch.setattr(main.config, "DATA_DIR", journals)
     async def fake_fact(_):
         return "test fact"
     monkeypatch.setattr(main, "fetch_date_fact", fake_fact)
@@ -104,6 +105,7 @@ def test_restart_notice_absent_when_yesterday_exists(test_client):
 def test_redirect_to_settings_when_prompts_missing(test_client, monkeypatch):
     """Missing prompts file should redirect to the settings page."""
     monkeypatch.setattr(main, "PROMPTS_FILE", Path("/nonexistent.yaml"))
+    monkeypatch.setattr(main.config, "PROMPTS_FILE", Path("/nonexistent.yaml"))
     resp = test_client.get("/", follow_redirects=False)
     assert resp.status_code == 307
     assert resp.headers["location"] == "/settings"
@@ -943,6 +945,8 @@ def test_asset_proxy_download(test_client, monkeypatch):
     monkeypatch.setattr(main.httpx, "AsyncClient", lambda: client)
     monkeypatch.setattr(main, "IMMICH_URL", "http://example/api")
     monkeypatch.setattr(main, "IMMICH_API_KEY", "secret")
+    monkeypatch.setattr(main.config, "IMMICH_URL", "http://example/api")
+    monkeypatch.setattr(main.config, "IMMICH_API_KEY", "secret")
 
     resp = test_client.get("/api/asset/abc")
 
@@ -1019,6 +1023,7 @@ def test_reverse_geocode_user_agent(test_client, monkeypatch):
     client = FakeClient()
     monkeypatch.setattr(main.httpx, "AsyncClient", lambda: client)
     monkeypatch.setattr(main, "NOMINATIM_USER_AGENT", "TestAgent/1.0")
+    monkeypatch.setattr(main.config, "NOMINATIM_USER_AGENT", "TestAgent/1.0")
 
     resp = test_client.get("/api/reverse_geocode", params={"lat": 1.0, "lon": 2.0})
 
@@ -1143,12 +1148,14 @@ def test_basic_auth_malformed_headers_logged(monkeypatch, caplog, header):
     mod = importlib.reload(main)
     client = TestClient(mod.app)
 
-    with caplog.at_level(logging.WARNING, logger="ej.auth"):
-        resp = client.get("/", headers={"Authorization": header})
+    called = {}
+    def fake_warn(msg, *args, **kwargs):
+        called["msg"] = msg % args if args else msg
+    monkeypatch.setattr(mod.auth_logger, "warning", fake_warn)
+
+    resp = client.get("/", headers={"Authorization": header})
     assert resp.status_code == 401
-    assert any(
-        "Invalid Basic auth header" in record.getMessage() for record in caplog.records
-    )
+    assert "Invalid Basic auth header" in called.get("msg", "")
 
 
 def test_settings_endpoints(tmp_path, monkeypatch):
@@ -1253,6 +1260,7 @@ def test_ai_prompt_defaults_anchor(test_client, monkeypatch):
     monkeypatch.setattr(ai_prompt_utils, "fetch_ai_prompt", fake_fetch)
     monkeypatch.setattr(main, "fetch_ai_prompt", fake_fetch)
     monkeypatch.setattr(main, "PROMPTS_FILE", PROMPTS_FILE)
+    monkeypatch.setattr(main.config, "PROMPTS_FILE", PROMPTS_FILE)
     token = base64.b64encode(b"user:pass").decode()
     resp = test_client.get("/api/ai_prompt", headers={"Authorization": f"Basic {token}"})
     assert resp.status_code == 200
