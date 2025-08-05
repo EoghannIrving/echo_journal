@@ -12,10 +12,10 @@ async def fetch_date_fact(day: date) -> Optional[str]:
     Uses numbersapi.com to fetch a trivia fact about the supplied date.
     Returns ``None`` if the request fails or the response is malformed.
     """
-    url = f"http://numbersapi.com/{day.month}/{day.day}/date"
+    url = f"https://numbersapi.com/{day.month}/{day.day}/date?json"
     try:
         async with httpx.AsyncClient() as client:
-            resp = await client.get(url, params={"json": True}, timeout=10)
+            resp = await client.get(url, timeout=10)
             resp.raise_for_status()
             data = resp.json()
             text = data.get("text")
