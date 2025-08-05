@@ -44,6 +44,20 @@ def test_save_settings_merges(tmp_path):
     assert yaml.safe_load(p.read_text(encoding="utf-8")) == {"A": "a", "B": "b"}
 
 
+def test_save_settings_coerces_non_strings(tmp_path):
+    """Non-string values should be coerced to strings when saving."""
+    p = tmp_path / "settings.yaml"
+    p.write_text("A: a\n", encoding="utf-8")
+    result = settings_utils.save_settings({"B": 2, "C": True, "D": None}, p)
+    assert result == {"A": "a", "B": "2", "C": "true", "D": ""}
+    assert yaml.safe_load(p.read_text(encoding="utf-8")) == {
+        "A": "a",
+        "B": "2",
+        "C": "true",
+        "D": "",
+    }
+
+
 def test_load_settings_logs_missing_warning(tmp_path, caplog):
     """Missing files should log a warning with the expected path."""
     p = tmp_path / "missing.yaml"
