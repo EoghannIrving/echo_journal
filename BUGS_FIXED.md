@@ -720,5 +720,23 @@ The following issues were identified and subsequently resolved.
          else:
              current_day_streak = 1 if unique_dates else 0
      ```
-     【F:main.py†L521-L531】
+    【F:main.py†L521-L531】
+
+60. **AI prompts wrapped in code fences not parsed** (fixed)
+   - Some AI responses returned YAML enclosed in triple backticks which caused
+     `yaml.safe_load` to fail, resulting in "AI prompt unavailable" errors even
+     when a valid API key was configured.
+   - The code now strips optional code fences and logs detailed errors to aid
+     debugging.
+   - Fixed lines:
+     ```python
+     if content.startswith("```"):
+         lines = content.splitlines()
+         if lines and lines[0].startswith("```"):
+             lines = lines[1:]
+         if lines and lines[-1].startswith("```"):
+             lines = lines[:-1]
+         content = "\n".join(lines).strip()
+     ```
+     【F:src/echo_journal/ai_prompt_utils.py†L96-L103】
 

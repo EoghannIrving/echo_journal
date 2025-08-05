@@ -92,3 +92,16 @@ def test_fetch_ai_prompt_from_settings(monkeypatch):
 
     assert prompt["prompt"] == "Hi"
     assert client.captured["headers"]["Authorization"] == "Bearer from_settings"
+
+
+def test_fetch_ai_prompt_code_fence(monkeypatch):
+    """YAML wrapped in code fences should be parsed correctly."""
+    yaml_str = "- id: tag-001\n  prompt: Hi\n  tags:\n    - mood\n  anchor: soft"
+    fenced = f"```yaml\n{yaml_str}\n```"
+    client = FakeClient({"choices": [{"message": {"content": [{"type": "text", "text": fenced}]}}]})
+    monkeypatch.setattr(config, "OPENAI_API_KEY", "x")
+    monkeypatch.setattr(ai.httpx, "AsyncClient", lambda: client)
+
+    prompt = asyncio.run(ai.fetch_ai_prompt("soft"))
+
+    assert prompt["prompt"] == "Hi"
