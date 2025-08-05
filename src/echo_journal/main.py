@@ -61,6 +61,7 @@ from .jellyfin_utils import update_media_metadata, update_song_metadata
 from .prompt_utils import generate_prompt, _choose_anchor, load_prompts
 from .settings_utils import load_settings, save_settings
 from .weather_utils import build_frontmatter, time_of_day_label
+from .numbers_utils import fetch_date_fact
 
 
 # Provide pathlib.Path.is_relative_to on Python < 3.9
@@ -380,6 +381,13 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
     frontmatter = _with_updated_category(frontmatter, category)
     frontmatter = _with_updated_mood(frontmatter, mood)
     frontmatter = _with_updated_energy(frontmatter, energy)
+    try:
+        fact_date = datetime.strptime(entry_date, "%Y-%m-%d").date()
+    except ValueError:
+        fact_date = None
+    if fact_date:
+        fact = await fetch_date_fact(fact_date)
+        frontmatter = _update_field(frontmatter, "fact", fact)
 
     md_body = f"# Prompt\n{prompt}\n\n# Entry\n{content}"
     if frontmatter is not None:
@@ -588,6 +596,8 @@ async def archive_entry(request: Request, entry_date: str):
             "photos": photos,
             "songs": songs,
             "media": media,
+            "fact": meta.get("fact", ""),
+            "meta": meta,
             "readonly": True,  # Read-only mode for archive
             "active_page": "archive",
         },

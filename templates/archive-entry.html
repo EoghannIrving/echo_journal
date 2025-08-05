@@ -16,13 +16,19 @@
 </section>
 
 <div id="entry-wrapper" class="md:flex md:items-start md:space-x-4">
-  <details id="metadata-panel" class="meta-card md:w-1/4 {% if not (wotd or songs or media) %}hidden{% endif %}">
+  <details id="metadata-panel" class="meta-card md:w-1/4 {% if not (wotd or songs or media or fact) %}hidden{% endif %}">
     <summary class="md:hidden cursor-pointer font-medium mb-2">Extras</summary>
     <div>
       <div id="meta-tabs" class="flex justify-center gap-2 border-b border-gray-300 dark:border-gray-600">
+        <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="fact-tab" {% if not fact %}hidden{% endif %}>Fact</button>
         <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="wotd-tab" {% if not wotd %}hidden{% endif %}>Word</button>
         <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="tv-tab" {% if not media %}hidden{% endif %}>TV</button>
         <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="music-tab" {% if not songs %}hidden{% endif %}>Music</button>
+      </div>
+      <div id="fact-tab" class="tab-content mt-2 {% if not fact %}hidden{% endif %}">
+        <div id="fact-display" class="text-sm text-gray-600 dark:text-gray-300 italic">
+          {% if fact %}📅 {{ fact }}{% endif %}
+        </div>
       </div>
       <div id="wotd-tab" class="tab-content mt-2 {% if not wotd %}hidden{% endif %}">
         <div id="wotd-display" class="text-sm text-gray-600 dark:text-gray-300 italic">
@@ -84,6 +90,11 @@
 </div>
 </div>
 </section>
+{% if meta %}
+<script id="entry-meta" type="application/json">
+{{ meta | tojson }}
+</script>
+{% endif %}
   <footer class="w-full mx-auto mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">
   <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
   Echo Journal
