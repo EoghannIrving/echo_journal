@@ -1,0 +1,16 @@
+# Example configuration for Echo Journal
+# Copy this file to settings.yaml and adjust values as needed.
+
+# Base directories
+DATA_DIR: /journals
+APP_DIR: /app/echo_journal
+
+# Optional API integrations
+WORDNIK_API_KEY: your-wordnik-api-key
+OPENAI_API_KEY: your-openai-api-key
+IMMICH_URL: http://localhost:2283
+IMMICH_API_KEY: your-immich-api-key
+JELLYFIN_URL: http://localhost:8096
+JELLYFIN_API_KEY: your-jellyfin-api-key
+JELLYFIN_USER_ID: your-jellyfin-user-id
+NOMINATIM_USER_AGENT: EchoJournal/1.0 (you@example.com)
