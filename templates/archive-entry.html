@@ -61,17 +61,29 @@
       <div id="inline-meta" class="flex flex-wrap gap-4 mt-4 text-2xl justify-center">
         {% set mood_data = mood_map.get(mood) %}
         {% if mood_data %}
-        <span id="mood-display" class="flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500" title="Mood: {{ mood_data[1] }}">{{ mood_data[0] }}</span>
+        <span id="mood-display" data-chip class="relative flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500 cursor-pointer">
+          {{ mood_data[0] }}
+          <span class="chip-label hidden">Mood: {{ mood_data[1] }}</span>
+        </span>
         {% endif %}
         {% set energy_data = energy_map.get(energy) %}
         {% if energy_data %}
-        <span id="energy-display" class="flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500" title="Energy: {{ energy_data[1] }}">{{ energy_data[0] }}</span>
+        <span id="energy-display" data-chip class="relative flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500 cursor-pointer">
+          {{ energy_data[0] }}
+          <span class="chip-label hidden">Energy: {{ energy_data[1] }}</span>
+        </span>
         {% endif %}
         {% if weather %}
-        <span id="weather-display" class="flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500" title="Weather: {{ weather_desc }}">{{ weather }}</span>
+        <span id="weather-display" data-chip class="relative flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500 cursor-pointer">
+          {{ weather }}
+          <span class="chip-label hidden">Weather: {{ weather_desc }}</span>
+        </span>
         {% endif %}
         {% if location %}
-        <span id="location-display" class="flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500" title="Location: {{ location }}">📍</span>
+        <span id="location-display" data-chip class="relative flex items-center justify-center w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full ring-1 ring-gray-400 dark:ring-gray-500 cursor-pointer">
+          📍
+          <span class="chip-label hidden">Location: {{ location }}</span>
+        </span>
         {% endif %}
       </div>
       {% endif %}
@@ -98,8 +110,9 @@
   <footer class="w-full mx-auto mt-8 bg-gray-100 dark:bg-[#222] text-[clamp(0.9rem,0.8vw+0.8rem,1rem)] text-gray-500 dark:text-gray-400 text-center leading-snug tracking-wide">
   <img src="/static/icons/echo_journal_transparent_128x128.png" alt="Echo Journal logo" class="h-16 inline align-middle opacity-50 transition">
   Echo Journal
-</footer>
+  </footer>
 
+<script src="/static/echo_journal.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const animateText = (target, startDelay = 0, letterDelay = 80, wordDelay = 150) => {

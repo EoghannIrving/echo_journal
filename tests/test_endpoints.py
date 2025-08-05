@@ -374,7 +374,8 @@ def test_view_entry_uses_frontmatter(test_client):
     resp = test_client.get("/archive/2020-09-09")
     assert resp.status_code == 200
     assert "Testville" in resp.text
-    assert 'title="Weather: Mostly clear, 12°C"' in resp.text
+    assert "Weather: Mostly clear, 12°C" in resp.text
+    assert "chip-label" in resp.text
 
 
 def test_view_entry_no_metadata_hidden(test_client):

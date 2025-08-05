@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  [data-chip] {
+    @apply relative cursor-pointer;
+  }
+  [data-chip] .chip-label {
+    @apply absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-1 text-xs text-white bg-gray-700 dark:bg-gray-800 rounded shadow whitespace-nowrap z-10;
+  }
+}
