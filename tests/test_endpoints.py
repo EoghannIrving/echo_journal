@@ -1176,6 +1176,7 @@ def test_ai_prompt_missing_key(test_client, monkeypatch):
         "/api/ai_prompt?mood=meh&energy=2", headers={"Authorization": f"Basic {token}"}
     )
     assert resp.status_code == 503
+    assert resp.json()["detail"] == "AI prompt unavailable"
 
 
 def test_ai_prompt_external_failure(test_client, monkeypatch):
@@ -1191,6 +1192,7 @@ def test_ai_prompt_external_failure(test_client, monkeypatch):
         "/api/ai_prompt?mood=meh&energy=2", headers={"Authorization": f"Basic {token}"}
     )
     assert resp.status_code == 503
+    assert resp.json()["detail"] == "AI prompt unavailable"
 
 
 def test_ai_prompt_defaults_anchor(test_client, monkeypatch):
