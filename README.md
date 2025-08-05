@@ -252,10 +252,10 @@ values:
 | Variable | Purpose | Notes / Defaults |
 | --- | --- | --- |
 | `DATA_DIR` | Internal application path. | Default `/journals`. |
-| `APP_DIR` | Internal application directory. | Default `/app`. |
-| `PROMPTS_FILE` | Location of YAML prompts file. | Default `/app/prompts.yaml`. |
-| `STATIC_DIR` | Directory for static assets. | Default `/app/static`. |
-| `TEMPLATES_DIR` | Directory for Jinja2 templates. | Default `/app/templates`. |
+| `APP_DIR` | Internal application directory. | Automatically derived from the installed package; override with `APP_DIR` env var if needed. |
+| `PROMPTS_FILE` | Location of YAML prompts file. | Default `<APP_DIR>/prompts.yaml`. |
+| `STATIC_DIR` | Directory for static assets. | Default `<APP_DIR>/static`. |
+| `TEMPLATES_DIR` | Directory for Jinja2 templates. | Default `<APP_DIR>/templates`. |
 | `WORDNIK_API_KEY` | Enables the Wordnik "word of the day" prompt. | |
 | `OPENAI_API_KEY` | Enables AI-generated prompts via the OpenAI API. | Usage may incur costs and is subject to OpenAI's rate limits. |
 | `IMMICH_URL` | URL of your Immich server. | |
