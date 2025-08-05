@@ -58,6 +58,7 @@ from echo_journal import main  # type: ignore  # pylint: disable=wrong-import-po
 from echo_journal import weather_utils  # pylint: disable=wrong-import-position
 from echo_journal import immich_utils  # pylint: disable=wrong-import-position
 from echo_journal import jellyfin_utils  # pylint: disable=wrong-import-position
+from echo_journal import numbers_utils  # pylint: disable=wrong-import-position
 
 
 @pytest.fixture()
@@ -66,6 +67,10 @@ def test_client(tmp_path, monkeypatch):
     journals = tmp_path / "journals"
     journals.mkdir()
     monkeypatch.setattr(main, "DATA_DIR", journals)
+    async def fake_fact(_):
+        return "test fact"
+    monkeypatch.setattr(main, "fetch_date_fact", fake_fact)
+    monkeypatch.setattr(numbers_utils, "fetch_date_fact", fake_fact)
     # ensure settings file exists in case other tests removed it
     main.SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
     if not main.SETTINGS_PATH.exists():
@@ -169,6 +174,16 @@ def test_wordnik_disabled_in_frontmatter(test_client, monkeypatch):
     text = (main.DATA_DIR / "2020-10-11.md").read_text(encoding="utf-8")
     assert "wotd:" not in text
     assert "wotd_def:" not in text
+
+
+def test_fact_of_day_in_frontmatter(test_client):
+    """Numbers API fact is saved in frontmatter when entry is saved."""
+    payload = {"date": "2020-02-02", "content": "entry", "prompt": "prompt"}
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    text = (main.DATA_DIR / "2020-02-02.md").read_text(encoding="utf-8")
+    assert "fact: test fact" in text
+
 
 
 def test_category_saved_in_frontmatter(test_client):
@@ -369,6 +384,17 @@ def test_view_entry_no_metadata_hidden(test_client):
     assert resp.status_code == 200
     assert 'id="location-display"' not in resp.text
     assert 'id="weather-display"' not in resp.text
+
+
+def test_archive_entry_displays_fact_and_meta(test_client):
+    """Archive entry page shows fact and exposes metadata."""
+    payload = {"date": "2020-02-03", "content": "entry", "prompt": "prompt"}
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    resp = test_client.get("/archive/2020-02-03")
+    assert resp.status_code == 200
+    assert "test fact" in resp.text
+    assert 'id="entry-meta"' in resp.text
 
 
 def test_save_entry_invalid_date(test_client):
