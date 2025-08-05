@@ -7,9 +7,6 @@ from pathlib import Path
 from typing import Any, Dict
 
 import yaml
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # ``settings.yaml`` should live alongside the journal data so that it persists
 # outside of the application container.  Default to ``/journals`` but allow the

@@ -39,14 +39,14 @@ class FakeClient:
 
 def test_no_api_key(monkeypatch):
     """Missing API key should return ``None``."""
-    monkeypatch.delenv("WORDNIK_API_KEY", raising=False)
+    monkeypatch.setattr(wu, "WORDNIK_API_KEY", None)
     assert asyncio.run(wu.fetch_word_of_day()) is None
 
 
 def test_fetch_word_of_day(monkeypatch):
     """Valid responses should return word and definition."""
     client = FakeClient({"word": "apple", "definitions": [{"text": "a fruit"}]})
-    monkeypatch.setenv("WORDNIK_API_KEY", "k")
+    monkeypatch.setattr(wu, "WORDNIK_API_KEY", "k")
     monkeypatch.setattr(wu.httpx, "AsyncClient", lambda: client)
 
     result = asyncio.run(wu.fetch_word_of_day())
