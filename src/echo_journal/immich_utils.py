@@ -21,10 +21,11 @@ IMMICH_TIME_BUFFER = config.IMMICH_TIME_BUFFER
 
 def refresh_config() -> None:
     """Refresh module-level configuration aliases."""
-    global IMMICH_URL, IMMICH_API_KEY, IMMICH_TIME_BUFFER
-    IMMICH_URL = config.IMMICH_URL
-    IMMICH_API_KEY = config.IMMICH_API_KEY
-    IMMICH_TIME_BUFFER = config.IMMICH_TIME_BUFFER
+    globals().update(
+        IMMICH_URL=config.IMMICH_URL,
+        IMMICH_API_KEY=config.IMMICH_API_KEY,
+        IMMICH_TIME_BUFFER=config.IMMICH_TIME_BUFFER,
+    )
 
 logger = logging.getLogger("ej.immich")
 
