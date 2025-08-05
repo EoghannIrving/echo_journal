@@ -16,42 +16,59 @@
 </section>
 
 <div id="entry-wrapper" class="md:flex md:items-start md:space-x-4">
-  <details id="metadata-panel" class="meta-card md:w-1/4">
-    <summary class="md:hidden cursor-pointer font-medium mb-2">Entry Metadata</summary>
-    <div class="space-y-1">
-      <div id="location-display" class="text-sm text-gray-600 dark:text-gray-300 mt-2 italic {% if not location %}hidden{% endif %}">
-      {% if location %}📍 {{ location }}{% endif %}
+  <details id="metadata-panel" class="meta-card md:w-1/4 {% if not (wotd or songs or media) %}hidden{% endif %}">
+    <summary class="md:hidden cursor-pointer font-medium mb-2">Extras</summary>
+    <div>
+      <div id="meta-tabs" class="flex border-b">
+        <button type="button" class="tab-btn flex-1 py-1 text-sm border-b-2 border-transparent text-gray-500 dark:text-gray-400" data-target="wotd-tab" {% if not wotd %}hidden{% endif %}>Word</button>
+        <button type="button" class="tab-btn flex-1 py-1 text-sm border-b-2 border-transparent text-gray-500 dark:text-gray-400" data-target="tv-tab" {% if not media %}hidden{% endif %}>TV</button>
+        <button type="button" class="tab-btn flex-1 py-1 text-sm border-b-2 border-transparent text-gray-500 dark:text-gray-400" data-target="music-tab" {% if not songs %}hidden{% endif %}>Music</button>
       </div>
-      <div id="weather-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not weather %}hidden{% endif %}">
-      {% if weather %}{{ weather }}{% endif %}
+      <div id="wotd-tab" class="tab-content mt-2 {% if not wotd %}hidden{% endif %}">
+        <div id="wotd-display" class="text-sm text-gray-600 dark:text-gray-300 italic">
+          {% if wotd %}📖 {{ wotd }}{% if wotd_def %} — {{ wotd_def }}{% endif %}{% endif %}
+        </div>
       </div>
-      <div id="wotd-display" class="text-sm text-gray-600 dark:text-gray-300 mt-1 italic {% if not wotd %}hidden{% endif %}">
-        {% if wotd %}📖 {{ wotd }}{% if wotd_def %} — {{ wotd_def }}{% endif %}{% endif %}
+      <div id="tv-tab" class="tab-content mt-2 {% if not media %}hidden{% endif %}">
+        <ul class="text-xs text-gray-600 dark:text-gray-300 list-disc list-inside pl-4 mt-1">
+          {% for m in media %}
+          <li>{% if m.series %}{{ m.series }} - {{ m.title }}{% else %}{{ m.title }}{% endif %}</li>
+          {% endfor %}
+        </ul>
       </div>
-      <details id="songs-display" class="text-xs text-gray-600 dark:text-gray-300 mt-3 {% if not songs %}hidden{% endif %}">
-        <summary class="cursor-pointer font-medium">🎵 Today's Songs</summary>
-        <ul class="list-disc list-inside pl-4 mt-1">
+      <div id="music-tab" class="tab-content mt-2 {% if not songs %}hidden{% endif %}">
+        <ul class="text-xs text-gray-600 dark:text-gray-300 list-disc list-inside pl-4 mt-1">
           {% for s in songs %}
           <li>{{ s.track }} - {{ s.artist }}</li>
           {% endfor %}
         </ul>
-      </details>
-      <details id="media-display" class="text-xs text-gray-600 dark:text-gray-300 mt-3 {% if not media %}hidden{% endif %}">
-        <summary class="cursor-pointer font-medium">🎬 Watched</summary>
-        <ul class="list-disc list-inside pl-4 mt-1">
-          {% for m in media %}
-          <li>
-            {% if m.series %}{{ m.series }} - {{ m.title }}{% else %}{{ m.title }}{% endif %}
-          </li>
-          {% endfor %}
-        </ul>
-      </details>
+      </div>
     </div>
   </details>
 
   <section class="w-full md:w-3/4 mx-auto editor-container p-4 rounded-xl paper-card">
     <div class="journal-html mx-auto p-6 font-serif rounded-xl prose dark:prose-invert prose-lg">
       {{ content_html|safe }}
+      {% if mood or energy or weather or location %}
+      {% set mood_map = {'sad': ['😔', 'Sad'], 'self-doubt': ['😶', 'Self-doubt'], 'meh': ['😐', 'Meh'], 'okay': ['😊', 'Okay'], 'joyful': ['😍', 'Joyful']} %}
+      {% set energy_map = {'drained': ['🪫', 'Drained'], 'low': ['😴', 'Low'], 'ok': ['🙂', 'OK'], 'energized': ['⚡', 'Energized']} %}
+      <div id="inline-meta" class="flex flex-wrap gap-2 mt-4 text-xs">
+        {% set mood_data = mood_map.get(mood) %}
+        {% if mood_data %}
+        <span id="mood-display" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-gray-700 dark:text-gray-200" title="Mood: {{ mood_data[1] }}">{{ mood_data[0] }} {{ mood_data[1] }}</span>
+        {% endif %}
+        {% set energy_data = energy_map.get(energy) %}
+        {% if energy_data %}
+        <span id="energy-display" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-gray-700 dark:text-gray-200" title="Energy: {{ energy_data[1] }}">{{ energy_data[0] }} {{ energy_data[1] }}</span>
+        {% endif %}
+        {% if weather %}
+        <span id="weather-display" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-gray-700 dark:text-gray-200" title="{{ weather_raw }}">{{ weather }}</span>
+        {% endif %}
+        {% if location %}
+        <span id="location-display" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-gray-700 dark:text-gray-200" title="Location: {{ location }}">📍 {{ location }}</span>
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
   </section>
 </div>
@@ -136,6 +153,29 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   updateMetaPanel();
   window.addEventListener("resize", updateMetaPanel);
+
+  const tabButtons = document.querySelectorAll('#meta-tabs .tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  const activateTab = (id) => {
+    tabButtons.forEach((btn) => {
+      const active = btn.dataset.target === id;
+      btn.classList.toggle('border-gray-500', active);
+      btn.classList.toggle('dark:border-gray-200', active);
+      btn.classList.toggle('text-gray-800', active);
+      btn.classList.toggle('dark:text-gray-200', active);
+      btn.classList.toggle('text-gray-500', !active);
+      btn.classList.toggle('dark:text-gray-400', !active);
+      btn.classList.toggle('border-transparent', !active);
+    });
+    tabContents.forEach((content) => {
+      content.classList.toggle('hidden', content.id !== id);
+    });
+  };
+  tabButtons.forEach((btn) => {
+    btn.addEventListener('click', () => activateTab(btn.dataset.target));
+  });
+  const firstBtn = Array.from(tabButtons).find((b) => !b.hasAttribute('hidden'));
+  if (firstBtn) activateTab(firstBtn.dataset.target);
 });
 </script>
 
