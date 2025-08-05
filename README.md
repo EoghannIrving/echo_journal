@@ -243,7 +243,7 @@ This allows the backend to score prompts based on numeric intensity.
 ### Configuration
 
 On startup the application looks for a `settings.yaml` file in
-`<DATA_DIR>/settings.yaml` (default `/journals/settings.yaml`). If it is
+`<DATA_DIR>/.settings/settings.yaml` (default `/journals/.settings/settings.yaml`). If it is
 missing a warning is logged noting the expected path and the app falls back to
 environment variables. The `settings.yaml` file configures optional
 integrations and runtime paths. It is the authoritative source for these

@@ -70,7 +70,7 @@ def test_settings_path_relative_to_data_dir(tmp_path, monkeypatch):
     monkeypatch.setenv("DATA_DIR", str(data_dir))
     importlib.reload(settings_utils)
     settings_utils.save_settings({"X": "1"})
-    expected = data_dir / "settings.yaml"
+    expected = data_dir / ".settings" / "settings.yaml"
     assert expected.read_text(encoding="utf-8") == "X: '1'\n"
     # Reset module to default state for other tests
     monkeypatch.delenv("DATA_DIR")
@@ -124,7 +124,7 @@ def test_load_settings_falls_back_to_app_dir(tmp_path, monkeypatch):
     assert data == {"A": "a"}
 
     settings_utils.save_settings({"B": "b"})
-    expected = data_dir / "settings.yaml"
+    expected = data_dir / ".settings" / "settings.yaml"
     assert yaml.safe_load(expected.read_text(encoding="utf-8")) == {"A": "a", "B": "b"}
 
     # Reset module to default state for other tests
