@@ -78,21 +78,28 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
 
 > Note: The following commands use Docker Compose v2. If `docker compose` is unavailable, install the [Docker Compose plugin](https://docs.docker.com/compose/install/).
 
-1. **Prepare a persistent journals directory:**
+1. **Copy the example environment file and adjust settings as needed:**
+
+   ```bash
+   cp .env.example .env
+   # edit .env to change HOST_PORT, DATA_DIR, or TLS paths
+   ```
+
+2. **Prepare a persistent journals directory (matches `DATA_DIR`, default `data`):**
 
    ```bash
    mkdir -p data
    ```
 
-2. **Start the container:**
+3. **Start the container:**
 
    ```bash
    docker compose up --build
    ```
 
-   Then open <http://localhost:8510> in your browser.
+   Then open <http://localhost:8510> (or your chosen `HOST_PORT`) in your browser.
 
-3. **Stop the container while preserving data:**
+4. **Stop the container while preserving data:**
 
    ```bash
    docker compose down
