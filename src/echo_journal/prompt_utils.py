@@ -8,10 +8,19 @@ from datetime import date
 import aiofiles
 import yaml
 
-from .config import PROMPTS_FILE, ENCODING
+from . import config
 
-_prompts_cache: dict = {"data": None, "mtime": None}
+# Expose path for tests while deriving from configuration
+PROMPTS_FILE = config.PROMPTS_FILE
+
+_prompts_cache: dict = {"data": None, "mtime": None, "path": None}
 _prompts_lock = asyncio.Lock()
+
+
+def refresh_config() -> None:
+    """Refresh module-level configuration aliases."""
+    global PROMPTS_FILE
+    PROMPTS_FILE = config.PROMPTS_FILE
 
 logger = logging.getLogger("ej.prompt")
 
@@ -80,28 +89,33 @@ async def load_prompts() -> list[dict]:
     The cache automatically invalidates when ``PROMPTS_FILE`` changes on disk.
     Returns an empty list if the file is missing or invalid.
     """
+    path = PROMPTS_FILE
     try:
-        mtime = PROMPTS_FILE.stat().st_mtime
+        mtime = path.stat().st_mtime
     except FileNotFoundError:
         mtime = None
 
     if (
         _prompts_cache["data"] is None
         or _prompts_cache.get("mtime") != mtime
+        or _prompts_cache.get("path") != path
     ):
         async with _prompts_lock:
             if (
                 _prompts_cache["data"] is None
                 or _prompts_cache.get("mtime") != mtime
+                or _prompts_cache.get("path") != path
             ):
                 try:
-                    async with aiofiles.open(PROMPTS_FILE, "r", encoding=ENCODING) as fh:
+                    async with aiofiles.open(path, "r", encoding=config.ENCODING) as fh:
                         prompts_text = await fh.read()
                     _prompts_cache["data"] = yaml.safe_load(prompts_text) or []
                     _prompts_cache["mtime"] = mtime
+                    _prompts_cache["path"] = path
                 except (FileNotFoundError, yaml.YAMLError):
                     _prompts_cache["data"] = []
                     _prompts_cache["mtime"] = mtime
+                    _prompts_cache["path"] = path
     return _prompts_cache["data"]
 
 

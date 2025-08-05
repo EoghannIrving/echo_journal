@@ -8,10 +8,23 @@ from typing import Any, Dict, List
 
 import httpx
 
-from .config import IMMICH_URL, IMMICH_API_KEY, IMMICH_TIME_BUFFER
+from . import config
 
-# ``IMMICH_TIME_BUFFER`` is imported from ``config`` so empty environment values
-# fall back to the default defined there.
+# Expose configuration values for tests while deriving from the config module.
+IMMICH_URL = config.IMMICH_URL
+IMMICH_API_KEY = config.IMMICH_API_KEY
+IMMICH_TIME_BUFFER = config.IMMICH_TIME_BUFFER
+
+# ``config.IMMICH_TIME_BUFFER`` ensures empty environment values fall back to
+# the default defined in the configuration module.
+
+
+def refresh_config() -> None:
+    """Refresh module-level configuration aliases."""
+    global IMMICH_URL, IMMICH_API_KEY, IMMICH_TIME_BUFFER
+    IMMICH_URL = config.IMMICH_URL
+    IMMICH_API_KEY = config.IMMICH_API_KEY
+    IMMICH_TIME_BUFFER = config.IMMICH_TIME_BUFFER
 
 logger = logging.getLogger("ej.immich")
 
@@ -37,7 +50,9 @@ async def fetch_assets_for_date(
 
     headers = {"x-api-key": IMMICH_API_KEY} if IMMICH_API_KEY else {}
 
-    logger.info("Fetching assets for %s from %s/api/search/metadata", date_str, IMMICH_URL)
+    logger.info(
+        "Fetching assets for %s from %s/api/search/metadata", date_str, IMMICH_URL
+    )
 
     try:
         async with httpx.AsyncClient() as client:

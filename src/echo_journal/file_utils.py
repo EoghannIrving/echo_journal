@@ -9,11 +9,13 @@ from datetime import datetime
 import aiofiles
 import yaml
 
-from .config import DATA_DIR, ENCODING
+from . import config
 
 
-def safe_entry_path(entry_date: str, data_dir: Path = DATA_DIR) -> Path:
+def safe_entry_path(entry_date: str, data_dir: Path | None = None) -> Path:
     """Return a normalized path for the given entry date inside ``data_dir``."""
+    if data_dir is None:
+        data_dir = config.DATA_DIR
     sanitized = Path(entry_date).name
     sanitized = re.sub(r"[^0-9A-Za-z_-]", "_", sanitized)
     if not sanitized:
@@ -69,7 +71,7 @@ def split_frontmatter(text: str) -> Tuple[Optional[str], str]:
 async def read_existing_frontmatter(file_path: Path) -> Optional[str]:
     """Return frontmatter from the given file path if present."""
     try:
-        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+        async with aiofiles.open(file_path, "r", encoding=config.ENCODING) as fh:
             existing = await fh.read()
         frontmatter, _ = split_frontmatter(existing)
         return frontmatter
@@ -93,7 +95,7 @@ async def load_json_file(file_path: Path) -> List[Dict[str, Any]]:
     if not file_path.exists():
         return []
     try:
-        async with aiofiles.open(file_path, "r", encoding=ENCODING) as fh:
+        async with aiofiles.open(file_path, "r", encoding=config.ENCODING) as fh:
             return json.loads(await fh.read())
     except (OSError, ValueError):
         return []
