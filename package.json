@@ -8,6 +8,7 @@
     "postcss": "^8.4.31"
   },
   "scripts": {
-    "build:css": "tailwindcss -i ./tailwind_src.css -o ./static/tailwind.css --minify"
+    "build:css": "tailwindcss -i ./tailwind_src.css -o ./static/tailwind.css --minify",
+    "postinstall": "npm run build:css"
   }
 }
