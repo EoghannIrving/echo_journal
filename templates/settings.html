@@ -140,10 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const envSettingCategories = {
       Paths: [
         'DATA_DIR',
-        'APP_DIR',
         'PROMPTS_FILE',
-        'STATIC_DIR',
-        'TEMPLATES_DIR',
       ],
       'API Keys': [
         'WORDNIK_API_KEY',
@@ -206,25 +203,10 @@ document.addEventListener("DOMContentLoaded", () => {
         help: 'Location for persistent data files',
         placeholder: '/path/to/data',
       },
-      APP_DIR: {
-        label: 'Application directory',
-        help: 'Root path of the Echo Journal installation',
-        placeholder: '/path/to/app',
-      },
       PROMPTS_FILE: {
         label: 'Prompts file',
         help: 'YAML file containing writing prompts',
         placeholder: '/path/to/prompts.yaml',
-      },
-      STATIC_DIR: {
-        label: 'Static directory',
-        help: 'Directory for static assets like images and CSS',
-        placeholder: '/path/to/static',
-      },
-      TEMPLATES_DIR: {
-        label: 'Templates directory',
-        help: 'Directory containing HTML templates',
-        placeholder: '/path/to/templates',
       },
       WORDNIK_API_KEY: {
         label: 'Wordnik API key',

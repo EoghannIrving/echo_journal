@@ -88,12 +88,11 @@ elif BASIC_AUTH_USERNAME or BASIC_AUTH_PASSWORD:
 
 # Keys configurable via environment variables and editable from the settings page.
 # Values provided in ``settings.yaml`` override these defaults.
+NON_EDITABLE_SETTING_KEYS = {"APP_DIR", "STATIC_DIR", "TEMPLATES_DIR"}
+
 ENV_SETTING_KEYS = [
     "DATA_DIR",
-    "APP_DIR",
     "PROMPTS_FILE",
-    "STATIC_DIR",
-    "TEMPLATES_DIR",
     "WORDNIK_API_KEY",
     "OPENAI_API_KEY",
     "IMMICH_URL",
@@ -840,6 +839,8 @@ async def get_settings() -> Dict[str, str]:
     # Include any additional keys from settings.yaml that aren't in
     # ``ENV_SETTING_KEYS``.
     for key, val in load_settings().items():
+        if key in NON_EDITABLE_SETTING_KEYS:
+            continue
         values.setdefault(key, val)
 
     return values
@@ -848,6 +849,8 @@ async def get_settings() -> Dict[str, str]:
 @app.post("/api/settings")
 async def update_settings(values: Dict[str, str]) -> Dict[str, str]:
     """Merge provided values into ``settings.yaml`` and return the updated mapping."""
+    for key in NON_EDITABLE_SETTING_KEYS:
+        values.pop(key, None)
     return save_settings(values)
 
 
