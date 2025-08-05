@@ -7,3 +7,9 @@ services:
       - ./static:/app/static
       - ./prompts.yaml:/app/prompts.yaml
       - ./data:/journals
+    environment:
+      - ECHO_JOURNAL_HOST=0.0.0.0
+      - ECHO_JOURNAL_PORT=8000
+      # Uncomment to enable TLS inside the container
+      # - ECHO_JOURNAL_SSL_KEYFILE=/path/to/key.pem
+      # - ECHO_JOURNAL_SSL_CERTFILE=/path/to/cert.pem

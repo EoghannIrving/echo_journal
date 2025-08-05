@@ -945,8 +945,30 @@ async def backfill_jellyfin_metadata() -> dict:
 
 
 def main() -> None:
-    """Run the Echo Journal ASGI application."""
-    uvicorn.run("echo_journal.main:app", host="0.0.0.0", port=8000)
+    """Run the Echo Journal ASGI application.
+
+    Host, port, and optional TLS settings can be overridden via the
+    ``ECHO_JOURNAL_HOST``, ``ECHO_JOURNAL_PORT``, ``ECHO_JOURNAL_SSL_KEYFILE``,
+    and ``ECHO_JOURNAL_SSL_CERTFILE`` environment variables. By default the
+    server binds to ``127.0.0.1:8000`` which is suitable when running behind a
+    reverse proxy that terminates TLS.
+    """
+
+    host = os.getenv("ECHO_JOURNAL_HOST", "127.0.0.1")
+    port = int(os.getenv("ECHO_JOURNAL_PORT", "8000"))
+    ssl_keyfile = os.getenv("ECHO_JOURNAL_SSL_KEYFILE")
+    ssl_certfile = os.getenv("ECHO_JOURNAL_SSL_CERTFILE")
+
+    ssl_args = {}
+    if ssl_keyfile and ssl_certfile:
+        ssl_args = {"ssl_keyfile": ssl_keyfile, "ssl_certfile": ssl_certfile}
+
+    uvicorn.run(
+        "echo_journal.main:app",
+        host=host,
+        port=port,
+        **ssl_args,
+    )
 
 
 if __name__ == "__main__":
