@@ -88,13 +88,21 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
         return {}
 
 
-def save_settings(values: Dict[str, str], path: Path | None = None) -> Dict[str, str]:
+def save_settings(values: Dict[str, Any], path: Path | None = None) -> Dict[str, str]:
     """Merge ``values`` into the settings file and return updated mapping."""
     if path is None:
         path = SETTINGS_PATH
     logger.debug("Saving settings to %s: %s", path, values)
     data = load_settings(path)
-    data.update(values)
+    cleaned: Dict[str, str] = {}
+    for k, v in values.items():
+        if v is None:
+            cleaned[str(k)] = ""
+        elif isinstance(v, bool):
+            cleaned[str(k)] = "true" if v else "false"
+        else:
+            cleaned[str(k)] = str(v)
+    data.update(cleaned)
     logger.debug("Merged settings: %s", data)
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
