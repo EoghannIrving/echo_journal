@@ -740,3 +740,108 @@ The following issues were identified and subsequently resolved.
      ```
      【F:src/echo_journal/ai_prompt_utils.py†L96-L103】
 
+61. **Missing `httpx` dependency for `weather_utils`** (fixed)
+   - The `weather_utils` module required `httpx` but the package was absent,
+     causing import errors.
+   - `httpx` is now listed among the project dependencies.
+   - Fixed lines:
+     ```toml
+     "aiofiles==24.1.0",
+     "httpx==0.28.1",
+     "pyyaml==6.0.2",
+     ```
+     【F:pyproject.toml†L14-L22】
+
+62. **`file_utils` depended on missing `aiofiles`** (fixed)
+   - Runtime imports failed because `aiofiles` was not installed.
+   - The library is now included in `pyproject.toml`.
+   - Fixed lines:
+     ```toml
+     "aiofiles==24.1.0",
+     ```
+     【F:pyproject.toml†L14-L22】
+
+63. **`settings_utils` required `yaml` without providing `pyyaml`** (fixed)
+   - The module imported `yaml`, leading to `ModuleNotFoundError` during tests.
+   - `pyyaml` is now part of the dependencies.
+   - Fixed lines:
+     ```toml
+     "pyyaml==6.0.2",
+     ```
+     【F:pyproject.toml†L14-L22】
+
+64. **`load_env` misparsed values containing `=`** (fixed)
+   - The function split on the first `=`, corrupting quoted values or keys with
+     `=` characters.
+   - It now uses `shlex.split` to properly parse `.env` lines.
+   - Fixed lines:
+     ```python
+     for token in shlex.split(line, comments=True, posix=True):
+         if "=" not in token:
+             continue
+         key, value = token.split("=", 1)
+         env[key] = value
+     ```
+     【F:src/echo_journal/env_utils.py†L23-L38】
+
+65. **Relative `.env` path prevented loading from other directories** (fixed)
+   - `ENV_PATH` was relative, so callers in different working directories could
+     not locate the `.env` file.
+   - The path is now resolved to an absolute location and can be overridden with
+     `ECHO_JOURNAL_ENV_PATH`.
+   - Fixed lines:
+     ```python
+     ENV_PATH = Path(
+         os.environ.get(
+             "ECHO_JOURNAL_ENV_PATH",
+             Path(__file__).resolve().parents[2] / ".env",
+         )
+     ).expanduser().resolve()
+     ```
+     【F:src/echo_journal/env_utils.py†L10-L18】
+
+66. **Numbers API requests insecure and incorrectly formatted** (fixed)
+   - `fetch_date_fact` used HTTP and passed `json=True`, which could return
+     non‑JSON responses.
+   - The function now uses HTTPS and appends the `?json` flag.
+   - Fixed lines:
+     ```python
+     url = f"https://numbersapi.com/{day.month}/{day.day}/date?json"
+     async with httpx.AsyncClient() as client:
+         resp = await client.get(url, timeout=10)
+     ```
+     【F:src/echo_journal/numbers_utils.py†L15-L18】
+
+67. **`save_settings` wrote values without type coercion** (fixed)
+   - Arbitrary types could be merged into `settings.yaml` without validation.
+   - Values are now coerced to strings (with booleans normalized) before being
+     written.
+   - Fixed lines:
+     ```python
+     cleaned: Dict[str, str] = {}
+     for k, v in values.items():
+         if v is None:
+             cleaned[str(k)] = ""
+         elif isinstance(v, bool):
+             cleaned[str(k)] = "true" if v else "false"
+         else:
+             cleaned[str(k)] = str(v)
+     data.update(cleaned)
+     ```
+     【F:src/echo_journal/settings_utils.py†L91-L106】
+
+68. **`_iter_items` could loop endlessly on full pages** (fixed)
+   - The Jellyfin history iterator lacked a termination condition when the API
+     kept returning full pages.
+   - It now tracks the last page and last date to stop when results no longer
+     advance.
+   - Fixed lines:
+     ```python
+     if len(page_items) == JELLYFIN_PAGE_SIZE and (
+         last_page_date == last_date or last_page_index == current_page
+     ):
+         ...
+         break
+     ```
+     【F:src/echo_journal/jellyfin_utils.py†L81-L92】
+
