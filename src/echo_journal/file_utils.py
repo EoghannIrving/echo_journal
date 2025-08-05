@@ -135,10 +135,13 @@ def format_weather(weather: str) -> str:
 
 
 def weather_description(weather: str) -> str:
-    """Return a textual description from ``weather`` frontmatter."""
+    """Return a textual description and temperature from ``weather`` frontmatter."""
     match = re.search(r"(-?\d+(?:\.\d+)?)°C code (\d+)", weather)
     if not match:
         return weather
+    temp = match.group(1)
     code = int(match.group(2))
     _, desc = WEATHER_CODES.get(code, ("", ""))
-    return desc
+    if desc:
+        return f"{desc}, {temp}°C"
+    return f"{temp}°C"
