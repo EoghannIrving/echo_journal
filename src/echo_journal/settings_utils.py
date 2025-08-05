@@ -9,14 +9,17 @@ from typing import Any, Dict
 import yaml
 
 # ``settings.yaml`` should live alongside the journal data so that it persists
-# outside of the application container.  Default to ``/journals`` but allow the
+# outside of the application container.  Store it within a dedicated
+# ``.settings`` directory under ``/journals`` by default, but allow the
 # location to be overridden via the ``DATA_DIR`` environment variable.  The
 # entire path can also be overridden via ``SETTINGS_PATH``.  When the default
-# data directory does not contain a settings file we fall back to looking inside
-# ``APP_DIR`` so that bundled defaults can be used on first run.
+# data directory does not contain a settings file we fall back to looking
+# inside ``APP_DIR`` so that bundled defaults can be used on first run.
 DATA_DIR = Path(os.getenv("DATA_DIR", "/journals"))
 APP_DIR = Path(os.getenv("APP_DIR", "/app"))
-SETTINGS_PATH = Path(os.getenv("SETTINGS_PATH", DATA_DIR / "settings.yaml"))
+SETTINGS_PATH = Path(
+    os.getenv("SETTINGS_PATH", DATA_DIR / ".settings" / "settings.yaml")
+)
 
 logger = logging.getLogger("ej.settings")
 
