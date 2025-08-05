@@ -4,6 +4,7 @@ from typing import Optional, Dict, Any
 
 import httpx
 import yaml
+import logging
 
 from . import config
 
@@ -40,6 +41,8 @@ AI_PROMPT_TEMPLATE = (
     "  anchor: <anchor>"
 )
 
+logger = logging.getLogger("ej.ai_prompt")
+
 
 async def fetch_ai_prompt(anchor: str | None) -> Optional[Dict[str, Any]]:
     """Return a generated prompt as a dict from an AI service.
@@ -49,8 +52,13 @@ async def fetch_ai_prompt(anchor: str | None) -> Optional[Dict[str, Any]]:
     ``None`` or the request fails for any reason.
     """
 
+    logger.debug("Fetching AI prompt with anchor=%s", anchor)
     api_key = config.OPENAI_API_KEY
-    if not api_key or not anchor:
+    if not api_key:
+        logger.warning("OPENAI_API_KEY missing; cannot fetch AI prompt")
+        return None
+    if not anchor:
+        logger.warning("Anchor missing; cannot fetch AI prompt")
         return None
 
     headers = {"Authorization": f"Bearer {api_key}"}
@@ -68,6 +76,7 @@ async def fetch_ai_prompt(anchor: str | None) -> Optional[Dict[str, Any]]:
             data = resp.json()
             choices = data.get("choices")
             if not isinstance(choices, list) or not choices:
+                logger.warning("AI response missing choices: %s", data)
                 return None
             message = choices[0].get("message", {})
             content = message.get("content")
@@ -81,14 +90,28 @@ async def fetch_ai_prompt(anchor: str | None) -> Optional[Dict[str, Any]]:
                 content = "".join(text_parts)
 
             if not isinstance(content, str) or not content.strip():
+                logger.warning("AI response had empty content: %s", content)
                 return None
+
+            content = content.strip()
+            if content.startswith("```"):
+                lines = content.splitlines()
+                if lines and lines[0].startswith("```"):
+                    lines = lines[1:]
+                if lines and lines[-1].startswith("```"):
+                    lines = lines[:-1]
+                content = "\n".join(lines).strip()
+
+            logger.debug("AI returned content: %s", content)
 
             parsed = yaml.safe_load(content)
             if isinstance(parsed, list) and parsed:
                 first = parsed[0]
                 if isinstance(first, dict):
                     return first
-    except (httpx.HTTPError, ValueError, KeyError, yaml.YAMLError):
+            logger.warning("AI response not in expected format: %s", content)
+    except (httpx.HTTPError, ValueError, KeyError, yaml.YAMLError) as exc:
+        logger.error("AI prompt fetch failed: %s", exc)
         return None
 
     return None
