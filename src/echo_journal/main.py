@@ -84,12 +84,22 @@ templates: Jinja2Templates
 
 def _refresh_config_vars() -> None:
     """Refresh module-level aliases to configuration values."""
-    global DATA_DIR, PROMPTS_FILE, IMMICH_URL, IMMICH_API_KEY, NOMINATIM_USER_AGENT
+    global DATA_DIR, PROMPTS_FILE, IMMICH_URL, IMMICH_API_KEY, NOMINATIM_USER_AGENT, IMMICH_ALLOWED_HOSTS
     DATA_DIR = config.DATA_DIR
     PROMPTS_FILE = config.PROMPTS_FILE
     IMMICH_URL = config.IMMICH_URL
     IMMICH_API_KEY = config.IMMICH_API_KEY
     NOMINATIM_USER_AGENT = config.NOMINATIM_USER_AGENT
+
+    # Restrict Immich asset proxying to known hosts derived from configuration.
+    IMMICH_ALLOWED_HOSTS = {"immich", "localhost"}
+    if IMMICH_URL:
+        try:
+            host = urlparse(IMMICH_URL).hostname
+        except ValueError:
+            host = None
+        if host:
+            IMMICH_ALLOWED_HOSTS.add(host)
 
 
 def _configure_auth() -> None:
