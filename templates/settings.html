@@ -78,6 +78,7 @@
 </footer>
 
 <script>
+window.ejConfig = { csrfToken: "{{ csrf_token }}" };
 document.addEventListener("DOMContentLoaded", () => {
   const animateText = (target, startDelay = 0, letterDelay = 80, wordDelay = 150) => {
     if (!target) return 0;
@@ -403,7 +404,10 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const resp = await fetch('/api/settings', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': window.ejConfig.csrfToken,
+          },
           body: JSON.stringify(updated),
         });
         if (!resp.ok) {

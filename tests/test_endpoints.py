@@ -76,7 +76,12 @@ def test_client(tmp_path, monkeypatch):
     main.SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
     if not main.SETTINGS_PATH.exists():
         main.SETTINGS_PATH.write_text("{}", encoding="utf-8")
-    return TestClient(main.app)
+    client = TestClient(main.app)
+    client.get("/")
+    token = client.cookies.get("csrftoken")
+    if token:
+        client.headers.update({"X-CSRF-Token": token})
+    return client
 
 
 def test_index_returns_page(test_client):
@@ -1122,6 +1127,14 @@ def test_basic_auth_required(monkeypatch):
     importlib.reload(config)
     mod = importlib.reload(main)
     client = TestClient(mod.app)
+    client.get("/")
+    token = client.cookies.get("csrftoken")
+    if token:
+        client.headers.update({"X-CSRF-Token": token})
+    client.get("/")
+    token = client.cookies.get("csrftoken")
+    if token:
+        client.headers.update({"X-CSRF-Token": token})
 
     resp = client.get("/")
     assert resp.status_code == 401
@@ -1186,7 +1199,11 @@ def test_settings_endpoints(tmp_path, monkeypatch):
     body = resp.json()
     assert body["FOO"] == "baz"
 
-    resp2 = client.post("/api/settings", json={"BAR": "qux"})
+    resp2 = client.post(
+        "/api/settings",
+        json={"BAR": "qux"},
+        headers={"X-CSRF-Token": client.cookies.get("csrftoken", "")},
+    )
     assert resp2.status_code == 200
     assert resp2.json()["BAR"] == "qux"
     assert "BAR: qux" in settings_file.read_text(encoding="utf-8")
@@ -1211,7 +1228,10 @@ def test_settings_endpoints(tmp_path, monkeypatch):
     resp4 = client.post(
         "/api/settings",
         json={"BAR": "new"},
-        headers={"Authorization": f"Basic {token}"},
+        headers={
+            "Authorization": f"Basic {token}",
+            "X-CSRF-Token": client.cookies.get("csrftoken", ""),
+        },
     )
     assert resp4.status_code == 200
     body = resp4.json()

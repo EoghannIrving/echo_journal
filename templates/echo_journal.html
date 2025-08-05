@@ -105,7 +105,8 @@
         category: {{ category | tojson }},
         anchor: {{ anchor | tojson }},
         readonly: {{ 'true' if readonly else 'false' }},
-        integrations: {{ integrations | tojson }} {# includes ai integration key #}
+        integrations: {{ integrations | tojson }} {# includes ai integration key #},
+        csrfToken: "{{ csrf_token }}"
       };
     </script>
     <script src="/static/echo_journal.js"></script>
