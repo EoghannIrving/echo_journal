@@ -81,6 +81,8 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
    docker compose up --build
    ```
 
+   Then open <http://localhost:8510> in your browser.
+
 3. **Stop the container while preserving data:**
 
    ```bash
@@ -105,7 +107,7 @@ uvicorn echo_journal.main:app --reload
 echo-journal
 ```
 
-Then open <http://localhost:8000> in your browser. You should see the Echo Journal interface and can create a test entry.
+Then open <http://localhost:8510> in your browser. You should see the Echo Journal interface and can create a test entry.
 
 ## API and CLI reference
 
@@ -117,7 +119,7 @@ dedicated API guide.*
 
 - `GET /api/new_prompt` – return a journaling prompt.
   ```bash
-  curl http://localhost:8000/api/new_prompt
+  curl http://localhost:8510/api/new_prompt
   ```
   ```json
   {"prompt": "Describe a recent moment that made you smile.", "category": "Gratitude"}
@@ -126,7 +128,7 @@ dedicated API guide.*
 - `GET /api/ai_prompt?energy=3` – generate a prompt using the OpenAI API when
   configured. Mood and energy parameters are optional; if omitted, the service defaults to a gentle "soft" anchor.
   ```bash
-  curl 'http://localhost:8000/api/ai_prompt?energy=3'
+  curl 'http://localhost:8510/api/ai_prompt?energy=3'
   ```
   ```json
   {"prompt": "What energized you today?", "source": "openai"}
@@ -134,7 +136,7 @@ dedicated API guide.*
 
 - `GET /api/settings` – fetch current server settings.
   ```bash
-  curl http://localhost:8000/api/settings
+  curl http://localhost:8510/api/settings
   ```
   ```json
   {"DATA_DIR": "/journals", "OPENAI_API_KEY": null, ...}
@@ -142,7 +144,7 @@ dedicated API guide.*
 
 - `POST /api/settings` – update settings and persist them to `settings.yaml`.
   ```bash
-  curl -X POST http://localhost:8000/api/settings \
+  curl -X POST http://localhost:8510/api/settings \
        -H 'Content-Type: application/json' \
        -d '{"DATA_DIR": "/journals"}'
   ```
@@ -153,7 +155,7 @@ dedicated API guide.*
 - `POST /api/backfill_songs` – re-scan existing entries for song and media
   metadata.
   ```bash
-  curl -X POST http://localhost:8000/api/backfill_songs
+  curl -X POST http://localhost:8510/api/backfill_songs
   ```
   ```json
   {"songs_added": 0, "media_added": 0}
@@ -329,7 +331,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/journal.example.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:8000;
+       proxy_pass http://127.0.0.1:8510;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
