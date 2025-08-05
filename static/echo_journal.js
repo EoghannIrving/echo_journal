@@ -385,9 +385,16 @@
             }
             localStorage.setItem(promptKey, JSON.stringify({ prompt: currentPrompt, category: currentCategory, anchor: currentAnchor }));
           } else {
-            alert('Failed to fetch AI prompt.');
+            let msg = 'Failed to fetch AI prompt.';
+            try {
+              const err = await res.json();
+              if (err && err.detail) msg = err.detail;
+            } catch (_) {}
+            alert(msg);
           }
-        } catch (_) {}
+        } catch (_) {
+          alert('Failed to fetch AI prompt.');
+        }
       });
     }
 
