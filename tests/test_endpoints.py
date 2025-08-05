@@ -1013,6 +1013,18 @@ def test_asset_proxy_disallowed_host(test_client, monkeypatch, caplog):
     assert "Blocked Immich host" in caplog.text
 
 
+def test_refresh_config_vars_adds_immich_host(monkeypatch):
+    """Host from IMMICH_URL should be included in allowed host set."""
+    monkeypatch.setattr(main.config, "IMMICH_URL", "http://photos.example.com/api")
+
+    main._refresh_config_vars()
+    assert "photos.example.com" in main.IMMICH_ALLOWED_HOSTS
+
+    # Restore default configuration for subsequent tests
+    monkeypatch.setattr(main.config, "IMMICH_URL", None)
+    main._refresh_config_vars()
+
+
 def test_thumbnail_proxy_download(test_client, monkeypatch):
     """Thumbnail proxy endpoint should fetch thumbnail from Immich."""
 
