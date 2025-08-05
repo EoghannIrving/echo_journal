@@ -107,6 +107,16 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
 
    Journal files remain in the mounted `data` directory on the host.
 
+## Configuration
+
+To override default paths or provide API credentials, copy the example settings
+file and adjust values as needed:
+
+```bash
+cp settings.example.yaml settings.yaml
+# edit settings.yaml to set DATA_DIR, APP_DIR, and API keys
+```
+
 ## Example walkthrough
 
 To verify the app runs, try the following sequence:
