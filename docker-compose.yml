@@ -2,14 +2,14 @@ services:
   echo-journal:
     build: .
     ports:
-      - "8510:8000"
+      - "${HOST_PORT}:8000"
     volumes:
       - ./static:/app/static
       - ./prompts.yaml:/app/prompts.yaml
-      - ./data:/journals
+      - "${DATA_DIR}:/journals"
     environment:
       - ECHO_JOURNAL_HOST=0.0.0.0
       - ECHO_JOURNAL_PORT=8000
       # Uncomment to enable TLS inside the container
-      # - ECHO_JOURNAL_SSL_KEYFILE=/path/to/key.pem
-      # - ECHO_JOURNAL_SSL_CERTFILE=/path/to/cert.pem
+      # - ECHO_JOURNAL_SSL_KEYFILE=${TLS_KEY_PATH}
+      # - ECHO_JOURNAL_SSL_CERTFILE=${TLS_CERT_PATH}
