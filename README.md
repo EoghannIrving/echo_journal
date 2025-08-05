@@ -31,7 +31,17 @@ with an AI helper. Below is the project roadmap and current feature set.
 
 ## Installation
 
-### Clone and install dependencies
+### Automated setup
+
+```bash
+git clone https://github.com/<your_user>/echo_journal.git
+cd echo_journal
+./scripts/setup.sh
+```
+
+The `setup.sh` script creates a `.venv`, installs Python dependencies, runs `npm install`, and builds the Tailwind CSS bundle.
+
+### Manual setup
 
 ```bash
 git clone https://github.com/<your_user>/echo_journal.git
