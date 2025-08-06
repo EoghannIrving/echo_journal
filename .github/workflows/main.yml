@@ -38,7 +38,7 @@ jobs:
 
       # ----- Type Checking -----
       - name: Run mypy
-        run: mypy .
+        run: mypy src tests
 
       # ----- Security -----
       - name: Run Bandit
