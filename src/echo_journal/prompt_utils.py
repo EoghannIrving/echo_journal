@@ -24,6 +24,7 @@ def refresh_config() -> None:
     global PROMPTS_FILE
     PROMPTS_FILE = config.PROMPTS_FILE
 
+
 logger = logging.getLogger("ej.prompt")
 
 
@@ -38,7 +39,9 @@ def _choose_anchor(mood: str | None, energy: int | None) -> str | None:
 
     if energy == 1:
         anchors = (
-            ["micro"] if mood_l in {"drained", "self-doubt", "sad"} else ["micro", "soft"]
+            ["micro"]
+            if mood_l in {"drained", "self-doubt", "sad"}
+            else ["micro", "soft"]
         )
         anchor = random.choice(anchors)
         logger.debug(
@@ -178,7 +181,9 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
         candidates = [p for p in candidates if p.get("anchor") == anchor]
         if debug:
             debug_info["after_anchor"] = [p.get("id") for p in candidates]
-        logger.debug("Candidates after anchor filter: %s", [p.get("id") for p in candidates])
+        logger.debug(
+            "Candidates after anchor filter: %s", [p.get("id") for p in candidates]
+        )
     elif debug:
         debug_info["after_anchor"] = [p.get("id") for p in candidates]
 
@@ -192,7 +197,9 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
     chosen = random.choice(candidates)
     logger.debug("Chosen prompt: %s", chosen.get("id"))
     prompt_text = chosen.get("prompt", "")
-    prompt_text = prompt_text.replace("{{weekday}}", weekday).replace("{{season}}", season)
+    prompt_text = prompt_text.replace("{{weekday}}", weekday).replace(
+        "{{season}}", season
+    )
 
     # Derive a category from the prompt id or tags
     category = None

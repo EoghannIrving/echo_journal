@@ -75,9 +75,13 @@ async def build_frontmatter(
     if wotd_word:
         lines.append(f"wotd: {wotd_word}")
         if wotd_def:
-            dumped_lines = yaml.safe_dump(wotd_def, explicit_end=False).strip().splitlines()
+            dumped_lines = (
+                yaml.safe_dump(wotd_def, explicit_end=False).strip().splitlines()
+            )
             dumped = " ".join(
-                line.strip() for line in dumped_lines if line.strip() and line.strip() != "..."
+                line.strip()
+                for line in dumped_lines
+                if line.strip() and line.strip() != "..."
             )
             lines.append(f"wotd_def: {dumped}")
     if integrations.get("immich", True):

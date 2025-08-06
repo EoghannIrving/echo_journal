@@ -26,7 +26,7 @@ AI_PROMPT_TEMPLATE = (
     "context: what led to something, location, environment\n"
     "scene: describe a moment visually or like a painting\n"
     "contrast: explore difference or opposites\n"
-    "list: list things with elaboration (e.g. \"3 things and why\")\n"
+    'list: list things with elaboration (e.g. "3 things and why")\n'
     "mood: explore feelings and what caused them\n"
     "hypothetical: imagined or alternate scenarios\n"
     "deep: reflection on meaning, significance, values\n"
@@ -35,7 +35,7 @@ AI_PROMPT_TEMPLATE = (
     "Format\n"
     "Return the result in strict YAML:\n\n"
     "- id: <tag>-<3-digit number>\n"
-    "  prompt: \"<journal prompt>\"\n"
+    '  prompt: "<journal prompt>"\n'
     "  tags:\n"
     "    - tag1\n"
     "    - tag2\n"
@@ -72,7 +72,9 @@ async def fetch_ai_prompt(anchor: str | None) -> Optional[Dict[str, Any]]:
 
     try:
         async with httpx.AsyncClient() as client:
-            resp = await client.post(CHAT_URL, headers=headers, json=payload, timeout=10)
+            resp = await client.post(
+                CHAT_URL, headers=headers, json=payload, timeout=10
+            )
             resp.raise_for_status()
             data = resp.json()
             return _parse_ai_response(data)

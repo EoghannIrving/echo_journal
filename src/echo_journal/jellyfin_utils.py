@@ -29,9 +29,11 @@ def refresh_config() -> None:
         JELLYFIN_PLAY_THRESHOLD=config.JELLYFIN_PLAY_THRESHOLD,
     )
 
+
 logger = logging.getLogger("ej.jellyfin")
 
 # Number of items to request per page when fetching play history.
+
 
 async def _iter_items(
     date_str: str, headers: Dict[str, str], url: str, base_params: Dict[str, str]
@@ -66,9 +68,7 @@ async def _iter_items(
             current_page = start_index
             start_index += JELLYFIN_PAGE_SIZE
             if not last_played:
-                logger.debug(
-                    "No last played date in page starting %d", current_page
-                )
+                logger.debug("No last played date in page starting %d", current_page)
                 continue
             try:
                 last_date = (
@@ -143,8 +143,7 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
             track = item.get("Name", "Unknown Title")
             artist = (
                 " / ".join(
-                    a.get("Name", "Unknown Artist")
-                    for a in item.get("ArtistItems", [])
+                    a.get("Name", "Unknown Artist") for a in item.get("ArtistItems", [])
                 )
                 or "Unknown Artist"
             )
@@ -197,6 +196,7 @@ async def update_song_metadata(date_str: str, journal_path: Path) -> None:
         logger.info("Wrote %d song records to %s", len(songs), song_path)
     except OSError as exc:
         logger.error("Failed to write song metadata file: %s", exc)
+
 
 async def fetch_daily_media(date_str: str) -> List[Dict[str, Any]]:
     """Return watched movies and episodes for the given date."""

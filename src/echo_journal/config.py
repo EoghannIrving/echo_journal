@@ -23,6 +23,7 @@ def _get_setting(key: str, default: str | None = None) -> str | None:
         return default
     return value
 
+
 # Derive the application directory from the installed package location.  This
 # allows the code to run from arbitrary paths without requiring users to set
 # ``APP_DIR`` manually.  An environment variable can still override the value
@@ -52,9 +53,7 @@ NOMINATIM_USER_AGENT = _get_setting(
 
 # File logging path - defaults to ``DATA_DIR/.logs/echo_journal.log`` but can
 # be overridden via the ``LOG_FILE`` environment variable.
-LOG_FILE = Path(
-    _get_setting("LOG_FILE", str(DATA_DIR / ".logs" / "echo_journal.log"))
-)
+LOG_FILE = Path(_get_setting("LOG_FILE", str(DATA_DIR / ".logs" / "echo_journal.log")))
 
 # Log level for the application. Defaults to ``DEBUG`` so development
 # environments capture detailed output, but can be overridden to
