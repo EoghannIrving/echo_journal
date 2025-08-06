@@ -1,1927 +1,2148 @@
-- energy: 1
-  id: memory-001
-  mood: &id001
-  - sad
-  - meh
-  - okay
+- id: memory-001
   prompt: 'Describe a place from your past in detail: what could you see, hear, and
     smell there?'
-  tags: &id002
-  - memory
-  - reflective
-- energy: 1
-  id: memory-002
-  mood: *id001
+  tags:
+  - contrast
+  - senses
+  anchor: soft
+- id: memory-002
   prompt: Tell the full story of a memorable day long ago, including what led up to
     it and how you felt.
-  tags: *id002
-- energy: 1
-  id: memory-003
-  mood: *id001
-  prompt: "Write about a favorite object you once had \u2014 what did it look like,\
-    \ feel like, and why did it matter?"
-  tags: *id002
-- energy: 1
-  id: memory-004
-  mood: *id001
+  tags:
+  - contrast
+  - narrative
+  anchor: moderate
+- id: memory-003
+  prompt: Write about a favorite object you once had — what did it look like, feel
+    like, and why did it matter?
+  tags:
+  - contrast
+  - deep
+  - mood
+  anchor: strong
+- id: memory-004
   prompt: What was a calm moment from your past? Describe the setting, your emotions,
     and what made it calm.
-  tags: *id002
-- energy: 1
-  id: memory-005
-  mood: *id001
+  tags:
+  - contrast
+  - mood
+  - senses
+  anchor: soft
+- id: memory-005
   prompt: List three things you remember clearly about your childhood home and explain
     why they stand out.
-  tags: *id002
-- energy: 1
-  id: memory-006
-  mood: *id001
+  tags:
+  - contrast
+  - deep
+  - list
+  anchor: strong
+- id: memory-006
   prompt: Describe a journey you took long ago and what you noticed along the way.
-  tags: *id002
-- energy: 1
-  id: memory-007
-  mood: *id001
+  tags:
+  - contrast
+  - senses
+  anchor: soft
+- id: memory-007
   prompt: Tell the story of a place from your past that you wish you could visit again.
-  tags: *id002
-- energy: 1
-  id: memory-008
-  mood: *id001
+  tags:
+  - narrative
+  anchor: strong
+- id: memory-008
   prompt: What did your favorite place from childhood look and feel like at different
     times of day?
-  tags: *id002
-- energy: 1
-  id: memory-009
-  mood: *id001
+  tags:
+  - contrast
+  - mood
+  anchor: moderate
+- id: memory-009
   prompt: Describe a memory that surfaces often and explore why it returns.
-  tags: *id002
-- energy: 1
-  id: memory-010
-  mood: *id001
+  tags:
+  - contrast
+  - deep
+  - senses
+  anchor: moderate
+- id: memory-010
   prompt: What object from your past would you show someone today and why?
-  tags: *id002
-- energy: 1
-  id: memory-011
-  mood: *id001
-  prompt: "Describe a moment from your past that you didn\u2019t fully appreciate\
-    \ at the time. What stands out now?"
-  tags: *id002
-- energy: 1
-  id: memory-012
-  mood: *id001
-  prompt: "What\u2019s a piece of advice or phrase from someone in your past that\
-    \ stayed with you?"
-  tags: *id002
-- energy: 1
-  id: memory-013
-  mood: *id001
+  tags:
+  - contrast
+  - deep
+  - temporal
+  anchor: strong
+- id: memory-011
+  prompt: Describe a moment from your past that you didn’t fully appreciate at the
+    time. What stands out now?
+  tags:
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
+- id: memory-012
+  prompt: What’s a piece of advice or phrase from someone in your past that stayed
+    with you?
+  tags: []
+  anchor: moderate
+- id: memory-013
   prompt: Describe a place that no longer exists but lives in your memory.
-  tags: *id002
-- energy: 1
-  id: memory-014
-  mood: *id001
-  prompt: "Write about a forgotten photo or object you recently came across \u2014\
-    \ what did it unlock?"
-  tags: *id002
-- energy: 1
-  id: memory-015
-  mood: *id001
+  tags:
+  - senses
+  anchor: soft
+- id: memory-014
+  prompt: Write about a forgotten photo or object you recently came across — what
+    did it unlock?
+  tags: []
+  anchor: moderate
+- id: memory-015
   prompt: What memory do you wish you could revisit with your current perspective?
-  tags: *id002
-- energy: 1
-  id: memory-016
-  mood: *id001
-  prompt: "What\u2019s a sound from your past that still echoes in your memory? When\
-    \ did you hear it last?"
-  tags: *id002
-- energy: 1
-  id: memory-017
-  mood: *id001
-  prompt: "Describe a time you got lost \u2014 physically or emotionally. Where were\
-    \ you and what happened?"
-  tags: *id002
-- energy: 1
-  id: memory-018
-  mood: *id001
+  tags: []
+  anchor: moderate
+- id: memory-016
+  prompt: What’s a sound from your past that still echoes in your memory? When did
+    you hear it last?
+  tags:
+  - senses
+  anchor: moderate
+- id: memory-017
+  prompt: Describe a time you got lost — physically or emotionally. Where were you
+    and what happened?
+  tags:
+  - context
+  - contrast
+  - mood
+  - narrative
+  - senses
+  anchor: soft
+- id: memory-018
   prompt: Write about a meal from long ago that you still remember vividly. Who were
     you with and what made it stick?
-  tags: *id002
-- energy: 1
-  id: memory-019
-  mood: *id001
+  tags:
+  - contrast
+  anchor: moderate
+- id: memory-019
   prompt: Recall a room you spent time in as a child. What did it look like and how
     did it make you feel?
-  tags: *id002
-- energy: 1
-  id: memory-020
-  mood: *id001
-  prompt: "What\u2019s an old habit you used to have that you no longer do? What was\
-    \ its rhythm and why do you think it faded?"
-  tags: *id002
-- energy: 1
-  id: memory-021
-  mood: *id001
-  prompt: "Describe a moment from your past that you didn\u2019t fully appreciate\
-    \ at the time. What stands out now?"
-  tags: *id002
-- energy: 1
-  id: memory-022
-  mood: *id001
-  prompt: "What\u2019s a piece of advice or phrase from someone in your past that\
-    \ stayed with you?"
-  tags: *id002
-- energy: 1
-  id: memory-023
-  mood: *id001
+  tags:
+  - contrast
+  - mood
+  anchor: moderate
+- id: memory-020
+  prompt: What’s an old habit you used to have that you no longer do? What was its
+    rhythm and why do you think it faded?
+  tags:
+  - contrast
+  - deep
+  anchor: strong
+- id: memory-021
+  prompt: Describe a moment from your past that you didn’t fully appreciate at the
+    time. What stands out now?
+  tags:
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
+- id: memory-022
+  prompt: What’s a piece of advice or phrase from someone in your past that stayed
+    with you?
+  tags: []
+  anchor: moderate
+- id: memory-023
   prompt: Describe a place that no longer exists but lives in your memory.
-  tags: *id002
-- energy: 1
-  id: memory-024
-  mood: *id001
-  prompt: "Write about a forgotten photo or object you recently came across \u2014\
-    \ what did it unlock?"
-  tags: *id002
-- energy: 1
-  id: memory-025
-  mood: *id001
+  tags:
+  - senses
+  anchor: soft
+- id: memory-024
+  prompt: Write about a forgotten photo or object you recently came across — what
+    did it unlock?
+  tags: []
+  anchor: moderate
+- id: memory-025
   prompt: What memory do you wish you could revisit with your current perspective?
-  tags: *id002
-- energy: 1
-  id: emotional-001
-  mood: &id003
-  - any
+  tags: []
+  anchor: moderate
+- id: emotional-001
   prompt: How do you feel today? Describe what influenced that feeling throughout
     the day.
-  tags: &id004
-  - emotional
-  - mood-check
-- energy: 1
-  id: emotional-002
-  mood: *id003
+  tags:
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: emotional-002
   prompt: Describe your mood today in detail, including moments when it changed and
     why.
-  tags: *id004
-- energy: 1
-  id: emotional-003
-  mood: *id003
+  tags:
+  - contrast
+  - deep
+  - senses
+  - temporal
+  anchor: moderate
+- id: emotional-003
   prompt: What emotions did you experience today? Describe a scene where they were
     strongest.
-  tags: *id004
-- energy: 1
-  id: emotional-004
-  mood: *id003
-  prompt: "Tell the story of an interaction today that shaped your feelings \u2014\
-    \ what happened and how did you respond?"
-  tags: *id004
-- energy: 1
-  id: emotional-005
-  mood: *id003
+  tags:
+  - context
+  - mood
+  - scene
+  - senses
+  - temporal
+  anchor: soft
+- id: emotional-004
+  prompt: Tell the story of an interaction today that shaped your feelings — what
+    happened and how did you respond?
+  tags:
+  - context
+  - contrast
+  - mood
+  - narrative
+  - temporal
+  anchor: strong
+- id: emotional-005
   prompt: What was the first thing that lifted your mood today and what effect did
     it have on the rest of your day?
-  tags: *id004
-- energy: 1
-  id: emotional-006
-  mood: *id003
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: emotional-006
   prompt: When today did you feel most at ease? What made you feel that way?
-  tags: *id004
-- energy: 1
-  id: emotional-007
-  mood: *id003
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: emotional-007
   prompt: Describe a moment when your emotions caught you by surprise.
-  tags: *id004
-- energy: 1
-  id: emotional-008
-  mood: *id003
+  tags:
+  - mood
+  - senses
+  anchor: soft
+- id: emotional-008
   prompt: When did you feel conflicted today and why?
-  tags: *id004
-- energy: 1
-  id: emotional-009
-  mood: *id003
+  tags:
+  - contrast
+  - deep
+  - mood
+  - temporal
+  anchor: strong
+- id: emotional-009
   prompt: Who or what influenced your emotional state today the most?
-  tags: *id004
-- energy: 1
-  id: emotional-010
-  mood: *id003
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: emotional-010
   prompt: Describe the emotional arc of your entire day, from start to finish.
-  tags: *id004
-- energy: 1
-  id: emotional-011
-  mood: *id003
-  prompt: "What emotion simmered beneath the surface today that you didn\u2019t express?"
-  tags: *id004
-- energy: 1
-  id: emotional-012
-  mood: *id003
-  prompt: "Describe a time today when you felt emotionally distant \u2014 from yourself\
-    \ or others."
-  tags: *id004
-- energy: 1
-  id: emotional-013
-  mood: *id003
+  tags:
+  - mood
+  - senses
+  anchor: soft
+- id: emotional-011
+  prompt: What emotion simmered beneath the surface today that you didn’t express?
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: emotional-012
+  prompt: Describe a time today when you felt emotionally distant — from yourself
+    or others.
+  tags:
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: emotional-013
   prompt: What feeling came and went quickly today? What triggered it?
-  tags: *id004
-- energy: 1
-  id: emotional-014
-  mood: *id003
+  tags:
+  - contrast
+  - mood
+  - temporal
+  anchor: moderate
+- id: emotional-014
   prompt: Did you comfort yourself in any way today? Describe how and why.
-  tags: *id004
-- energy: 1
-  id: emotional-015
-  mood: *id003
+  tags:
+  - contrast
+  - deep
+  - senses
+  - temporal
+  anchor: moderate
+- id: emotional-015
   prompt: What emotion did you notice in others today that reflected something in
     you?
-  tags: *id004
-- energy: 1
-  id: emotional-016
-  mood: *id003
+  tags:
+  - mood
+  - temporal
+  anchor: soft
+- id: emotional-016
   prompt: What emotion lingered after the day ended? What might have caused it?
-  tags: *id004
-- energy: 1
-  id: emotional-017
-  mood: *id003
-  prompt: "Describe a moment today when you felt seen or unseen \u2014 what triggered\
-    \ that?"
-  tags: *id004
-- energy: 1
-  id: emotional-018
-  mood: *id003
+  tags:
+  - mood
+  anchor: moderate
+- id: emotional-017
+  prompt: Describe a moment today when you felt seen or unseen — what triggered that?
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: emotional-018
   prompt: Was there a moment today when you felt unexpectedly grateful? Describe it.
-  tags: *id004
-- energy: 1
-  id: emotional-019
-  mood: *id003
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: emotional-019
   prompt: What emotion did you hide today and why?
-  tags: *id004
-- energy: 1
-  id: emotional-020
-  mood: *id003
+  tags:
+  - contrast
+  - deep
+  - mood
+  - temporal
+  anchor: strong
+- id: emotional-020
   prompt: If your mood today had a color or texture, what would it be? What shaped
     it?
-  tags: *id004
-- energy: 1
-  id: emotional-021
-  mood: *id003
-  prompt: "What emotion simmered beneath the surface today that you didn\u2019t express?"
-  tags: *id004
-- energy: 1
-  id: emotional-022
-  mood: *id003
-  prompt: "Describe a time today when you felt emotionally distant \u2014 from yourself\
-    \ or others."
-  tags: *id004
-- energy: 1
-  id: emotional-023
-  mood: *id003
+  tags:
+  - senses
+  - temporal
+  anchor: moderate
+- id: emotional-021
+  prompt: What emotion simmered beneath the surface today that you didn’t express?
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: emotional-022
+  prompt: Describe a time today when you felt emotionally distant — from yourself
+    or others.
+  tags:
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: emotional-023
   prompt: What feeling came and went quickly today? What triggered it?
-  tags: *id004
-- energy: 1
-  id: emotional-024
-  mood: *id003
+  tags:
+  - contrast
+  - mood
+  - temporal
+  anchor: moderate
+- id: emotional-024
   prompt: Did you comfort yourself in any way today? Describe how and why.
-  tags: *id004
-- energy: 1
-  id: emotional-025
-  mood: *id003
+  tags:
+  - contrast
+  - deep
+  - senses
+  - temporal
+  anchor: moderate
+- id: emotional-025
   prompt: What emotion did you notice in others today that reflected something in
     you?
-  tags: *id004
-- energy: 2
-  id: situational-001
-  mood: &id005
-  - meh
-  - okay
-  - joyful
-  prompt: "It\u2019s {{weekday}} \u2014 what did today feel like overall? Describe\
-    \ moments that defined the day."
-  tags: &id006
-  - situational
-  - contextual
-- energy: 2
-  id: situational-002
-  mood: *id005
+  tags:
+  - mood
+  - temporal
+  anchor: soft
+- id: situational-001
+  prompt: It’s {{weekday}} — what did today feel like overall? Describe moments that
+    defined the day.
+  tags:
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: situational-002
   prompt: How does this {{season}} feel to you right now? What details around you
     reflect it?
-  tags: *id006
-- energy: 2
-  id: situational-003
-  mood: *id005
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: situational-003
   prompt: What did the weather do today and how did it affect where you went or what
     you did?
-  tags: *id006
-- energy: 2
-  id: situational-004
-  mood: *id005
+  tags:
+  - context
+  - contrast
+  - mood
+  - temporal
+  anchor: moderate
+- id: situational-004
   prompt: 'Describe a scene from somewhere you visited today: include sounds, colors,
     textures.'
-  tags: *id006
-- energy: 2
-  id: situational-005
-  mood: *id005
+  tags:
+  - context
+  - scene
+  - senses
+  - temporal
+  anchor: soft
+- id: situational-005
   prompt: Where did you go today? What was your path and what drew you there?
-  tags: *id006
-- energy: 2
-  id: situational-006
-  mood: *id005
+  tags:
+  - context
+  - contrast
+  - temporal
+  anchor: moderate
+- id: situational-006
   prompt: What made today feel like a typical or unusual {{weekday}}?
-  tags: *id006
-- energy: 2
-  id: situational-007
-  mood: *id005
-  prompt: "Describe how time passed today \u2014 did it feel fast or slow? Why?"
-  tags: *id006
-- energy: 2
-  id: situational-008
-  mood: *id005
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: situational-007
+  prompt: Describe how time passed today — did it feel fast or slow? Why?
+  tags:
+  - deep
+  - mood
+  - senses
+  - temporal
+  anchor: moderate
+- id: situational-008
   prompt: Was there a turning point in your day? Describe it.
-  tags: *id006
-- energy: 2
-  id: situational-009
-  mood: *id005
+  tags:
+  - senses
+  anchor: soft
+- id: situational-009
   prompt: Where were you when you felt most present today?
-  tags: *id006
-- energy: 2
-  id: situational-010
-  mood: *id005
+  tags:
+  - context
+  - temporal
+  anchor: soft
+- id: situational-010
   prompt: How did the spaces you inhabited today influence your experience?
-  tags: *id006
-- energy: 2
-  id: situational-011
-  mood: *id005
+  tags:
+  - temporal
+  anchor: moderate
+- id: situational-011
   prompt: How did your surroundings change over the course of the day?
-  tags: *id006
-- energy: 2
-  id: situational-012
-  mood: *id005
+  tags: []
+  anchor: moderate
+- id: situational-012
   prompt: What detail of your day would someone else likely overlook?
-  tags: *id006
-- energy: 2
-  id: situational-013
-  mood: *id005
-  prompt: "Describe a boundary you crossed today \u2014 physical, social, or emotional."
-  tags: *id006
-- energy: 2
-  id: situational-014
-  mood: *id005
+  tags: []
+  anchor: moderate
+- id: situational-013
+  prompt: Describe a boundary you crossed today — physical, social, or emotional.
+  tags:
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: situational-014
   prompt: Where did you pause today and what did you observe?
-  tags: *id006
-- energy: 2
-  id: situational-015
-  mood: *id005
+  tags:
+  - context
+  - contrast
+  - temporal
+  anchor: moderate
+- id: situational-015
   prompt: What interrupted your plans today and how did you adapt?
-  tags: *id006
-- energy: 2
-  id: situational-016
-  mood: *id005
-  prompt: "Describe how your day shifted from morning to night \u2014 what changed\
-    \ and how did it feel?"
-  tags: *id006
-- energy: 2
-  id: situational-017
-  mood: *id005
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: situational-016
+  prompt: Describe how your day shifted from morning to night — what changed and how
+    did it feel?
+  tags:
+  - contrast
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: situational-017
   prompt: What was the first thing you noticed when you stepped outside today?
-  tags: *id006
-- energy: 2
-  id: situational-018
-  mood: *id005
-  prompt: "Describe a threshold you crossed today \u2014 physical or emotional."
-  tags: *id006
-- energy: 2
-  id: situational-019
-  mood: *id005
+  tags:
+  - temporal
+  anchor: soft
+- id: situational-018
+  prompt: Describe a threshold you crossed today — physical or emotional.
+  tags:
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: situational-019
   prompt: What routine or ritual made today feel grounded (or ungrounded)?
-  tags: *id006
-- energy: 2
-  id: situational-020
-  mood: *id005
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: situational-020
   prompt: Where did your day begin and where did it end? How do those places contrast?
-  tags: *id006
-- energy: 2
-  id: situational-021
-  mood: *id005
+  tags:
+  - context
+  - contrast
+  anchor: moderate
+- id: situational-021
   prompt: How did your surroundings change over the course of the day?
-  tags: *id006
-- energy: 2
-  id: situational-022
-  mood: *id005
+  tags: []
+  anchor: moderate
+- id: situational-022
   prompt: What detail of your day would someone else likely overlook?
-  tags: *id006
-- energy: 2
-  id: situational-023
-  mood: *id005
-  prompt: "Describe a boundary you crossed today \u2014 physical, social, or emotional."
-  tags: *id006
-- energy: 2
-  id: situational-024
-  mood: *id005
+  tags: []
+  anchor: moderate
+- id: situational-023
+  prompt: Describe a boundary you crossed today — physical, social, or emotional.
+  tags:
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: situational-024
   prompt: Where did you pause today and what did you observe?
-  tags: *id006
-- energy: 2
-  id: situational-025
-  mood: *id005
+  tags:
+  - context
+  - contrast
+  - temporal
+  anchor: moderate
+- id: situational-025
   prompt: What interrupted your plans today and how did you adapt?
-  tags: *id006
-- energy: 2
-  id: forward-001
-  mood: &id007
-  - okay
-  - joyful
-  prompt: "What is something you\u2019re looking forward to soon and why does it matter\
-    \ to you?"
-  tags: &id008
-  - future
-  - planning
-- energy: 2
-  id: forward-002
-  mood: *id007
-  prompt: "Describe a small plan for the coming days \u2014 how do you imagine it\
-    \ unfolding?"
-  tags: *id008
-- energy: 2
-  id: forward-003
-  mood: *id007
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: forward-001
+  prompt: What is something you’re looking forward to soon and why does it matter
+    to you?
+  tags:
+  - contrast
+  - deep
+  anchor: strong
+- id: forward-002
+  prompt: Describe a small plan for the coming days — how do you imagine it unfolding?
+  tags:
+  - hypothetical
+  - senses
+  anchor: soft
+- id: forward-003
   prompt: If you had a free afternoon this week, where would you go and what would
     you do?
-  tags: *id008
-- energy: 2
-  id: forward-004
-  mood: *id007
+  tags:
+  - context
+  - contrast
+  anchor: moderate
+- id: forward-004
   prompt: What are you avoiding this week? Describe why and how that feels.
-  tags: *id008
-- energy: 2
-  id: forward-005
-  mood: *id007
+  tags:
+  - contrast
+  - deep
+  - mood
+  - senses
+  anchor: moderate
+- id: forward-005
   prompt: Describe a change you hope will happen soon and what it might bring.
-  tags: *id008
-- energy: 2
-  id: forward-006
-  mood: *id007
+  tags:
+  - context
+  - contrast
+  - senses
+  anchor: soft
+- id: forward-006
   prompt: What opportunity would you like to create for yourself this week?
-  tags: *id008
-- energy: 2
-  id: forward-007
-  mood: *id007
+  tags: []
+  anchor: moderate
+- id: forward-007
   prompt: What is a small risk you could take soon and what appeals to you about it?
-  tags: *id008
-- energy: 2
-  id: forward-008
-  mood: *id007
+  tags:
+  - contrast
+  anchor: moderate
+- id: forward-008
   prompt: Describe a goal you have that feels achievable and what steps you'd take
     next.
-  tags: *id008
-- energy: 2
-  id: forward-009
-  mood: *id007
+  tags:
+  - contrast
+  - mood
+  - senses
+  anchor: soft
+- id: forward-009
   prompt: What project or task are you most excited to tackle next?
-  tags: *id008
-- energy: 2
-  id: forward-010
-  mood: *id007
+  tags: []
+  anchor: moderate
+- id: forward-010
   prompt: What habit do you hope to establish in the near future?
-  tags: *id008
-- energy: 2
-  id: forward-011
-  mood: *id007
-  prompt: "What\u2019s one thing you hope tomorrow feels like?"
-  tags: *id008
-- energy: 2
-  id: forward-012
-  mood: *id007
-  prompt: "What is a possibility you\u2019d like to remain open to in the coming days?"
-  tags: *id008
-- energy: 2
-  id: forward-013
-  mood: *id007
+  tags: []
+  anchor: moderate
+- id: forward-011
+  prompt: What’s one thing you hope tomorrow feels like?
+  tags:
+  - mood
+  anchor: moderate
+- id: forward-012
+  prompt: What is a possibility you’d like to remain open to in the coming days?
+  tags: []
+  anchor: moderate
+- id: forward-013
   prompt: What question do you hope gets answered soon?
-  tags: *id008
-- energy: 2
-  id: forward-014
-  mood: *id007
-  prompt: "Describe a future moment you\u2019ve imagined recently \u2014 what does\
-    \ it look like?"
-  tags: *id008
-- energy: 2
-  id: forward-015
-  mood: *id007
+  tags: []
+  anchor: moderate
+- id: forward-014
+  prompt: Describe a future moment you’ve imagined recently — what does it look like?
+  tags:
+  - hypothetical
+  - senses
+  anchor: soft
+- id: forward-015
   prompt: What do you want to feel more of next week?
-  tags: *id008
-- energy: 2
-  id: forward-016
-  mood: *id007
+  tags:
+  - mood
+  anchor: moderate
+- id: forward-016
   prompt: If tomorrow had a theme, what would you hope it to be and why?
-  tags: *id008
-- energy: 2
-  id: forward-017
-  mood: *id007
+  tags:
+  - contrast
+  - deep
+  anchor: strong
+- id: forward-017
   prompt: What intention would you like to carry into the next few days?
-  tags: *id008
-- energy: 2
-  id: forward-018
-  mood: *id007
+  tags: []
+  anchor: moderate
+- id: forward-018
   prompt: What could surprise you in a good way this week?
-  tags: *id008
-- energy: 2
-  id: forward-019
-  mood: *id007
+  tags: []
+  anchor: moderate
+- id: forward-019
   prompt: If you could send a message to your future self about today, what would
     it say?
-  tags: *id008
-- energy: 2
-  id: forward-020
-  mood: *id007
-  prompt: "What\u2019s a small curiosity you\u2019d like to follow soon? What might\
-    \ it reveal?"
-  tags: *id008
-- energy: 2
-  id: forward-021
-  mood: *id007
-  prompt: "What\u2019s one thing you hope tomorrow feels like?"
-  tags: *id008
-- energy: 2
-  id: forward-022
-  mood: *id007
-  prompt: "What is a possibility you\u2019d like to remain open to in the coming days?"
-  tags: *id008
-- energy: 2
-  id: forward-023
-  mood: *id007
+  tags:
+  - hypothetical
+  - temporal
+  anchor: moderate
+- id: forward-020
+  prompt: What’s a small curiosity you’d like to follow soon? What might it reveal?
+  tags: []
+  anchor: moderate
+- id: forward-021
+  prompt: What’s one thing you hope tomorrow feels like?
+  tags:
+  - mood
+  anchor: moderate
+- id: forward-022
+  prompt: What is a possibility you’d like to remain open to in the coming days?
+  tags: []
+  anchor: moderate
+- id: forward-023
   prompt: What question do you hope gets answered soon?
-  tags: *id008
-- energy: 2
-  id: forward-024
-  mood: *id007
-  prompt: "Describe a future moment you\u2019ve imagined recently \u2014 what does\
-    \ it look like?"
-  tags: *id008
-- energy: 2
-  id: forward-025
-  mood: *id007
+  tags: []
+  anchor: moderate
+- id: forward-024
+  prompt: Describe a future moment you’ve imagined recently — what does it look like?
+  tags:
+  - hypothetical
+  - senses
+  anchor: soft
+- id: forward-025
   prompt: What do you want to feel more of next week?
-  tags: *id008
-- energy: 1
-  id: observational-001
-  mood: &id009
-  - meh
-  - okay
+  tags:
+  - mood
+  anchor: moderate
+- id: observational-001
   prompt: Describe a sound you heard today that stayed with you. Where were you and
     how did it feel?
-  tags: &id010
-  - sensory
-  - observational
-- energy: 1
-  id: observational-002
-  mood: *id009
+  tags:
+  - context
+  - contrast
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: observational-002
   prompt: What object caught your eye today? Describe its details and why it stood
     out.
-  tags: *id010
-- energy: 1
-  id: observational-003
-  mood: *id009
+  tags:
+  - contrast
+  - deep
+  - senses
+  - temporal
+  anchor: moderate
+- id: observational-003
   prompt: List three small details you noticed today and explain why they felt important.
-  tags: *id010
-- energy: 1
-  id: observational-004
-  mood: *id009
+  tags:
+  - contrast
+  - deep
+  - list
+  - temporal
+  anchor: moderate
+- id: observational-004
   prompt: What was an ordinary moment today that felt meaningful? Describe the scene.
-  tags: *id010
-- energy: 1
-  id: observational-005
-  mood: *id009
-  prompt: "Describe a routine task today \u2014 how did it feel in your body and mind?"
-  tags: *id010
-- energy: 1
-  id: observational-006
-  mood: *id009
+  tags:
+  - deep
+  - scene
+  - senses
+  - temporal
+  anchor: moderate
+- id: observational-005
+  prompt: Describe a routine task today — how did it feel in your body and mind?
+  tags:
+  - contrast
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: observational-006
   prompt: What patterns or textures did you notice around you today?
-  tags: *id010
-- energy: 1
-  id: observational-007
-  mood: *id009
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: observational-007
   prompt: Describe the light and shadows you observed today.
-  tags: *id010
-- energy: 1
-  id: observational-008
-  mood: *id009
+  tags:
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
+- id: observational-008
   prompt: Was there a scent or taste that defined a moment of your day?
-  tags: *id010
-- energy: 1
-  id: observational-009
-  mood: *id009
+  tags:
+  - senses
+  anchor: soft
+- id: observational-009
   prompt: What colors stood out in your surroundings today and where did you notice
     them?
-  tags: *id010
-- energy: 1
-  id: observational-010
-  mood: *id009
+  tags:
+  - context
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
+- id: observational-010
   prompt: What contrast between natural and man-made elements did you observe today?
-  tags: *id010
-- energy: 1
-  id: observational-011
-  mood: *id009
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: observational-011
   prompt: What movement did you observe today that felt graceful or awkward?
-  tags: *id010
-- energy: 1
-  id: observational-012
-  mood: *id009
+  tags:
+  - temporal
+  anchor: soft
+- id: observational-012
   prompt: Describe how light changed in a space you spent time in.
-  tags: *id010
-- energy: 1
-  id: observational-013
-  mood: *id009
+  tags:
+  - senses
+  anchor: soft
+- id: observational-013
   prompt: What unexpected sound entered your awareness today?
-  tags: *id010
-- energy: 1
-  id: observational-014
-  mood: *id009
+  tags:
+  - senses
+  - temporal
+  anchor: moderate
+- id: observational-014
   prompt: Describe something tiny that caught your eye today.
-  tags: *id010
-- energy: 1
-  id: observational-015
-  mood: *id009
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: observational-015
   prompt: What did you notice today that reminded you of someone else?
-  tags: *id010
-- energy: 1
-  id: observational-016
-  mood: *id009
+  tags:
+  - temporal
+  anchor: soft
+- id: observational-016
   prompt: What repeated detail or pattern did you notice today that you usually overlook?
-  tags: *id010
-- energy: 1
-  id: observational-017
-  mood: *id009
-  prompt: "Describe a fleeting moment you wish you could replay \u2014 what made it\
-    \ stand out?"
-  tags: *id010
-- energy: 1
-  id: observational-018
-  mood: *id009
+  tags:
+  - temporal
+  anchor: soft
+- id: observational-017
+  prompt: Describe a fleeting moment you wish you could replay — what made it stand
+    out?
+  tags:
+  - contrast
+  - senses
+  anchor: soft
+- id: observational-018
   prompt: What was out of place in your environment today and how did it make you
     feel?
-  tags: *id010
-- energy: 1
-  id: observational-019
-  mood: *id009
+  tags:
+  - contrast
+  - mood
+  - temporal
+  anchor: moderate
+- id: observational-019
   prompt: What detail today made you pause, even briefly?
-  tags: *id010
-- energy: 1
-  id: observational-020
-  mood: *id009
-  prompt: "Describe a quiet moment you witnessed but didn\u2019t participate in."
-  tags: *id010
-- energy: 1
-  id: observational-021
-  mood: *id009
+  tags:
+  - temporal
+  anchor: moderate
+- id: observational-020
+  prompt: Describe a quiet moment you witnessed but didn’t participate in.
+  tags:
+  - senses
+  anchor: soft
+- id: observational-021
   prompt: What movement did you observe today that felt graceful or awkward?
-  tags: *id010
-- energy: 1
-  id: observational-022
-  mood: *id009
+  tags:
+  - temporal
+  anchor: soft
+- id: observational-022
   prompt: Describe how light changed in a space you spent time in.
-  tags: *id010
-- energy: 1
-  id: observational-023
-  mood: *id009
+  tags:
+  - senses
+  anchor: soft
+- id: observational-023
   prompt: What unexpected sound entered your awareness today?
-  tags: *id010
-- energy: 1
-  id: observational-024
-  mood: *id009
+  tags:
+  - senses
+  - temporal
+  anchor: moderate
+- id: observational-024
   prompt: Describe something tiny that caught your eye today.
-  tags: *id010
-- energy: 1
-  id: observational-025
-  mood: *id009
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: observational-025
   prompt: What did you notice today that reminded you of someone else?
-  tags: *id010
-- energy: 2
-  id: people-001
-  mood: &id011
-  - meh
-  - okay
-  - joyful
+  tags:
+  - temporal
+  anchor: soft
+- id: people-001
   prompt: Who did you cross paths with today? Describe their appearance, mood, and
     your impression.
-  tags: &id012
-  - social
-  - interaction
-- energy: 2
-  id: people-002
-  mood: *id011
-  prompt: "Write about a conversation you overheard or participated in today \u2014\
-    \ where did it happen and what was said?"
-  tags: *id012
-- energy: 2
-  id: people-003
-  mood: *id011
-  prompt: "Describe someone\u2019s expression or mood you noticed today. What do you\
-    \ think they were feeling?"
-  tags: *id012
-- energy: 2
-  id: people-004
-  mood: *id011
-  prompt: "What surprised you about someone\u2019s behavior today? How did it affect\
-    \ you?"
-  tags: *id012
-- energy: 2
-  id: people-005
-  mood: *id011
+  tags:
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
+- id: people-002
+  prompt: Write about a conversation you overheard or participated in today — where
+    did it happen and what was said?
+  tags:
+  - context
+  - contrast
+  - temporal
+  anchor: soft
+- id: people-003
+  prompt: Describe someone’s expression or mood you noticed today. What do you think
+    they were feeling?
+  tags:
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: people-004
+  prompt: What surprised you about someone’s behavior today? How did it affect you?
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: people-005
   prompt: Tell the story of your most meaningful interaction today. Where did it happen
     and what did it mean to you?
-  tags: *id012
-- energy: 2
-  id: people-006
-  mood: *id011
+  tags:
+  - context
+  - contrast
+  - deep
+  - narrative
+  - temporal
+  anchor: strong
+- id: people-006
   prompt: Who felt most familiar to you today and why?
-  tags: *id012
-- energy: 2
-  id: people-007
-  mood: *id011
+  tags:
+  - contrast
+  - deep
+  - temporal
+  anchor: moderate
+- id: people-007
   prompt: What was an unexpected interaction you had today and how did it unfold?
-  tags: *id012
-- energy: 2
-  id: people-008
-  mood: *id011
+  tags:
+  - contrast
+  - narrative
+  - temporal
+  anchor: moderate
+- id: people-008
   prompt: Describe a person you noticed from a distance and what details you observed.
-  tags: *id012
-- energy: 2
-  id: people-009
-  mood: *id011
+  tags:
+  - contrast
+  - senses
+  anchor: soft
+- id: people-009
   prompt: Who made you smile today and what were they doing?
-  tags: *id012
-- energy: 2
-  id: people-010
-  mood: *id011
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: people-010
   prompt: Who would you like to thank for something small today?
-  tags: *id012
-- energy: 2
-  id: people-011
-  mood: *id011
+  tags:
+  - temporal
+  anchor: moderate
+- id: people-011
   prompt: Who seemed out of place today and what made you notice them?
-  tags: *id012
-- energy: 2
-  id: people-012
-  mood: *id011
+  tags:
+  - contrast
+  - temporal
+  anchor: soft
+- id: people-012
   prompt: Did someone remind you of a memory or a different time in your life today?
-  tags: *id012
-- energy: 2
-  id: people-013
-  mood: *id011
+  tags:
+  - temporal
+  anchor: moderate
+- id: people-013
   prompt: Who seemed to need something today and what did you observe?
-  tags: *id012
-- energy: 2
-  id: people-014
-  mood: *id011
-  prompt: "What did you learn about someone today \u2014 even if only from a glance?"
-  tags: *id012
-- energy: 2
-  id: people-015
-  mood: *id011
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: people-014
+  prompt: What did you learn about someone today — even if only from a glance?
+  tags:
+  - temporal
+  anchor: moderate
+- id: people-015
   prompt: Who lingered in your thoughts after the day ended?
-  tags: *id012
-- energy: 2
-  id: people-016
-  mood: *id011
+  tags: []
+  anchor: moderate
+- id: people-016
   prompt: Who did you observe from afar today and what did their body language suggest?
-  tags: *id012
-- energy: 2
-  id: people-017
-  mood: *id011
-  prompt: "Was there someone you wanted to speak to today but didn\u2019t? What held\
-    \ you back?"
-  tags: *id012
-- energy: 2
-  id: people-018
-  mood: *id011
-  prompt: "Describe someone\u2019s small action that stayed with you."
-  tags: *id012
-- energy: 2
-  id: people-019
-  mood: *id011
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: people-017
+  prompt: Was there someone you wanted to speak to today but didn’t? What held you
+    back?
+  tags:
+  - temporal
+  anchor: moderate
+- id: people-018
+  prompt: Describe someone’s small action that stayed with you.
+  tags:
+  - senses
+  anchor: soft
+- id: people-019
   prompt: What gesture or tone revealed something deeper about someone you saw today?
-  tags: *id012
-- energy: 2
-  id: people-020
-  mood: *id011
-  prompt: "Who reminded you of someone else today \u2014 and why?"
-  tags: *id012
-- energy: 2
-  id: people-021
-  mood: *id011
+  tags:
+  - temporal
+  anchor: soft
+- id: people-020
+  prompt: Who reminded you of someone else today — and why?
+  tags:
+  - contrast
+  - deep
+  - temporal
+  anchor: strong
+- id: people-021
   prompt: Who seemed out of place today and what made you notice them?
-  tags: *id012
-- energy: 2
-  id: people-022
-  mood: *id011
+  tags:
+  - contrast
+  - temporal
+  anchor: soft
+- id: people-022
   prompt: Did someone remind you of a memory or a different time in your life today?
-  tags: *id012
-- energy: 2
-  id: people-023
-  mood: *id011
+  tags:
+  - temporal
+  anchor: moderate
+- id: people-023
   prompt: Who seemed to need something today and what did you observe?
-  tags: *id012
-- energy: 2
-  id: people-024
-  mood: *id011
-  prompt: "What did you learn about someone today \u2014 even if only from a glance?"
-  tags: *id012
-- energy: 2
-  id: people-025
-  mood: *id011
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: people-024
+  prompt: What did you learn about someone today — even if only from a glance?
+  tags:
+  - temporal
+  anchor: moderate
+- id: people-025
   prompt: Who lingered in your thoughts after the day ended?
-  tags: *id012
-- energy: 1
-  id: environment-001
-  mood: &id013
-  - meh
-  - okay
+  tags: []
+  anchor: moderate
+- id: environment-001
   prompt: Describe the space where you spent most of today. What details stand out?
-  tags: &id014
-  - environment
-  - spatial
-- energy: 1
-  id: environment-002
-  mood: *id013
+  tags:
+  - context
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
+- id: environment-002
   prompt: What object was most in your view today? Describe its texture, shape, and
     color.
-  tags: *id014
-- energy: 1
-  id: environment-003
-  mood: *id013
+  tags:
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
+- id: environment-003
   prompt: How would you describe the atmosphere of where you are right now? Include
     sounds, light, and feeling.
-  tags: *id014
-- energy: 1
-  id: environment-004
-  mood: *id013
+  tags:
+  - context
+  - contrast
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: environment-004
   prompt: What did you hear around you today and where were you?
-  tags: *id014
-- energy: 1
-  id: environment-005
-  mood: *id013
+  tags:
+  - context
+  - contrast
+  - temporal
+  anchor: moderate
+- id: environment-005
   prompt: What part of your environment felt comforting today and why?
-  tags: *id014
-- energy: 1
-  id: environment-006
-  mood: *id013
+  tags:
+  - contrast
+  - deep
+  - temporal
+  anchor: moderate
+- id: environment-006
   prompt: Describe how the light changed in your space over the course of the day.
-  tags: *id014
-- energy: 1
-  id: environment-007
-  mood: *id013
+  tags:
+  - senses
+  anchor: soft
+- id: environment-007
   prompt: What textures did your surroundings contain and how did they feel visually?
-  tags: *id014
-- energy: 1
-  id: environment-008
-  mood: *id013
+  tags:
+  - contrast
+  - mood
+  - scene
+  - senses
+  anchor: moderate
+- id: environment-008
   prompt: How was your space arranged today and did it feel orderly or chaotic?
-  tags: *id014
-- energy: 1
-  id: environment-009
-  mood: *id013
+  tags:
+  - contrast
+  - mood
+  - temporal
+  anchor: moderate
+- id: environment-009
   prompt: Describe a corner or nook of your environment in detail.
-  tags: *id014
-- energy: 1
-  id: environment-010
-  mood: *id013
+  tags:
+  - senses
+  anchor: soft
+- id: environment-010
   prompt: Where did you feel most comfortable today and what defined that space?
-  tags: *id014
-- energy: 1
-  id: environment-011
-  mood: *id013
+  tags:
+  - context
+  - contrast
+  - mood
+  - temporal
+  anchor: moderate
+- id: environment-011
   prompt: Describe the lighting in your space today and how it affected your mood.
-  tags: *id014
-- energy: 1
-  id: environment-012
-  mood: *id013
+  tags:
+  - contrast
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: environment-012
   prompt: What background noise filled your space today and how did it feel?
-  tags: *id014
-- energy: 1
-  id: environment-013
-  mood: *id013
+  tags:
+  - context
+  - contrast
+  - mood
+  - temporal
+  anchor: moderate
+- id: environment-013
   prompt: What object in your space seemed to carry emotional weight today?
-  tags: *id014
-- energy: 1
-  id: environment-014
-  mood: *id013
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: environment-014
   prompt: Where in your environment did your eyes return to again and again?
-  tags: *id014
-- energy: 1
-  id: environment-015
-  mood: *id013
-  prompt: "What change would you make to your space after today\u2019s experience?"
-  tags: *id014
-- energy: 1
-  id: environment-016
-  mood: *id013
+  tags:
+  - context
+  - contrast
+  anchor: moderate
+- id: environment-015
+  prompt: What change would you make to your space after today’s experience?
+  tags:
+  - temporal
+  anchor: moderate
+- id: environment-016
   prompt: What change in your environment today affected your mood or energy?
-  tags: *id014
-- energy: 1
-  id: environment-017
-  mood: *id013
-  prompt: "Describe how the air felt around you at a specific moment \u2014 temperature,\
-    \ scent, stillness."
-  tags: *id014
-- energy: 1
-  id: environment-018
-  mood: *id013
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: environment-017
+  prompt: Describe how the air felt around you at a specific moment — temperature,
+    scent, stillness.
+  tags:
+  - senses
+  anchor: soft
+- id: environment-018
   prompt: What did you touch today in your environment that had an unexpected texture?
-  tags: *id014
-- energy: 1
-  id: environment-019
-  mood: *id013
+  tags:
+  - senses
+  - temporal
+  anchor: moderate
+- id: environment-019
   prompt: How did your environment today affect your ability to focus or relax?
-  tags: *id014
-- energy: 1
-  id: environment-020
-  mood: *id013
-  prompt: "What object in your space felt meaningful today \u2014 even if only briefly?"
-  tags: *id014
-- energy: 1
-  id: environment-021
-  mood: *id013
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: environment-020
+  prompt: What object in your space felt meaningful today — even if only briefly?
+  tags:
+  - deep
+  - temporal
+  anchor: moderate
+- id: environment-021
   prompt: Describe the lighting in your space today and how it affected your mood.
-  tags: *id014
-- energy: 1
-  id: environment-022
-  mood: *id013
+  tags:
+  - contrast
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: environment-022
   prompt: What background noise filled your space today and how did it feel?
-  tags: *id014
-- energy: 1
-  id: environment-023
-  mood: *id013
+  tags:
+  - context
+  - contrast
+  - mood
+  - temporal
+  anchor: moderate
+- id: environment-023
   prompt: What object in your space seemed to carry emotional weight today?
-  tags: *id014
-- energy: 1
-  id: environment-024
-  mood: *id013
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: environment-024
   prompt: Where in your environment did your eyes return to again and again?
-  tags: *id014
-- energy: 1
-  id: environment-025
-  mood: *id013
-  prompt: "What change would you make to your space after today\u2019s experience?"
-  tags: *id014
-- energy: 1
-  id: routines-001
-  mood: &id015
-  - meh
-  - okay
+  tags:
+  - context
+  - contrast
+  anchor: moderate
+- id: environment-025
+  prompt: What change would you make to your space after today’s experience?
+  tags:
+  - temporal
+  anchor: moderate
+- id: routines-001
   prompt: What part of your daily routine felt different today? Describe what happened
     and how it felt.
-  tags: &id016
-  - routine
-  - daily
-- energy: 1
-  id: routines-002
-  mood: *id015
-  prompt: "Describe a task you did today \u2014 how did it feel compared to usual?"
-  tags: *id016
-- energy: 1
-  id: routines-003
-  mood: *id015
+  tags:
+  - context
+  - contrast
+  - narrative
+  - senses
+  - temporal
+  anchor: soft
+- id: routines-002
+  prompt: Describe a task you did today — how did it feel compared to usual?
+  tags:
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: routines-003
   prompt: Was there anything that broke your normal routine today? How did you respond?
-  tags: *id016
-- energy: 1
-  id: routines-004
-  mood: *id015
+  tags:
+  - temporal
+  anchor: moderate
+- id: routines-004
   prompt: What time of day felt most familiar today? Describe the scene and why it
     felt that way.
-  tags: *id016
-- energy: 1
-  id: routines-005
-  mood: *id015
-  prompt: "Describe the rhythm of your day \u2014 was it smooth or interrupted? What\
-    \ influenced it?"
-  tags: *id016
-- energy: 1
-  id: routines-006
-  mood: *id015
+  tags:
+  - contrast
+  - deep
+  - scene
+  - senses
+  - temporal
+  anchor: moderate
+- id: routines-005
+  prompt: Describe the rhythm of your day — was it smooth or interrupted? What influenced
+    it?
+  tags:
+  - mood
+  - senses
+  anchor: soft
+- id: routines-006
   prompt: What part of your routine felt most grounding today?
-  tags: *id016
-- energy: 1
-  id: routines-007
-  mood: *id015
+  tags:
+  - temporal
+  anchor: soft
+- id: routines-007
   prompt: What task today felt automatic and what did you think about while doing
     it?
-  tags: *id016
-- energy: 1
-  id: routines-008
-  mood: *id015
+  tags:
+  - contrast
+  - temporal
+  anchor: soft
+- id: routines-008
   prompt: Was there something you delayed or skipped in your usual routine today?
-  tags: *id016
-- energy: 1
-  id: routines-009
-  mood: *id015
+  tags:
+  - temporal
+  anchor: moderate
+- id: routines-009
   prompt: Describe the start or end of your day and how it set the tone.
-  tags: *id016
-- energy: 1
-  id: routines-010
-  mood: *id015
-  prompt: "What did you repeat today that you\u2019ve done many times before?"
-  tags: *id016
-- energy: 1
-  id: routines-011
-  mood: *id015
+  tags:
+  - contrast
+  - senses
+  anchor: soft
+- id: routines-010
+  prompt: What did you repeat today that you’ve done many times before?
+  tags:
+  - context
+  - temporal
+  anchor: moderate
+- id: routines-011
   prompt: What task felt like a chore today and why?
-  tags: *id016
-- energy: 1
-  id: routines-012
-  mood: *id015
-  prompt: "Describe a small break in your routine \u2014 intentional or not."
-  tags: *id016
-- energy: 1
-  id: routines-013
-  mood: *id015
+  tags:
+  - contrast
+  - deep
+  - temporal
+  anchor: moderate
+- id: routines-012
+  prompt: Describe a small break in your routine — intentional or not.
+  tags:
+  - senses
+  anchor: soft
+- id: routines-013
   prompt: What routine do you wish you had today?
-  tags: *id016
-- energy: 1
-  id: routines-014
-  mood: *id015
+  tags:
+  - temporal
+  anchor: moderate
+- id: routines-014
   prompt: What was the most nourishing part of your routine today?
-  tags: *id016
-- energy: 1
-  id: routines-015
-  mood: *id015
+  tags:
+  - temporal
+  anchor: moderate
+- id: routines-015
   prompt: What repeated moment today felt different from usual?
-  tags: *id016
-- energy: 1
-  id: routines-016
-  mood: *id015
-  prompt: "Describe how your routine today mirrored or defied yesterday\u2019s."
-  tags: *id016
-- energy: 1
-  id: routines-017
-  mood: *id015
+  tags:
+  - temporal
+  anchor: soft
+- id: routines-016
+  prompt: Describe how your routine today mirrored or defied yesterday’s.
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: routines-017
   prompt: What part of your day felt most repetitive? What thoughts accompanied it?
-  tags: *id016
-- energy: 1
-  id: routines-018
-  mood: *id015
+  tags: []
+  anchor: soft
+- id: routines-018
   prompt: Did you create or adjust any rituals today, even unintentionally?
-  tags: *id016
-- energy: 1
-  id: routines-019
-  mood: *id015
+  tags:
+  - temporal
+  anchor: moderate
+- id: routines-019
   prompt: What small moment in your routine felt unexpectedly alive?
-  tags: *id016
-- energy: 1
-  id: routines-020
-  mood: *id015
-  prompt: "What did you skip today that you usually do \u2014 and how did that change\
-    \ things?"
-  tags: *id016
-- energy: 1
-  id: routines-021
-  mood: *id015
+  tags: []
+  anchor: soft
+- id: routines-020
+  prompt: What did you skip today that you usually do — and how did that change things?
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: routines-021
   prompt: What task felt like a chore today and why?
-  tags: *id016
-- energy: 1
-  id: routines-022
-  mood: *id015
-  prompt: "Describe a small break in your routine \u2014 intentional or not."
-  tags: *id016
-- energy: 1
-  id: routines-023
-  mood: *id015
+  tags:
+  - contrast
+  - deep
+  - temporal
+  anchor: moderate
+- id: routines-022
+  prompt: Describe a small break in your routine — intentional or not.
+  tags:
+  - senses
+  anchor: soft
+- id: routines-023
   prompt: What routine do you wish you had today?
-  tags: *id016
-- energy: 1
-  id: routines-024
-  mood: *id015
+  tags:
+  - temporal
+  anchor: moderate
+- id: routines-024
   prompt: What was the most nourishing part of your routine today?
-  tags: *id016
-- energy: 1
-  id: routines-025
-  mood: *id015
+  tags:
+  - temporal
+  anchor: moderate
+- id: routines-025
   prompt: What repeated moment today felt different from usual?
-  tags: *id016
-- energy: 2
-  id: nature-001
-  mood: &id017
-  - meh
-  - okay
-  - joyful
+  tags:
+  - temporal
+  anchor: soft
+- id: nature-001
   prompt: What did the sky look like today? Describe colors, clouds, or light.
-  tags: &id018
-  - nature
-  - sensory
-- energy: 2
-  id: nature-002
-  mood: *id017
-  prompt: "Describe a natural detail you observed today \u2014 where was it and what\
-    \ did you notice?"
-  tags: *id018
-- energy: 2
-  id: nature-003
-  mood: *id017
-  prompt: "How did today\u2019s weather shape your experience? Include where you were\
-    \ and how you felt."
-  tags: *id018
-- energy: 2
-  id: nature-004
-  mood: *id017
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: nature-002
+  prompt: Describe a natural detail you observed today — where was it and what did
+    you notice?
+  tags:
+  - context
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
+- id: nature-003
+  prompt: How did today’s weather shape your experience? Include where you were and
+    how you felt.
+  tags:
+  - context
+  - contrast
+  - temporal
+  anchor: soft
+- id: nature-004
   prompt: Did you spend time outdoors today? Describe the environment and its effect
     on you.
-  tags: *id018
-- energy: 2
-  id: nature-005
-  mood: *id017
-  prompt: "Describe a seasonal change you noticed today \u2014 what signs told you\
-    \ it was happening?"
-  tags: *id018
-- energy: 2
-  id: nature-006
-  mood: *id017
+  tags:
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
+- id: nature-005
+  prompt: Describe a seasonal change you noticed today — what signs told you it was
+    happening?
+  tags:
+  - context
+  - senses
+  - temporal
+  anchor: soft
+- id: nature-006
   prompt: What plant, tree, or flower did you notice today and how did it appear?
-  tags: *id018
-- energy: 2
-  id: nature-007
-  mood: *id017
+  tags:
+  - contrast
+  - temporal
+  anchor: soft
+- id: nature-007
   prompt: Describe any animals, birds, or insects you saw today.
-  tags: *id018
-- energy: 2
-  id: nature-008
-  mood: *id017
-  prompt: "How did the air feel today \u2014 its temperature, humidity, or breeze?"
-  tags: *id018
-- energy: 2
-  id: nature-009
-  mood: *id017
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: nature-008
+  prompt: How did the air feel today — its temperature, humidity, or breeze?
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: nature-009
   prompt: What natural textures did you observe today?
-  tags: *id018
-- energy: 2
-  id: nature-010
-  mood: *id017
+  tags:
+  - senses
+  - temporal
+  anchor: moderate
+- id: nature-010
   prompt: Where did nature interrupt or enhance your day?
-  tags: *id018
-- energy: 2
-  id: nature-011
-  mood: *id017
+  tags:
+  - context
+  anchor: moderate
+- id: nature-011
   prompt: Describe the way light interacted with the natural world around you today.
-  tags: *id018
-- energy: 2
-  id: nature-012
-  mood: *id017
-  prompt: "What evidence of animals did you notice \u2014 sound, tracks, presence?"
-  tags: *id018
-- energy: 2
-  id: nature-013
-  mood: *id017
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: nature-012
+  prompt: What evidence of animals did you notice — sound, tracks, presence?
+  tags:
+  - senses
+  anchor: soft
+- id: nature-013
   prompt: What part of nature felt especially still or especially alive today?
-  tags: *id018
-- energy: 2
-  id: nature-014
-  mood: *id017
+  tags:
+  - temporal
+  anchor: soft
+- id: nature-014
   prompt: Describe the air today as if you were writing a postcard to someone far
     away.
-  tags: *id018
-- energy: 2
-  id: nature-015
-  mood: *id017
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: nature-015
   prompt: What did nature seem to be doing while you were busy today?
-  tags: *id018
-- energy: 2
-  id: nature-016
-  mood: *id017
+  tags:
+  - temporal
+  anchor: moderate
+- id: nature-016
   prompt: What sounds from nature did you notice today and where were you?
-  tags: *id018
-- energy: 2
-  id: nature-017
-  mood: *id017
+  tags:
+  - context
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
+- id: nature-017
   prompt: How did the sky shift today and what did that signal to you?
-  tags: *id018
-- energy: 2
-  id: nature-018
-  mood: *id017
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: nature-018
   prompt: What was the most alive part of your natural surroundings today?
-  tags: *id018
-- energy: 2
-  id: nature-019
-  mood: *id017
+  tags:
+  - temporal
+  anchor: moderate
+- id: nature-019
   prompt: Where did nature feel especially close or far away today?
-  tags: *id018
-- energy: 2
-  id: nature-020
-  mood: *id017
-  prompt: "What part of nature did you interact with \u2014 even briefly \u2014 and\
-    \ how did it respond?"
-  tags: *id018
-- energy: 2
-  id: nature-021
-  mood: *id017
+  tags:
+  - context
+  - mood
+  - temporal
+  anchor: moderate
+- id: nature-020
+  prompt: What part of nature did you interact with — even briefly — and how did it
+    respond?
+  tags:
+  - contrast
+  anchor: moderate
+- id: nature-021
   prompt: Describe the way light interacted with the natural world around you today.
-  tags: *id018
-- energy: 2
-  id: nature-022
-  mood: *id017
-  prompt: "What evidence of animals did you notice \u2014 sound, tracks, presence?"
-  tags: *id018
-- energy: 2
-  id: nature-023
-  mood: *id017
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: nature-022
+  prompt: What evidence of animals did you notice — sound, tracks, presence?
+  tags:
+  - senses
+  anchor: soft
+- id: nature-023
   prompt: What part of nature felt especially still or especially alive today?
-  tags: *id018
-- energy: 2
-  id: nature-024
-  mood: *id017
+  tags:
+  - temporal
+  anchor: soft
+- id: nature-024
   prompt: Describe the air today as if you were writing a postcard to someone far
     away.
-  tags: *id018
-- energy: 2
-  id: nature-025
-  mood: *id017
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: nature-025
   prompt: What did nature seem to be doing while you were busy today?
-  tags: *id018
-- energy: 1
-  id: questions-001
-  mood: &id019
-  - any
+  tags:
+  - temporal
+  anchor: moderate
+- id: questions-001
   prompt: What question did you find yourself wondering about today? When did it come
     to mind?
-  tags: &id020
-  - inquiry
-  - reflective
-- energy: 1
-  id: questions-002
-  mood: *id019
+  tags:
+  - temporal
+  anchor: moderate
+- id: questions-002
   prompt: If someone asked you what today was like, how would you describe it in detail?
-  tags: *id020
-- energy: 1
-  id: questions-003
-  mood: *id019
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: questions-003
   prompt: What would you ask your future self about this day? Why is that question
     meaningful?
-  tags: *id020
-- energy: 1
-  id: questions-004
-  mood: *id019
+  tags:
+  - deep
+  anchor: strong
+- id: questions-004
   prompt: What did you learn about yourself today? Describe a moment that revealed
     it.
-  tags: *id020
-- energy: 1
-  id: questions-005
-  mood: *id019
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: questions-005
   prompt: What unanswered question are you carrying right now? How does it feel?
-  tags: *id020
-- energy: 1
-  id: questions-006
-  mood: *id019
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: questions-006
   prompt: What question would you ask a friend about your day today?
-  tags: *id020
-- energy: 1
-  id: questions-007
-  mood: *id019
-  prompt: "If you could ask today\u2019s version of yourself one thing, what would\
-    \ it be?"
-  tags: *id020
-- energy: 1
-  id: questions-008
-  mood: *id019
+  tags:
+  - temporal
+  anchor: moderate
+- id: questions-007
+  prompt: If you could ask today’s version of yourself one thing, what would it be?
+  tags:
+  - hypothetical
+  - temporal
+  anchor: moderate
+- id: questions-008
   prompt: What question would help you understand your mood today?
-  tags: *id020
-- energy: 1
-  id: questions-009
-  mood: *id019
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: questions-009
   prompt: What question are you avoiding thinking about?
-  tags: *id020
-- energy: 1
-  id: questions-010
-  mood: *id019
-  prompt: "What\u2019s a question you answered for someone else today?"
-  tags: *id020
-- energy: 1
-  id: questions-011
-  mood: *id019
+  tags: []
+  anchor: moderate
+- id: questions-010
+  prompt: What’s a question you answered for someone else today?
+  tags:
+  - temporal
+  anchor: moderate
+- id: questions-011
   prompt: What question would you ask if you knew someone would really listen?
-  tags: *id020
-- energy: 1
-  id: questions-012
-  mood: *id019
+  tags:
+  - list
+  anchor: moderate
+- id: questions-012
   prompt: What question keeps reappearing lately?
-  tags: *id020
-- energy: 1
-  id: questions-013
-  mood: *id019
+  tags: []
+  anchor: moderate
+- id: questions-013
   prompt: What question are you afraid to answer honestly?
-  tags: *id020
-- energy: 1
-  id: questions-014
-  mood: *id019
+  tags: []
+  anchor: moderate
+- id: questions-014
   prompt: What question today felt answered by experience rather than thought?
-  tags: *id020
-- energy: 1
-  id: questions-015
-  mood: *id019
+  tags:
+  - temporal
+  anchor: soft
+- id: questions-015
   prompt: What kind of question do you wish more people asked you?
-  tags: *id020
-- energy: 1
-  id: questions-016
-  mood: *id019
+  tags: []
+  anchor: moderate
+- id: questions-016
   prompt: What question did you avoid answering today and what might be beneath it?
-  tags: *id020
-- energy: 1
-  id: questions-017
-  mood: *id019
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: questions-017
   prompt: If today asked something of you, what would the question be?
-  tags: *id020
-- energy: 1
-  id: questions-018
-  mood: *id019
+  tags:
+  - temporal
+  anchor: moderate
+- id: questions-018
   prompt: What did you wish you understood better today?
-  tags: *id020
-- energy: 1
-  id: questions-019
-  mood: *id019
+  tags:
+  - temporal
+  anchor: moderate
+- id: questions-019
   prompt: What question would help someone else understand your day more clearly?
-  tags: *id020
-- energy: 1
-  id: questions-020
-  mood: *id019
-  prompt: "What kind of question would you want to be asked about today \u2014 and\
-    \ why?"
-  tags: *id020
-- energy: 1
-  id: questions-021
-  mood: *id019
+  tags:
+  - contrast
+  anchor: moderate
+- id: questions-020
+  prompt: What kind of question would you want to be asked about today — and why?
+  tags:
+  - contrast
+  - deep
+  - temporal
+  anchor: strong
+- id: questions-021
   prompt: What question would you ask if you knew someone would really listen?
-  tags: *id020
-- energy: 1
-  id: questions-022
-  mood: *id019
+  tags:
+  - list
+  anchor: moderate
+- id: questions-022
   prompt: What question keeps reappearing lately?
-  tags: *id020
-- energy: 1
-  id: questions-023
-  mood: *id019
+  tags: []
+  anchor: moderate
+- id: questions-023
   prompt: What question are you afraid to answer honestly?
-  tags: *id020
-- energy: 1
-  id: questions-024
-  mood: *id019
+  tags: []
+  anchor: moderate
+- id: questions-024
   prompt: What question today felt answered by experience rather than thought?
-  tags: *id020
-- energy: 1
-  id: questions-025
-  mood: *id019
+  tags:
+  - temporal
+  anchor: soft
+- id: questions-025
   prompt: What kind of question do you wish more people asked you?
-  tags: *id020
-- energy: 1
-  id: body-001
-  mood: &id021
-  - meh
-  - okay
+  tags: []
+  anchor: moderate
+- id: body-001
   prompt: How did your body feel today? Describe when you noticed tension, relaxation,
     or energy.
-  tags: &id022
-  - body
-  - somatic
-- energy: 1
-  id: body-002
-  mood: *id021
-  prompt: "Describe how you physically experienced a moment of today \u2014 your posture,\
-    \ breath, and energy."
-  tags: *id022
-- energy: 1
-  id: body-003
-  mood: *id021
+  tags:
+  - mood
+  - senses
+  - temporal
+  anchor: soft
+- id: body-002
+  prompt: Describe how you physically experienced a moment of today — your posture,
+    breath, and energy.
+  tags:
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
+- id: body-003
   prompt: When did you feel most comfortable or uncomfortable today? What was happening?
-  tags: *id022
-- energy: 1
-  id: body-004
-  mood: *id021
+  tags:
+  - context
+  - mood
+  - temporal
+  anchor: moderate
+- id: body-004
   prompt: What did you notice about your energy today? How did it change?
-  tags: *id022
-- energy: 1
-  id: body-005
-  mood: *id021
+  tags:
+  - temporal
+  anchor: soft
+- id: body-005
   prompt: Was there a moment you felt especially present in your body? Where were
     you and what were you doing?
-  tags: *id022
-- energy: 1
-  id: body-006
-  mood: *id021
+  tags:
+  - context
+  - contrast
+  anchor: soft
+- id: body-006
   prompt: How did your physical surroundings influence how your body felt today?
-  tags: *id022
-- energy: 1
-  id: body-007
-  mood: *id021
-  prompt: "Describe your breathing at different points today \u2014 when was it slow,\
-    \ fast, calm, shallow?"
-  tags: *id022
-- energy: 1
-  id: body-008
-  mood: *id021
+  tags:
+  - temporal
+  anchor: soft
+- id: body-007
+  prompt: Describe your breathing at different points today — when was it slow, fast,
+    calm, shallow?
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: body-008
   prompt: How did your body react to a specific environment today?
-  tags: *id022
-- energy: 1
-  id: body-009
-  mood: *id021
+  tags:
+  - temporal
+  anchor: moderate
+- id: body-009
   prompt: Did you rest today and what was that rest like?
-  tags: *id022
-- energy: 1
-  id: body-010
-  mood: *id021
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: body-010
   prompt: What movements or gestures did you repeat today?
-  tags: *id022
-- energy: 1
-  id: body-011
-  mood: *id021
+  tags:
+  - temporal
+  anchor: moderate
+- id: body-011
   prompt: What part of your body felt most active or expressive today?
-  tags: *id022
-- energy: 1
-  id: body-012
-  mood: *id021
+  tags:
+  - temporal
+  anchor: soft
+- id: body-012
   prompt: How did your body respond to your emotions today?
-  tags: *id022
-- energy: 1
-  id: body-013
-  mood: *id021
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: body-013
   prompt: Describe a moment of stillness your body experienced today.
-  tags: *id022
-- energy: 1
-  id: body-014
-  mood: *id021
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: body-014
   prompt: When did your body guide you to slow down today?
-  tags: *id022
-- energy: 1
-  id: body-015
-  mood: *id021
+  tags:
+  - temporal
+  anchor: moderate
+- id: body-015
   prompt: What did your physical posture communicate to others today?
-  tags: *id022
-- energy: 1
-  id: body-016
-  mood: *id021
+  tags:
+  - temporal
+  anchor: moderate
+- id: body-016
   prompt: How did your body respond to stress or ease today?
-  tags: *id022
-- energy: 1
-  id: body-017
-  mood: *id021
-  prompt: "Describe your physical energy at three points today \u2014 what changed\
-    \ and why?"
-  tags: *id022
-- energy: 1
-  id: body-018
-  mood: *id021
+  tags:
+  - temporal
+  anchor: moderate
+- id: body-017
+  prompt: Describe your physical energy at three points today — what changed and why?
+  tags:
+  - contrast
+  - deep
+  - list
+  - senses
+  - temporal
+  anchor: moderate
+- id: body-018
   prompt: Where did you feel grounded in your body today and when did that shift?
-  tags: *id022
-- energy: 1
-  id: body-019
-  mood: *id021
+  tags:
+  - context
+  - contrast
+  - mood
+  - temporal
+  anchor: moderate
+- id: body-019
   prompt: What movement today felt natural or satisfying?
-  tags: *id022
-- energy: 1
-  id: body-020
-  mood: *id021
-  prompt: "What part of your body asked for attention today \u2014 and how did you\
-    \ respond?"
-  tags: *id022
-- energy: 1
-  id: body-021
-  mood: *id021
+  tags:
+  - temporal
+  anchor: soft
+- id: body-020
+  prompt: What part of your body asked for attention today — and how did you respond?
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: body-021
   prompt: What part of your body felt most active or expressive today?
-  tags: *id022
-- energy: 1
-  id: body-022
-  mood: *id021
+  tags:
+  - temporal
+  anchor: soft
+- id: body-022
   prompt: How did your body respond to your emotions today?
-  tags: *id022
-- energy: 1
-  id: body-023
-  mood: *id021
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: body-023
   prompt: Describe a moment of stillness your body experienced today.
-  tags: *id022
-- energy: 1
-  id: body-024
-  mood: *id021
+  tags:
+  - senses
+  - temporal
+  anchor: soft
+- id: body-024
   prompt: When did your body guide you to slow down today?
-  tags: *id022
-- energy: 1
-  id: body-025
-  mood: *id021
+  tags:
+  - temporal
+  anchor: moderate
+- id: body-025
   prompt: What did your physical posture communicate to others today?
-  tags: *id022
+  tags:
+  - temporal
+  anchor: moderate
 - id: drained_01
   prompt: What was one small thing that helped you keep going today?
   tags:
-  - mood
-  - survival
-  - list
-  energy: 1
-  mood: drained
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: drained_02
   prompt: Describe a quiet moment you had today, even if it was just a pause.
   tags:
-  - sensory
-  - rest
-  energy: 1
-  mood: drained
-  anchor: strong
+  - senses
+  - temporal
+  anchor: soft
 - id: focused_01
   prompt: What task captured your full attention today, and how did it feel to focus
     that way?
   tags:
-  - focus
-  - narrative
-  energy: 4
-  mood: focused
-  anchor: strong
+  - contrast
+  - mood
+  - temporal
+  anchor: moderate
 - id: focused_02
   prompt: Describe the moment today when you felt most in control or aligned with
     your priorities.
   tags:
-  - intention
-  - reflection
-  energy: 4
-  mood: focused
-  anchor: strong
+  - senses
+  - temporal
+  anchor: soft
 - id: sad_01
   prompt: What did you carry today that felt heavy? Did anything lighten it, even
     slightly?
   tags:
-  - mood
-  - reflection
-  energy: 2
-  mood: sad
-  anchor: strong
+  - temporal
+  anchor: soft
 - id: sad_02
-  prompt: "If today had a soundtrack, what would one song be\u2014and why?"
+  prompt: If today had a soundtrack, what would one song be—and why?
   tags:
-  - mood
-  - metaphor
-  energy: 2
-  mood: sad
+  - contrast
+  - deep
+  - senses
+  - temporal
   anchor: strong
 - id: ritual_01
-  prompt: "What\u2019s one small thing you did today that felt like a ritual?"
+  prompt: What’s one small thing you did today that felt like a ritual?
   tags:
-  - ritual
-  - reflection
-  energy: 2
-  mood: okay
-  anchor: strong
+  - temporal
+  anchor: soft
 - id: ritual_02
   prompt: Did you keep or skip a usual habit today? How did that affect your mood?
   tags:
-  - ritual
-  - contrast
-  energy: 2
-  mood: meh
-  anchor: strong
+  - mood
+  - temporal
+  anchor: moderate
 - id: joy_01
   prompt: What was a moment of joy today, no matter how brief?
   tags:
-  - joy
-  - sensory
-  energy: 3
-  mood: joyful
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: joy_02
   prompt: When did you smile or laugh today, and what sparked it?
   tags:
-  - joy
-  - emotional
-  energy: 3
-  mood: joyful
-  anchor: strong
+  - contrast
+  - temporal
+  anchor: moderate
 - id: planning_01
-  prompt: "What\u2019s one thing you planned or prepared for today?"
+  prompt: What’s one thing you planned or prepared for today?
   tags:
-  - planning
-  - intention
-  energy: 4
-  mood: focused
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: planning_02
   prompt: Did something go according to plan today? How did that feel?
   tags:
-  - planning
-  - contrast
-  energy: 3
-  mood: focused
-  anchor: strong
+  - mood
+  - temporal
+  anchor: moderate
 - id: social_01
   prompt: Who did you talk to today, and what stayed with you from that exchange?
   tags:
-  - social
-  - narrative
-  energy: 3
-  mood: any
-  anchor: strong
+  - contrast
+  - temporal
+  anchor: moderate
 - id: social_02
   prompt: Was there a moment of connection or distance with someone today?
   tags:
-  - social
-  - contrast
-  energy: 3
-  mood: meh
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: contrast_01
   prompt: What part of today felt most different from yesterday?
   tags:
-  - contrast
-  - memory
-  energy: 2
-  mood: any
-  anchor: strong
+  - temporal
+  anchor: soft
 - id: contrast_02
   prompt: What shifted in your mood or energy between morning and evening?
   tags:
   - contrast
-  - mood
-  energy: 2
-  mood: any
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: gratitude_01
   prompt: Was there something you were quietly thankful for today?
   tags:
-  - gratitude
-  - reflection
-  energy: 2
-  mood: any
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: contrast_03
   prompt: What felt out of sync today compared to your expectations?
   tags:
-  - contrast
-  - mood
-  energy: 2
-  mood: any
-  anchor: strong
+  - temporal
+  anchor: soft
 - id: contrast_04
-  prompt: "Describe a time today when your energy didn\u2019t match your environment."
+  prompt: Describe a time today when your energy didn’t match your environment.
   tags:
-  - contrast
-  - sensory
-  energy: 2
-  mood: drained
-  anchor: strong
+  - senses
+  - temporal
+  anchor: soft
 - id: contrast_05
-  prompt: "What part of your day surprised you most\u2014pleasantly or not?"
-  tags:
-  - contrast
-  - reflection
-  energy: 2
-  mood: okay
-  anchor: strong
+  prompt: What part of your day surprised you most—pleasantly or not?
+  tags: []
+  anchor: moderate
 - id: mood_01
   prompt: What emotion showed up most often today, and when did you first notice it?
   tags:
+  - contrast
   - mood
-  - reflection
-  energy: 2
-  mood: any
-  anchor: strong
+  - temporal
+  anchor: soft
 - id: mood_02
   prompt: Did your mood shift during the day? What might have influenced it?
   tags:
   - mood
-  - memory
-  energy: 2
-  mood: any
   anchor: strong
 - id: mood_03
   prompt: Describe how your body and mind expressed your mood today.
   tags:
-  - mood
-  - somatic
-  energy: 2
-  mood: any
-  anchor: strong
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
 - id: joy_03
   prompt: Was there a moment today that made you feel lucky?
   tags:
-  - joy
   - mood
-  energy: 3
-  mood: joyful
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: joy_04
   prompt: Describe a moment today you wished would last longer.
   tags:
-  - joy
-  - reflection
-  energy: 3
-  mood: joyful
-  anchor: strong
+  - senses
+  - temporal
+  anchor: soft
 - id: joy_05
   prompt: What about today gave you a sense of lightness or ease?
   tags:
-  - joy
-  - sensory
-  energy: 3
-  mood: joyful
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: ritual_03
   prompt: What repeated action today brought a sense of calm?
   tags:
-  - ritual
-  - somatic
-  energy: 2
-  mood: okay
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: ritual_04
   prompt: What part of your routine felt like it belonged to you alone?
-  tags:
-  - ritual
-  - narrative
-  energy: 2
-  mood: meh
-  anchor: strong
+  tags: []
+  anchor: soft
 - id: ritual_05
   prompt: Was there a small act of care today that felt sacred?
   tags:
-  - ritual
-  - reflection
-  energy: 2
-  mood: okay
-  anchor: strong
+  - temporal
+  anchor: soft
 - id: narrative_01
   prompt: Tell the story of something small that happened today but felt meaningful.
   tags:
+  - context
+  - deep
   - narrative
-  - reflection
-  energy: 3
-  mood: any
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: narrative_02
   prompt: Walk through your day as if it were a short scene in a novel.
   tags:
-  - narrative
-  - memory
-  energy: 3
-  mood: focused
-  anchor: strong
+  - scene
+  anchor: moderate
 - id: narrative_03
   prompt: What moment today would you include in a letter to your future self?
   tags:
-  - narrative
-  - intention
-  energy: 3
-  mood: okay
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: intention_01
   prompt: What did you intend to do today, and what actually happened?
   tags:
-  - intention
+  - context
   - contrast
-  energy: 3
-  mood: focused
-  anchor: strong
+  - narrative
+  - temporal
+  anchor: moderate
 - id: intention_02
   prompt: Was there a moment today where you paused and made a conscious choice?
   tags:
-  - intention
-  - reflection
-  energy: 3
-  mood: okay
-  anchor: strong
+  - context
+  - contrast
+  - temporal
+  anchor: moderate
 - id: intention_03
   prompt: What part of the day aligned most with your goals?
-  tags:
-  - intention
-  - planning
-  energy: 3
-  mood: focused
-  anchor: strong
+  tags: []
+  anchor: moderate
 - id: metaphor_01
   prompt: If today was a weather forecast, what would it be and why?
   tags:
-  - metaphor
-  - mood
-  energy: 2
-  mood: any
+  - contrast
+  - deep
+  - temporal
   anchor: strong
 - id: metaphor_02
   prompt: Describe your energy today as if it were an animal.
   tags:
-  - metaphor
-  - mood
-  energy: 2
-  mood: any
-  anchor: strong
+  - senses
+  - temporal
+  anchor: soft
 - id: metaphor_03
   prompt: What object best symbolizes how today felt?
   tags:
-  - metaphor
-  - reflection
-  energy: 2
-  mood: any
-  anchor: strong
+  - temporal
+  anchor: soft
 - id: rest_01
   prompt: Did you find rest today? Describe when and how.
   tags:
-  - rest
-  - body
-  energy: 1
-  mood: drained
-  anchor: strong
+  - contrast
+  - senses
+  - temporal
+  anchor: soft
 - id: rest_02
   prompt: What moment of stillness did your body ask for today?
   tags:
-  - rest
-  - somatic
-  energy: 1
-  mood: meh
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: rest_03
   prompt: If your day had included more rest, what might have shifted?
-  tags:
-  - rest
-  - hypothetical
-  energy: 1
-  mood: low
-  anchor: strong
+  tags: []
+  anchor: moderate
 - id: focus_01
   prompt: When today did you feel most absorbed in what you were doing?
   tags:
-  - focus
-  - narrative
-  energy: 4
-  mood: focused
-  anchor: strong
+  - mood
+  - temporal
+  anchor: moderate
 - id: focus_02
-  prompt: "What helped you stay on track today\u2014or what pulled you away?"
+  prompt: What helped you stay on track today—or what pulled you away?
   tags:
-  - focus
-  - contrast
-  energy: 3
-  mood: okay
-  anchor: strong
+  - context
+  - temporal
+  anchor: moderate
 - id: focus_03
   prompt: Describe a moment of clarity or momentum from your day.
   tags:
-  - focus
-  - reflection
-  energy: 4
-  mood: focused
-  anchor: strong
+  - senses
+  anchor: soft
 - id: list_01
   prompt: List three things that grounded you today.
   tags:
   - list
-  - somatic
-  energy: 2
-  mood: okay
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: list_02
   prompt: List three moments of beauty or calm from today.
   tags:
   - list
-  - sensory
-  energy: 2
-  mood: joyful
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: list_03
-  prompt: "List three things you did today that mattered to you\u2014even if small."
+  prompt: List three things you did today that mattered to you—even if small.
   tags:
   - list
-  - intention
-  energy: 2
-  mood: any
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: survival_01
-  prompt: "What was one thing you got through today that wasn\u2019t easy?"
+  prompt: What was one thing you got through today that wasn’t easy?
   tags:
-  - survival
-  - reflection
-  energy: 1
-  mood: drained
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: survival_02
   prompt: Describe how you showed up for yourself, even a little, today.
   tags:
-  - survival
-  - mood
-  energy: 1
-  mood: sad
-  anchor: strong
+  - senses
+  - temporal
+  anchor: soft
 - id: survival_03
   prompt: What helped you keep going today, even briefly?
   tags:
-  - survival
-  - support
-  energy: 1
-  mood: meh
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: gratitude_02
   prompt: Was there something today you appreciated more than usual?
   tags:
-  - gratitude
-  - reflection
-  energy: 2
-  mood: okay
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: gratitude_03
   prompt: Who or what supported you today, directly or indirectly?
   tags:
-  - gratitude
-  - support
-  energy: 2
-  mood: any
-  anchor: strong
+  - temporal
+  anchor: moderate
 - id: gratitude_04
-  prompt: "What\u2019s one comfort you had today that you sometimes forget to notice?"
+  prompt: What’s one comfort you had today that you sometimes forget to notice?
   tags:
-  - gratitude
-  - sensory
-  energy: 2
-  mood: okay
-  anchor: strong
+  - temporal
+  anchor: soft
+- id: selfdoubt_01
+  prompt: Did anything happen today that made you wonder if you were bothering someone?
+  tags:
+  - context
+  - contrast
+  - temporal
+  anchor: moderate
+- id: selfdoubt_02
+  prompt: Think about something you said or did today — if someone else had done it,
+    how would you have judged them?
+  tags:
+  - temporal
+  anchor: moderate
+- id: selfdoubt_03
+  prompt: If a kind friend had watched you go through today, what would they say about
+    how you handled things?
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: selfdoubt_04
+  prompt: What assumptions did you make today about what others were thinking of you?
+  tags:
+  - temporal
+  anchor: moderate
+- id: selfdoubt_05
+  prompt: When did you second-guess yourself today, and what do you think triggered
+    it?
+  tags:
+  - contrast
+  - temporal
+  anchor: moderate
+- id: selfdoubt_06
+  prompt: Was there a part of yourself that felt harder to accept than usual today?
+  tags:
+  - temporal
+  anchor: soft
+- id: selfdoubt_07
+  prompt: Did you feel like a burden at any point today? What made that feeling show
+    up?
+  tags:
+  - mood
+  - temporal
+  anchor: moderate
+- id: selfdoubt_08
+  prompt: What would have felt different today if you fully believed you had a right
+    to take up space?
+  tags:
+  - temporal
+  anchor: soft
+- id: selfdoubt_09
+  prompt: If you could reframe one moment of self-doubt from today as quiet confidence,
+    what would that look like?
+  tags:
+  - hypothetical
+  - scene
+  - temporal
+  anchor: moderate
+- id: selfdoubt_10
+  prompt: Did anyone show they valued you today — in a way that challenged your self-doubt?
+  tags:
+  - temporal
+  anchor: moderate
+- id: micro-001
+  prompt: Pick an emoji for today.
+  tags:
+  - mood
+  - temporal
+  anchor: micro
+- id: micro-002
+  prompt: What color describes today?
+  tags:
+  - senses
+  - temporal
+  anchor: micro
+- id: micro-003
+  prompt: One word for your energy level.
+  tags:
+  - mood
+  anchor: micro
+- id: micro-004
+  prompt: Were you inside or outside more?
+  tags:
+  - context
+  - temporal
+  anchor: micro
+- id: micro-005
+  prompt: 'Choose: stillness or motion?'
+  tags:
+  - senses
+  - contrast
+  anchor: micro
+- id: micro-006
+  prompt: Your day in 3 words.
+  tags:
+  - mood
+  - temporal
+  anchor: micro
+- id: micro-007
+  prompt: What sound do you remember?
+  tags:
+  - senses
+  - temporal
+  anchor: micro
+- id: micro-008
+  prompt: Cool or warm today?
+  tags:
+  - senses
+  - temporal
+  anchor: micro
+- id: micro-009
+  prompt: Name something you touched.
+  tags:
+  - senses
+  - temporal
+  anchor: micro
+- id: micro-010
+  prompt: Was there a moment of quiet?
+  tags:
+  - contrast
+  - temporal
+  anchor: micro
+- id: micro-011
+  prompt: How much light was around you?
+  tags:
+  - senses
+  - temporal
+  anchor: micro
+- id: micro-012
+  prompt: Did anything surprise you?
+  tags:
+  - contrast
+  - temporal
+  anchor: micro
+- id: micro-013
+  prompt: One thing you avoided?
+  tags:
+  - mood
+  - deep
+  anchor: micro
+- id: micro-014
+  prompt: Hardest part of today?
+  tags:
+  - mood
+  - temporal
+  anchor: micro
+- id: micro-015
+  prompt: Softest thing you noticed?
+  tags:
+  - senses
+  anchor: micro
