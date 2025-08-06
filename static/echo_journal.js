@@ -10,6 +10,7 @@
   const getEnergyValue = (level) => energyLevels[level] || null;
   const defaultIntegrations = { wordnik: true, immich: true, jellyfin: true, fact: true, ai: true };
   const integrationSettings = { ...defaultIntegrations, ...(cfg.integrations || {}) };
+  const tz_offset = -new Date().getTimezoneOffset();
 
   async function fetchWeather(lat, lon) {
     try {
@@ -437,7 +438,18 @@
               'Content-Type': 'application/json',
               'X-CSRF-Token': cfg.csrfToken,
             },
-            body: JSON.stringify({ date, content, prompt, category, location, weather, mood, energy, integrations: integrationSettings })
+            body: JSON.stringify({
+              date,
+              content,
+              prompt,
+              category,
+              location,
+              weather,
+              mood,
+              energy,
+              tz_offset,
+              integrations: integrationSettings,
+            })
           });
 
           if (!response.ok) {
