@@ -2,6 +2,8 @@
 
 import asyncio
 import json as jsonlib
+import os
+import time
 
 from echo_journal import immich_utils
 
@@ -47,12 +49,21 @@ def test_fetch_assets_posts_search(monkeypatch):
     client = FakeClient()
     monkeypatch.setattr(immich_utils.httpx, "AsyncClient", lambda: client)
     monkeypatch.setattr(immich_utils, "IMMICH_URL", "http://example/api")
-
-    asyncio.run(immich_utils.fetch_assets_for_date("2025-07-19"))
+    original_tz = os.environ.get("TZ")
+    os.environ["TZ"] = "America/Los_Angeles"
+    time.tzset()
+    try:
+        asyncio.run(immich_utils.fetch_assets_for_date("2025-07-19"))
+    finally:
+        if original_tz is None:
+            del os.environ["TZ"]
+        else:
+            os.environ["TZ"] = original_tz
+        time.tzset()
 
     assert client.captured["url"] == "http://example/api/search/metadata"
-    assert client.captured["json"]["takenAfter"] == "2025-07-18T09:00:00Z"
-    assert client.captured["json"]["takeBefore"] == "2025-07-20T14:59:59Z"
+    assert client.captured["json"]["takenAfter"] == "2025-07-18T16:00:00Z"
+    assert client.captured["json"]["takeBefore"] == "2025-07-20T21:59:59Z"
 
 
 def test_update_photo_metadata_filters_assets(monkeypatch, tmp_path):

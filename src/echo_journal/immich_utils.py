@@ -2,7 +2,7 @@
 
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -39,13 +39,18 @@ async def fetch_assets_for_date(
 
     # Expand the search range on either side of ``date_str`` to compensate
     # for timezone differences between where photos were taken and UTC.
-    date = datetime.strptime(date_str, "%Y-%m-%d")
+    # ``date_str`` is interpreted as midnight in the server's local timezone
+    # and converted to UTC before being sent to the Immich API.  The previous
+    # implementation treated local times as UTC directly which could shift the
+    # query window by the server's timezone offset.
+    local_tz = datetime.now().astimezone().tzinfo
+    date = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=local_tz)
     start = date - timedelta(hours=IMMICH_TIME_BUFFER)
     end = date + timedelta(days=1, hours=IMMICH_TIME_BUFFER) - timedelta(seconds=1)
 
     payload = {
-        "takenAfter": start.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "takeBefore": end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "takenAfter": start.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "takeBefore": end.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "type": media_type,
     }
 

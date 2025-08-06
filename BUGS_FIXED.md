@@ -845,3 +845,19 @@ The following issues were identified and subsequently resolved.
      ```
      【F:src/echo_journal/jellyfin_utils.py†L81-L92】
 
+69. **Immich asset search used local times as UTC** (fixed)
+   - `fetch_assets_for_date` formatted local naive datetimes with a trailing `Z`,
+     shifting the search window by the server's timezone offset.
+   - The function now attaches the local timezone and converts times to UTC
+     before constructing the payload.
+   - Fixed lines:
+     ```python
+     local_tz = datetime.now().astimezone().tzinfo
+     date = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=local_tz)
+     payload = {
+         "takenAfter": start.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+         "takeBefore": end.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+     }
+     ```
+     【F:src/echo_journal/immich_utils.py†L48-L58】
+
