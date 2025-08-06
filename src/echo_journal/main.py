@@ -13,7 +13,7 @@ import re
 import secrets
 import time
 from collections import defaultdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import DefaultDict, Dict
@@ -510,9 +510,11 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
         frontmatter = await read_existing_frontmatter(file_path)
 
     # Update or add save_time field
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     if tz_offset is not None:
         now += timedelta(minutes=tz_offset)
+    else:
+        now = datetime.now().astimezone()
     label = time_of_day_label(now)
     frontmatter = _with_updated_save_time(frontmatter, label)
     frontmatter = _with_updated_category(frontmatter, category)
