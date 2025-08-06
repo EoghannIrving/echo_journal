@@ -227,6 +227,8 @@ def test_save_entry_records_afternoon(test_client, monkeypatch, payload, utc_tim
     """Saving at 3 PM local time records an Afternoon label."""
 
     class FakeDatetime(datetime):
+        """Provide a controllable datetime for tests."""
+
         @classmethod
         def now(cls, tz=None):
             if tz is None:
