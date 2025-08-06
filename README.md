@@ -16,13 +16,10 @@ Journalling should not feel like a chore or a responsibility. I have bounced off
 ## Table of Contents
 
 - [Features](#features)
+- [How It Looks](#how-it-looks)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-  - [Automated setup](#automated-setup)
-  - [Manual setup](#manual-setup)
 - [Usage](#usage)
-  - [Run with Python](#run-with-python)
-  - [Run with Docker Compose](#run-with-docker-compose)
 - [Configuration](#configuration) ([details](docs/configuration.md))
 - [Example walkthrough](#example-walkthrough)
 - [API reference](#api-reference)
@@ -30,7 +27,6 @@ Journalling should not feel like a chore or a responsibility. I have bounced off
 - [Roadmap](#roadmap)
 - [Design Guardrails](#design-guardrails)
 - [YAML Frontmatter Reference](#yaml-frontmatter-reference)
-  - [Disabling integrations](#disabling-integrations)
 - [Deployment](#deployment)
 - [Testing](#testing)
 - [Bugs and Issues](#bugs-and-issues)
@@ -64,6 +60,26 @@ Journalling should not feel like a chore or a responsibility. I have bounced off
 **🔐 Local-first & private**  
 - Runs on your machine or private server.  
 - Optional HTTP Basic authentication for remote use.  
+
+## How It Looks
+
+![Echo Journal journaling screen in dark mode with a prompt and mood tags](docs/images/journal-dark.png)
+*Just open, type, and save. No clutter. No guilt.*
+
+![Markdown file open in VS Code with YAML frontmatter including mood, weather, and media](docs/images/frontmatter-example.png)
+*Entries are saved as portable Markdown files with optional frontmatter metadata.*
+
+![Side-by-side prompts showing high and low energy variations in Echo Journal](docs/images/adaptive-prompts.png)
+*Prompts shift to match your energy and mental bandwidth.*
+
+![Echo Journal Stats screen in dark mode](docs/images/stats.png)
+*Tracks stats in a guilt-free way. You can continue a weekly streak even if you break your daily streak .*
+
+![Echo Journal Archive screen in dark mode](docs/images/archives.png)
+*Archives allow you to revisit any day where you wrote a journal entry. Easily filter by meta-data.*
+
+![Echo Journal individual journal entry with meta-data](docs/images/archive-entry.png)
+*Archive entry page centers on your journal but surrounds it with metadata to enrich the experience*
 
 ## Prerequisites
 
