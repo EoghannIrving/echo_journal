@@ -878,9 +878,12 @@ def test_archive_filter_has_songs(test_client):
     md2.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
 
     resp = test_client.get("/archive", params={"filter": "has_songs"})
-    assert resp.status_code == 200
-    assert "2025-01-01" in resp.text
-    assert "2025-01-02" not in resp.text
+    if resp.status_code != 200:
+        pytest.fail(f"Unexpected status code: {resp.status_code}")
+    if "2025-01-01" not in resp.text:
+        pytest.fail("'2025-01-01' not found in response")
+    if "2025-01-02" in resp.text:
+        pytest.fail("'2025-01-02' unexpectedly found in response")
 
 
 def test_archive_sort_by_songs(test_client):
@@ -899,8 +902,10 @@ def test_archive_sort_by_songs(test_client):
     path2.write_text(json.dumps([{"track": "a"}]), encoding="utf-8")
 
     resp = test_client.get("/archive", params={"sort_by": "songs"})
-    assert resp.status_code == 200
-    assert resp.text.find("2026-01-02") < resp.text.find("2026-01-01")
+    if resp.status_code != 200:
+        pytest.fail(f"Unexpected status code: {resp.status_code}")
+    if resp.text.find("2026-01-02") >= resp.text.find("2026-01-01"):
+        pytest.fail("Entries not sorted by songs metadata")
 
 
 def test_view_entry_shows_media(test_client):
@@ -917,9 +922,12 @@ def test_view_entry_shows_media(test_client):
     json_path.write_text(json.dumps(media_items), encoding="utf-8")
 
     resp = test_client.get("/archive/2027-01-01")
-    assert resp.status_code == 200
-    assert "Show - Ep1" in resp.text
-    assert "Movie" in resp.text
+    if resp.status_code != 200:
+        pytest.fail(f"Unexpected status code: {resp.status_code}")
+    if "Show - Ep1" not in resp.text:
+        pytest.fail("'Show - Ep1' not found in response")
+    if "Movie" not in resp.text:
+        pytest.fail("'Movie' not found in response")
 
 
 def test_archive_filter_has_media(test_client):
@@ -935,9 +943,12 @@ def test_archive_filter_has_media(test_client):
     md2.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
 
     resp = test_client.get("/archive", params={"filter": "has_media"})
-    assert resp.status_code == 200
-    assert "2028-01-01" in resp.text
-    assert "2028-01-02" not in resp.text
+    if resp.status_code != 200:
+        pytest.fail(f"Unexpected status code: {resp.status_code}")
+    if "2028-01-01" not in resp.text:
+        pytest.fail("'2028-01-01' not found in response")
+    if "2028-01-02" in resp.text:
+        pytest.fail("'2028-01-02' unexpectedly found in response")
 
 
 def test_asset_proxy_download(test_client, monkeypatch):
