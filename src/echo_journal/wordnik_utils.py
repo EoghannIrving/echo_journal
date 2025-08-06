@@ -1,6 +1,6 @@
 """Utility functions for interacting with the Wordnik API."""
 
-# pylint: disable=duplicate-code,global-statement
+# pylint: disable=duplicate-code
 
 from typing import Optional, Tuple
 
@@ -8,21 +8,23 @@ import httpx
 
 from . import config
 
-# Expose API key for tests while deriving from configuration
-WORDNIK_API_KEY = config.WORDNIK_API_KEY
 WORDNIK_URL = "https://api.wordnik.com/v4/words.json/wordOfTheDay"
 
 
-def refresh_config() -> None:
-    """Refresh module-level configuration aliases."""
-    global WORDNIK_API_KEY
-    WORDNIK_API_KEY = config.WORDNIK_API_KEY
+def get_api_key() -> Optional[str]:
+    """Return the configured Wordnik API key.
+
+    The indirection allows tests to override how the key is retrieved without
+    resorting to modifying module-level globals.
+    """
+
+    return config.WORDNIK_API_KEY
 
 
 async def fetch_word_of_day() -> Optional[Tuple[str, str]]:
     """Return today's Wordnik word of the day and definition if available."""
 
-    api_key = WORDNIK_API_KEY
+    api_key = get_api_key()
     if not api_key:
         return None
     try:
