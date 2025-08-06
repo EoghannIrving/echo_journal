@@ -6,7 +6,8 @@ optional HTTP Basic authentication that can be enabled by setting the
 those variables, there is no built‑in authentication. **Do not expose the
 application directly to the internet.** If you deploy publicly, enable Basic
 Auth and place the app behind a secure reverse proxy with additional access
-controls.
+controls. Refer to [docs/deployment.md](docs/deployment.md) for guidance on
+secure configuration and reverse proxy examples.
 
 ## Reporting a Vulnerability
 
