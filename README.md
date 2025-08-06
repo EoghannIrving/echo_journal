@@ -2,10 +2,15 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml/badge.svg)](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-blue)
 
-Echo Journal is a minimalist FastAPI journaling app that stores Markdown
-entries enriched with optional metadata like mood, energy, location, weather,
-photos and media. Daily prompts can be refreshed or even generated on demand
-with an AI helper. Below is the project roadmap and current feature set.
+> **A low-friction, neurodivergent-friendly journaling app that stores your words in timeless Markdown and adapts to your mood and energy.**  
+
+Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds** and anyone who values simplicity, flexibility, and control over their own data.  
+
+- **Markdown at its core** — every entry is a plain `.md` file you can read, edit, and back up forever.  
+- **Adaptive prompts** — adjusts to your current mood and energy to make journaling possible even on low-bandwidth days.  
+- **Ultra-low friction** — open → type → save. No clutter, no pressure.  
+- **Optional enrichment** — mood, energy, location, weather, photos, media — all if you want, none if you don’t.  
+
 
 - [Features](#features)
 - [Prerequisites](#prerequisites)
@@ -18,12 +23,30 @@ with an AI helper. Below is the project roadmap and current feature set.
 
 ## Features
 
-- Markdown entries saved locally as `.md` files
-- Optional metadata for mood, energy, location, weather, photos, and media
-- Daily prompts from `prompts.yaml` with AI assistance and a “New Prompt” refresh
-- Archive view and stats dashboard for reviewing past entries
-- Per-browser toggles for Wordnik, Immich, and Jellyfin integrations
-- Optional HTTP Basic authentication for remote access
+**📄 Markdown-first journaling**  
+- Portable, human-readable `.md` files with optional YAML frontmatter.  
+- Compatible with Obsidian, VS Code, or any text editor.
+- They are your thoughts and memories, take them anywhere.  
+
+**🧠 Adapts to your mood and energy**  
+- Daily prompts that scale to your current bandwidth because sometimes you just.. *can't*.
+- Micro prompts for those bad days. (Write a word, type an emjoi).
+- AI helper to refresh or create new prompts instantly.  
+
+**♾️ AuADHD-friendly design**  
+- One-action journaling: open → tag mood → write → save.
+- Prompts designed to encourage writing without pressuring.
+- Optional auto-enrichment (location, weather, media, photos, trivia).  
+- Stats and archive views for gentle pattern tracking.  
+
+**🔌 Optional integrations**  
+- **Wordnik** (word of the day), **Immich** (photos), **Jellyfin** (media history), **NumbersAPI** (Fact of the day).  
+- Per-browser toggles — nothing is forced, nothing runs you didn’t ask for.
+- See your day in context.
+
+**🔐 Local-first & private**  
+- Runs on your machine or private server.  
+- Optional HTTP Basic authentication for remote use.  
 
 ## Prerequisites
 
@@ -216,6 +239,14 @@ Known issues are tracked in [BUGS.md](BUGS.md). If you run into a problem that's
 ## Contributing
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to get started.
+
+## About the Development
+
+Echo Journal was created using an AI-assisted development workflow guided by human design and review.
+This process allowed for rapid prototyping, iterative feature testing, and fast refinement while maintaining control over architecture, security, and usability.
+Every feature in this Alpha is been reviewed, tested, and integrated with a focus on privacy, accessibility, and low-friction journaling.
+
+Human contributors are encouraged and welcome — your insight, creativity, and lived experience can help shape Echo Journal’s future.
 
 ## License
 
