@@ -79,6 +79,7 @@ auth_logger: logging.Logger
 ai_logger: logging.Logger
 immich_logger: logging.Logger
 fact_logger: logging.Logger
+save_logger: logging.Logger
 templates: Jinja2Templates | None
 
 
@@ -138,13 +139,14 @@ def _configure_logging() -> None:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
         handlers=handlers,
     )
-    global logger, jellyfin_logger, auth_logger, ai_logger, immich_logger, fact_logger
+    global logger, jellyfin_logger, auth_logger, ai_logger, immich_logger, fact_logger, save_logger
     logger = logging.getLogger("ej.timing")
     jellyfin_logger = logging.getLogger("ej.jellyfin")
     auth_logger = logging.getLogger("ej.auth")
     ai_logger = logging.getLogger("ej.ai_prompt")
     immich_logger = logging.getLogger("ej.immich")
     fact_logger = logging.getLogger("ej.fact")
+    save_logger = logging.getLogger("ej.save")
 
 
 def _configure_mounts_and_templates() -> None:
@@ -510,13 +512,25 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
         frontmatter = await read_existing_frontmatter(file_path)
 
     # Update or add save_time field
-    now = datetime.now(timezone.utc)
+    utc_now = datetime.now(timezone.utc)
+    save_logger.debug("UTC now=%s tz_offset=%s", utc_now.isoformat(), tz_offset)
+    now = utc_now
     if tz_offset is not None:
         now += timedelta(minutes=tz_offset)
+        save_logger.debug("Adjusted time with tz_offset: %s", now.isoformat())
     else:
         now = datetime.now().astimezone()
+        save_logger.debug("Local timezone time: %s", now.isoformat())
     label = time_of_day_label(now)
+    save_logger.debug("Computed save_time label='%s' for hour=%s", label, now.hour)
+    if frontmatter:
+        save_logger.debug(
+            "Existing frontmatter before save_time update:\n%s", frontmatter
+        )
+    else:
+        save_logger.debug("No existing frontmatter; creating new frontmatter")
     frontmatter = _with_updated_save_time(frontmatter, label)
+    save_logger.debug("Frontmatter after save_time update:\n%s", frontmatter)
     frontmatter = _with_updated_category(frontmatter, category)
     frontmatter = _with_updated_mood(frontmatter, mood)
     frontmatter = _with_updated_energy(frontmatter, energy)
