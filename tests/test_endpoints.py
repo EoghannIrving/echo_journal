@@ -975,6 +975,8 @@ def test_asset_proxy_invalid_asset_id(test_client, monkeypatch, caplog):
     monkeypatch.setattr(main, "IMMICH_ALLOWED_HOSTS", {"example"})
 
     class BoomClient:
+        """Async client stub that should never be instantiated."""
+
         async def __aenter__(self):  # pragma: no cover - should not run
             raise AssertionError("client should not be created")
 
@@ -998,6 +1000,8 @@ def test_asset_proxy_disallowed_host(test_client, monkeypatch, caplog):
     monkeypatch.setattr(main, "IMMICH_ALLOWED_HOSTS", {"example"})
 
     class BoomClient:
+        """Async client stub that should never be instantiated."""
+
         async def __aenter__(self):  # pragma: no cover - should not run
             raise AssertionError("client should not be created")
 
@@ -1017,12 +1021,12 @@ def test_refresh_config_vars_adds_immich_host(monkeypatch):
     """Host from IMMICH_URL should be included in allowed host set."""
     monkeypatch.setattr(main.config, "IMMICH_URL", "http://photos.example.com/api")
 
-    main._refresh_config_vars()
+    main._refresh_config_vars()  # pylint: disable=protected-access
     assert "photos.example.com" in main.IMMICH_ALLOWED_HOSTS
 
     # Restore default configuration for subsequent tests
     monkeypatch.setattr(main.config, "IMMICH_URL", None)
-    main._refresh_config_vars()
+    main._refresh_config_vars()  # pylint: disable=protected-access
 
 
 def test_thumbnail_proxy_download(test_client, monkeypatch):
@@ -1043,11 +1047,14 @@ def test_thumbnail_proxy_download(test_client, monkeypatch):
             return False
 
         async def get(self, url, headers=None, timeout=None):
+            """Capture request details and return a fake response."""
             self.request_url = url
             self.request_headers = headers
             self.request_timeout = timeout
 
-            class Resp:
+            class Resp:  # pylint: disable=too-few-public-methods
+                """Simple fake HTTP response."""
+
                 status_code = 200
                 headers = {"content-type": "image/jpeg"}
                 content = b"img"
