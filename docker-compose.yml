@@ -8,6 +8,7 @@ services:
       - ./prompts.yaml:/app/prompts.yaml
       - "${DATA_DIR}:/journals"
     environment:
+      - TZ:${TZ}
       - ECHO_JOURNAL_HOST=0.0.0.0
       - ECHO_JOURNAL_PORT=8000
       # Uncomment to enable TLS inside the container
