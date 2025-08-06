@@ -2,12 +2,14 @@
 
 > **A low-friction, neurodivergent-friendly journaling app that stores your words in timeless Markdown and adapts to your mood and energy.**  
 
-Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds** and anyone who values simplicity, flexibility, and control over their own data.  
+Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds** and anyone who values simplicity, flexibility, and control over their own data.
 
 - **Markdown at its core** — every entry is a plain `.md` file you can read, edit, and back up forever.  
 - **Adaptive prompts** — adjusts to your current mood and energy to make journaling possible even on low-bandwidth days.  
 - **Ultra-low friction** — open → type → save. No clutter, no pressure.  
-- **Optional enrichment** — mood, energy, location, weather, photos, media — all if you want, none if you don’t.  
+- **Optional enrichment** — mood, energy, location, weather, photos, media — all if you want, none if you don’t.
+
+Journalling should not feel like a chore or a responsibility. I have bounced off so many different tools over the years because in the end it just became a burden and I was left with feelling like I **had** to do something.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/EoghannIrving/echo_journal/actions/workflows/main.yml/badge.svg)](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Version 0.1.0-alpha](https://img.shields.io/badge/version-0.1.0-blue) [![Built with Human + AI Collaboration](https://img.shields.io/badge/Built%20with-Human%20+%20AI%20Collaboration-blue)](#about-the-development)
 
