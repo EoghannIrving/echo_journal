@@ -59,6 +59,9 @@ NOMINATIM_USER_AGENT = _get_setting(
     "NOMINATIM_USER_AGENT", "EchoJournal/1.0 (contact@example.com)"
 )
 
+# Number of retry attempts for Numbers API requests.
+NUMBERS_API_RETRIES = int(_get_setting("NUMBERS_API_RETRIES", "0"))
+
 # File logging path - defaults to ``DATA_DIR/.logs/echo_journal.log`` but can
 # be overridden via the ``LOG_FILE`` environment variable.
 LOG_FILE = Path(_get_setting("LOG_FILE", str(DATA_DIR / ".logs" / "echo_journal.log")))
