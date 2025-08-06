@@ -28,6 +28,17 @@ Thank you for your interest in improving Echo Journal! This project welcomes pul
   ```
 - Execute the test suite with `pytest` before submitting a pull request.
 
+### Running tests
+
+Set up a fresh environment and run the suite:
+
+```sh
+python -m venv .venv
+source .venv/bin/activate
+pip install .
+pytest
+```
+
 ## Submitting changes
 
 1. Create a feature branch for your work.
