@@ -304,6 +304,7 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         return RedirectResponse(url="/settings", status_code=307)
     today = date.today()
     date_str = today.isoformat()
+    formatted_date = today.strftime("%A, %B %-d, %Y")
     file_path = safe_entry_path(date_str, config.DATA_DIR)
 
     if file_path.exists():
@@ -356,6 +357,7 @@ async def index(request: Request):  # pylint: disable=too-many-locals
             "category": category,
             "anchor": anchor,
             "date": date_str,
+            "formatted_date": formatted_date,
             "content": entry,
             "readonly": False,  # Explicit
             "active_page": "home",
@@ -698,11 +700,14 @@ async def archive_view(  # pylint: disable=too-many-branches
 async def archive_entry(request: Request, entry_date: str):
     """Display a previously written journal entry."""
     try:
+        entry_date_obj = datetime.strptime(entry_date, "%Y-%m-%d").date()
         file_path = safe_entry_path(entry_date, config.DATA_DIR)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail="Entry not found") from exc
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Entry not found")
+
+    formatted_date = entry_date_obj.strftime("%A, %B %-d, %Y")
 
     await update_photo_metadata(entry_date, file_path)
 
@@ -739,6 +744,7 @@ async def archive_entry(request: Request, entry_date: str):
                 attributes=bleach.sanitizer.ALLOWED_ATTRIBUTES,
             ),
             "date": entry_date,
+            "formatted_date": formatted_date,
             "prompt": prompt,
             "location": meta.get("location", ""),
             "weather": format_weather(meta["weather"]) if meta.get("weather") else "",

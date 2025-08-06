@@ -6,7 +6,7 @@
   <h1 id="welcome-message" class="welcome-message font-serif text-center mb-2 opacity-0"
       {% if not readonly %} data-dynamic-greeting="true"{% endif %}>
     {% if readonly %}
-      Welcome back to {{ date }}
+      Welcome back to {{ formatted_date }}
     {% else %}
       Welcome back.
     {% endif %}
