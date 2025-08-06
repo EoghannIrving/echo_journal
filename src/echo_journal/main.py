@@ -78,6 +78,7 @@ jellyfin_logger: logging.Logger
 auth_logger: logging.Logger
 ai_logger: logging.Logger
 immich_logger: logging.Logger
+fact_logger: logging.Logger
 templates: Jinja2Templates
 
 
@@ -137,12 +138,13 @@ def _configure_logging() -> None:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
         handlers=handlers,
     )
-    global logger, jellyfin_logger, auth_logger, ai_logger, immich_logger
+    global logger, jellyfin_logger, auth_logger, ai_logger, immich_logger, fact_logger
     logger = logging.getLogger("ej.timing")
     jellyfin_logger = logging.getLogger("ej.jellyfin")
     auth_logger = logging.getLogger("ej.auth")
     ai_logger = logging.getLogger("ej.ai_prompt")
     immich_logger = logging.getLogger("ej.immich")
+    fact_logger = logging.getLogger("ej.fact")
 
 
 def _configure_mounts_and_templates() -> None:
@@ -489,8 +491,15 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
         fact_date = datetime.strptime(entry_date, "%Y-%m-%d").date()
     except ValueError:
         fact_date = None
-    if fact_date:
-        fact = await fetch_date_fact(fact_date)
+    if fact_date and integrations.get("fact", True):
+        retries = config.NUMBERS_API_RETRIES
+        fact = None
+        for _ in range(retries + 1):
+            fact = await fetch_date_fact(fact_date)
+            if fact:
+                break
+        if fact is None:
+            fact_logger.warning("No fact found for %s", fact_date)
         frontmatter = _update_field(frontmatter, "fact", fact)
 
     md_body = f"# Prompt\n{prompt}\n\n# Entry\n{content}"

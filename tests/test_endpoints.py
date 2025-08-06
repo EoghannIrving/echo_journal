@@ -224,6 +224,27 @@ def test_fact_with_colon_is_yaml_safe(test_client, monkeypatch):
     assert meta.get("fact") == "mind-blowing fact: in 1970 something happened"
 
 
+def test_fact_unavailable_logs_warning(test_client, monkeypatch, caplog):
+    """When the Numbers API fails, a warning is logged and fact omitted."""
+
+    async def none_fact(_):
+        return None
+
+    monkeypatch.setattr(main, "fetch_date_fact", none_fact)
+    monkeypatch.setattr(numbers_utils, "fetch_date_fact", none_fact)
+
+    payload = {"date": "2020-02-04", "content": "entry", "prompt": "prompt"}
+    with caplog.at_level(logging.WARNING, logger="ej.fact"):
+        resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+
+    text = (main.DATA_DIR / "2020-02-04.md").read_text(encoding="utf-8")
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    assert "fact:" not in frontmatter
+    assert "No fact found for 2020-02-04" in caplog.text
+
+
 def test_category_saved_in_frontmatter(test_client):
     """Prompt category should be stored in frontmatter when provided."""
     payload = {
