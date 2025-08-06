@@ -27,7 +27,7 @@ def test_generate_prompt_uses_anchor(tmp_path, monkeypatch):
     pfile.write_text(content, encoding="utf-8")
     monkeypatch.setattr(prompt_utils, "PROMPTS_FILE", pfile)
     prompt_utils._prompts_cache = {"data": None, "mtime": None}
-    monkeypatch.setattr(prompt_utils.random, "choice", lambda seq: seq[0])
+    monkeypatch.setattr(prompt_utils.secrets, "choice", lambda seq: seq[0])
 
     res = asyncio.run(prompt_utils.generate_prompt(mood="meh", energy=2))
 
@@ -55,7 +55,7 @@ def test_generate_prompt_debug(tmp_path, monkeypatch):
     pfile.write_text(content, encoding="utf-8")
     monkeypatch.setattr(prompt_utils, "PROMPTS_FILE", pfile)
     prompt_utils._prompts_cache = {"data": None, "mtime": None}
-    monkeypatch.setattr(prompt_utils.random, "choice", lambda seq: seq[0])
+    monkeypatch.setattr(prompt_utils.secrets, "choice", lambda seq: seq[0])
 
     res = asyncio.run(prompt_utils.generate_prompt(mood="meh", energy=2, debug=True))
 
@@ -68,11 +68,11 @@ def test_generate_prompt_debug(tmp_path, monkeypatch):
 
 def test_choose_anchor_self_doubt(monkeypatch):
     """_choose_anchor prioritizes micro for self-doubt."""
-    monkeypatch.setattr(prompt_utils.random, "choice", lambda seq: seq[0])
+    monkeypatch.setattr(prompt_utils.secrets, "choice", lambda seq: seq[0])
     assert prompt_utils._choose_anchor("self-doubt", 2) == "micro"
 
 
 def test_choose_anchor_joyful_high_energy(monkeypatch):
     """_choose_anchor can return strong for joyful mood."""
-    monkeypatch.setattr(prompt_utils.random, "choice", lambda seq: seq[-1])
+    monkeypatch.setattr(prompt_utils.secrets, "choice", lambda seq: seq[-1])
     assert prompt_utils._choose_anchor("joyful", 3) == "strong"
