@@ -31,8 +31,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.routing import Mount
 
-from .ai_prompt_utils import fetch_ai_prompt
 from . import config
+from .ai_prompt_utils import fetch_ai_prompt
 from .file_utils import (
     format_weather,
     load_json_file,
