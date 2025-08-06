@@ -160,14 +160,44 @@ def test_save_entry_creates_file(test_client):
 
 def test_save_entry_records_time(test_client, monkeypatch):
     """Saving an entry records the time of day in frontmatter."""
-    monkeypatch.setattr(weather_utils, "time_of_day_label", lambda: "Evening")
-    monkeypatch.setattr(main, "time_of_day_label", lambda: "Evening")
+    monkeypatch.setattr(weather_utils, "time_of_day_label", lambda now=None: "Evening")
+    monkeypatch.setattr(main, "time_of_day_label", lambda now=None: "Evening")
     payload = {"date": "2020-01-03", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
     file_path = main.DATA_DIR / "2020-01-03.md"
     text = file_path.read_text(encoding="utf-8")
     assert "save_time: Evening" in text
+
+
+def test_save_entry_uses_timezone_offset(test_client, monkeypatch):
+    """Timezone offset should adjust save_time label."""
+
+    class FakeDatetime(datetime):
+        @classmethod
+        def utcnow(cls):
+            return cls(2020, 1, 4, 15, 0, 0)
+
+    async def fake_wotd():
+        return None
+
+    async def fake_weather(lat, lon):
+        return None
+
+    monkeypatch.setattr(main, "datetime", FakeDatetime)
+    monkeypatch.setattr(weather_utils, "fetch_word_of_day", fake_wotd)
+    monkeypatch.setattr(weather_utils, "fetch_weather", fake_weather)
+    payload = {
+        "date": "2020-01-04",
+        "content": "entry",
+        "prompt": "prompt",
+        "tz_offset": -360,
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    file_path = main.DATA_DIR / "2020-01-04.md"
+    text = file_path.read_text(encoding="utf-8")
+    assert "save_time: Morning" in text
 
 
 def test_word_of_day_in_frontmatter(test_client, monkeypatch):
