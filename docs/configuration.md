@@ -1,6 +1,6 @@
 # Configuration
 
-On startup the application looks for a `settings.yaml` file in `<DATA_DIR>/.settings/settings.yaml` (default `/journals/.settings/settings.yaml`). If it is missing a warning is logged noting the expected path and the app falls back to environment variables. The `settings.yaml` file configures optional integrations and runtime paths. It is the authoritative source for these values:
+On startup the application looks for a `settings.yaml` file in `<DATA_DIR>/.settings/settings.yaml` (default `/journals/.settings/settings.yaml`). This location can be overridden with the `SETTINGS_PATH` environment variable. If it is missing a warning is logged noting the expected path and the app falls back to environment variables. The `settings.yaml` file configures optional integrations and runtime paths. It is the authoritative source for these values:
 
 | Variable | Purpose | Notes / Defaults |
 | --- | --- | --- |
@@ -9,6 +9,7 @@ On startup the application looks for a `settings.yaml` file in `<DATA_DIR>/.sett
 | `PROMPTS_FILE` | Location of YAML prompts file. | Default `<APP_DIR>/prompts.yaml`. |
 | `STATIC_DIR` | Directory for static assets. | Default `<APP_DIR>/static`. |
 | `TEMPLATES_DIR` | Directory for Jinja2 templates. | Default `<APP_DIR>/templates`. |
+| `SETTINGS_PATH` | Full path to the settings.yaml file. | Default `<DATA_DIR>/.settings/settings.yaml`. |
 | `WORDNIK_API_KEY` | Enables the Wordnik "word of the day" prompt. | |
 | `OPENAI_API_KEY` | Enables AI-generated prompts via the OpenAI API. | Usage may incur costs and is subject to OpenAI's rate limits. |
 | `IMMICH_URL` | URL of your Immich server. | |
@@ -30,5 +31,6 @@ On startup the application looks for a `settings.yaml` file in `<DATA_DIR>/.sett
 | `ECHO_JOURNAL_SSL_CERTFILE` | Path to TLS certificate. | Used with `ECHO_JOURNAL_SSL_KEYFILE` to enable HTTPS. |
 | `BASIC_AUTH_USERNAME` | Username for optional HTTP Basic authentication. | |
 | `BASIC_AUTH_PASSWORD` | Password for optional HTTP Basic authentication. | |
+| `ECHO_JOURNAL_ENV_PATH` | Path to the .env file read by helper utilities. | Default `<APP_DIR>/../.env`. |
 
 Set any of these variables in `settings.yaml` to tailor the app to your setup. Values provided via environment variables can override the defaults, but `settings.yaml` takes precedence. The **Settings** page lists current values and lets you edit them; changes are written to `settings.yaml` and take effect after restarting the server.
