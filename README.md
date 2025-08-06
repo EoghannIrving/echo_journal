@@ -13,14 +13,30 @@ Journalling should not feel like a chore or a responsibility. I have bounced off
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/EoghannIrving/echo_journal/actions/workflows/main.yml/badge.svg)](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Version 0.1.0-alpha](https://img.shields.io/badge/version-0.1.0-blue) [![Built with Human + AI Collaboration](https://img.shields.io/badge/Built%20with-Human%20+%20AI%20Collaboration-blue)](#about-the-development)
 
+## Table of Contents
+
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
+  - [Automated setup](#automated-setup)
+  - [Manual setup](#manual-setup)
 - [Usage](#usage)
+  - [Run with Python](#run-with-python)
+  - [Run with Docker Compose](#run-with-docker-compose)
 - [Configuration](#configuration) ([details](docs/configuration.md))
-- [Security considerations](#security-considerations)
-- [CLI commands](#cli-commands)
+- [Example walkthrough](#example-walkthrough)
 - [API reference](#api-reference)
+- [CLI commands](#cli-commands)
+- [Roadmap](#roadmap)
+- [Design Guardrails](#design-guardrails)
+- [YAML Frontmatter Reference](#yaml-frontmatter-reference)
+  - [Disabling integrations](#disabling-integrations)
+- [Deployment](#deployment)
+- [Testing](#testing)
+- [Bugs and Issues](#bugs-and-issues)
+- [Contributing](#contributing)
+- [About the Development](#about-the-development)
+- [License](#license)
 
 ## Features
 
