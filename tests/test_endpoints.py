@@ -241,6 +241,32 @@ def test_fact_with_colon_is_yaml_safe(test_client, monkeypatch):
     assert meta.get("fact") == "mind-blowing fact: in 1970 something happened"
 
 
+def test_long_fact_not_truncated(test_client, monkeypatch):
+    """Very long facts should be stored completely in frontmatter."""
+
+    long_fact = (
+        'The name for Oz in the "Wizard of Oz" was thought up when the creator, '
+        'Frank Baum, looked at his filing cabinet and saw a label "O-Z" on one drawer '
+        'and "A-N" on the other, leading him to name the magical land.'
+    )
+
+    async def long_fact_fn(_):
+        return long_fact
+
+    monkeypatch.setattr(main, "fetch_date_fact", long_fact_fn)
+    monkeypatch.setattr(numbers_utils, "fetch_date_fact", long_fact_fn)
+
+    payload = {"date": "2020-02-05", "content": "entry", "prompt": "prompt"}
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+
+    text = (main.DATA_DIR / "2020-02-05.md").read_text(encoding="utf-8")
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    meta = parse_frontmatter(frontmatter)
+    assert meta.get("fact") == long_fact
+
+
 def test_fact_unavailable_logs_warning(test_client, monkeypatch, caplog):
     """When the Numbers API fails, a warning is logged and fact omitted."""
 
