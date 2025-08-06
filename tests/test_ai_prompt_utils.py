@@ -56,7 +56,12 @@ def test_fetch_ai_prompt(monkeypatch):
 
     prompt = asyncio.run(ai.fetch_ai_prompt("soft"))
 
-    assert prompt == {"id": "tag-001", "prompt": "Hi", "tags": ["mood"], "anchor": "soft"}
+    assert prompt == {
+        "id": "tag-001",
+        "prompt": "Hi",
+        "tags": ["mood"],
+        "anchor": "soft",
+    }
     assert client.captured["url"] == ai.CHAT_URL
     assert client.captured["headers"]["Authorization"] == "Bearer x"
     assert client.captured["json"]["model"] == "gpt-4o-mini"
@@ -98,7 +103,9 @@ def test_fetch_ai_prompt_code_fence(monkeypatch):
     """YAML wrapped in code fences should be parsed correctly."""
     yaml_str = "- id: tag-001\n  prompt: Hi\n  tags:\n    - mood\n  anchor: soft"
     fenced = f"```yaml\n{yaml_str}\n```"
-    client = FakeClient({"choices": [{"message": {"content": [{"type": "text", "text": fenced}]}}]})
+    client = FakeClient(
+        {"choices": [{"message": {"content": [{"type": "text", "text": fenced}]}}]}
+    )
     monkeypatch.setattr(config, "OPENAI_API_KEY", "x")
     monkeypatch.setattr(ai.httpx, "AsyncClient", lambda: client)
 

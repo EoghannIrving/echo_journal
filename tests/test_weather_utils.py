@@ -9,26 +9,36 @@ import yaml
 
 from echo_journal import weather_utils
 
+
 class FakeClient:
     """Minimal ``httpx.AsyncClient`` stand-in for ``fetch_weather``."""
+
     def __init__(self, data):
         self._data = data
         self.captured = {}
+
     async def __aenter__(self):
         return self
+
     async def __aexit__(self, exc_type, exc, tb):
         return False
+
     async def get(self, url, params=None, timeout=None):
         self.captured["url"] = url
         self.captured["params"] = params
+
         class Response:
             def __init__(self, data):
                 self._data = data
+
             def raise_for_status(self):
                 return None
+
             def json(self):
                 return self._data
+
         return Response(self._data)
+
 
 def test_fetch_weather(monkeypatch):
     """Successful requests should yield a formatted weather string."""
@@ -38,9 +48,11 @@ def test_fetch_weather(monkeypatch):
     assert weather == "12\u00b0C code 3"
     assert client.captured["params"]["latitude"] == 1
 
+
 def test_fetch_weather_zero():
     """Lat/Lon of zero should short-circuit to ``None``."""
     assert asyncio.run(weather_utils.fetch_weather(0, 0)) is None
+
 
 def test_time_of_day_label():
     """Time ranges should map to labels."""
@@ -49,12 +61,16 @@ def test_time_of_day_label():
     assert weather_utils.time_of_day_label(datetime(2024, 1, 1, 18)) == "Evening"
     assert weather_utils.time_of_day_label(datetime(2024, 1, 1, 23)) == "Night"
 
+
 def test_build_frontmatter(monkeypatch):
     """Frontmatter should include location, weather and word of the day."""
+
     async def fake_fetch_weather(lat, lon):
         return "10\u00b0C code 2"
+
     async def fake_wotd():
         return ("word", "definition")
+
     monkeypatch.setattr(weather_utils, "fetch_weather", fake_fetch_weather)
     monkeypatch.setattr(weather_utils, "fetch_word_of_day", fake_wotd)
     monkeypatch.setattr(weather_utils, "time_of_day_label", lambda: "Morning")
@@ -74,6 +90,7 @@ def test_build_frontmatter(monkeypatch):
 
 def test_build_frontmatter_multiline_definition(monkeypatch):
     """Multi-line definitions should be preserved in full."""
+
     async def fake_fetch_weather(lat, lon):
         return "10\u00b0C code 2"
 

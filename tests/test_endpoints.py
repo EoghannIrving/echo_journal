@@ -53,7 +53,10 @@ sys.path.insert(0, str(ROOT / "src"))
 
 # Import the application after environment setup
 from echo_journal import ai_prompt_utils  # pylint: disable=wrong-import-position
-from echo_journal.file_utils import split_frontmatter, parse_frontmatter  # pylint: disable=wrong-import-position
+from echo_journal.file_utils import (
+    split_frontmatter,
+    parse_frontmatter,
+)  # pylint: disable=wrong-import-position
 from echo_journal import main  # type: ignore  # pylint: disable=wrong-import-position
 from echo_journal import weather_utils  # pylint: disable=wrong-import-position
 from echo_journal import immich_utils  # pylint: disable=wrong-import-position
@@ -68,8 +71,10 @@ def test_client(tmp_path, monkeypatch):
     journals.mkdir()
     monkeypatch.setattr(main, "DATA_DIR", journals)
     monkeypatch.setattr(main.config, "DATA_DIR", journals)
+
     async def fake_fact(_):
         return "test fact"
+
     monkeypatch.setattr(main, "fetch_date_fact", fake_fact)
     monkeypatch.setattr(numbers_utils, "fetch_date_fact", fake_fact)
     # ensure settings file exists in case other tests removed it
@@ -194,6 +199,7 @@ def test_fact_of_day_in_frontmatter(test_client):
 
 def test_fact_with_colon_is_yaml_safe(test_client, monkeypatch):
     """Facts containing colons should be quoted and parsed correctly."""
+
     async def colon_fact(_):
         return "mind-blowing fact: in 1970 something happened"
 
@@ -208,7 +214,6 @@ def test_fact_with_colon_is_yaml_safe(test_client, monkeypatch):
     frontmatter, _ = split_frontmatter(text)
     meta = parse_frontmatter(frontmatter or "")
     assert meta.get("fact") == "mind-blowing fact: in 1970 something happened"
-
 
 
 def test_category_saved_in_frontmatter(test_client):
@@ -277,7 +282,6 @@ def test_save_entry_missing_fields(test_client):
     resp = test_client.post("/entry", json={"date": "2020-01-02"})
     assert resp.status_code == 400
     assert resp.json()["status"] == "error"
-
 
 
 def test_view_entry_existing(test_client):
@@ -441,6 +445,7 @@ def test_save_entry_path_traversal(test_client):
     assert resp.json()["status"] == "error"
     expected = main.DATA_DIR / "malicious.md"
     assert not expected.exists()
+
 
 def test_view_entry_traversal(test_client):
     """Path traversal attempts in view routes should be denied."""
@@ -1092,10 +1097,7 @@ def test_thumbnail_proxy_download(test_client, monkeypatch):
     assert resp.status_code == 200
     assert resp.content == b"img"
     assert resp.headers["content-type"] == "image/jpeg"
-    assert (
-        client.request_url
-        == "http://example/api/assets/abc/thumbnail?size=preview"
-    )
+    assert client.request_url == "http://example/api/assets/abc/thumbnail?size=preview"
     assert client.request_headers == {"x-api-key": "secret"}
     assert client.request_timeout == 10
 
@@ -1147,6 +1149,7 @@ def test_reverse_geocode_user_agent(test_client, monkeypatch):
 
             class Resp:  # pylint: disable=too-few-public-methods
                 """Simple fake HTTP response."""
+
                 status_code = 200
                 headers = {}
 
@@ -1232,7 +1235,9 @@ def test_new_prompt_endpoint_debug_param(test_client, monkeypatch):
 def test_save_entry_after_refresh(test_client, monkeypatch):
     """Entries saved after fetching a new prompt use that prompt."""
 
-    async def fake_prompt(*, mood=None, energy=None, debug=False):  # pylint: disable=unused-argument
+    async def fake_prompt(
+        *, mood=None, energy=None, debug=False
+    ):  # pylint: disable=unused-argument
         return {"prompt": "New", "category": "Cat"}
 
     monkeypatch.setattr(main, "generate_prompt", fake_prompt)
@@ -1300,8 +1305,10 @@ def test_basic_auth_malformed_headers_logged(monkeypatch, caplog, header):
     client = TestClient(mod.app)
 
     called = {}
+
     def fake_warn(msg, *args, **kwargs):
         called["msg"] = msg % args if args else msg
+
     monkeypatch.setattr(mod.auth_logger, "warning", fake_warn)
 
     resp = client.get("/", headers={"Authorization": header})
@@ -1411,6 +1418,7 @@ def test_ai_prompt_external_failure(test_client, monkeypatch):
 
 def test_ai_prompt_defaults_anchor(test_client, monkeypatch):
     """Endpoint falls back to a 'soft' anchor when params are missing."""
+
     async def fake_fetch(anchor):
         fake_fetch.called_with = anchor
         return {"prompt": "hi", "anchor": anchor, "tags": [], "id": "x"}
@@ -1420,7 +1428,9 @@ def test_ai_prompt_defaults_anchor(test_client, monkeypatch):
     monkeypatch.setattr(main, "PROMPTS_FILE", PROMPTS_FILE)
     monkeypatch.setattr(main.config, "PROMPTS_FILE", PROMPTS_FILE)
     token = base64.b64encode(b"user:pass").decode()
-    resp = test_client.get("/api/ai_prompt", headers={"Authorization": f"Basic {token}"})
+    resp = test_client.get(
+        "/api/ai_prompt", headers={"Authorization": f"Basic {token}"}
+    )
     assert resp.status_code == 200
     assert resp.json()["anchor"] == "soft"
     assert fake_fetch.called_with == "soft"

@@ -27,7 +27,9 @@ def refresh_config() -> None:
         IMMICH_TIME_BUFFER=config.IMMICH_TIME_BUFFER,
     )
 
+
 logger = logging.getLogger("ej.immich")
+
 
 async def fetch_assets_for_date(
     date_str: str, media_type: str = "IMAGE"
@@ -82,6 +84,7 @@ async def fetch_assets_for_date(
         return []
 
     return []
+
 
 async def update_photo_metadata(date_str: str, journal_path: Path) -> None:
     """Fetch photo assets from Immich and save metadata alongside journal entry."""

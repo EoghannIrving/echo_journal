@@ -40,6 +40,7 @@ class FakeClient:
             def json(self):
                 """Return the payload in ``httpx`` style."""
                 return {"Items": self._items}
+
         if self.items is not None:
             items = self.items
         else:
@@ -156,7 +157,10 @@ def test_fetch_daily_media(monkeypatch):
         {
             "Name": "Movie",
             "SeriesName": None,
-            "UserData": {"LastPlayedDate": "2025-07-25T10:00:00Z", "PlayedPercentage": 95},
+            "UserData": {
+                "LastPlayedDate": "2025-07-25T10:00:00Z",
+                "PlayedPercentage": 95,
+            },
         },
         {
             "Name": "Old",
@@ -166,7 +170,10 @@ def test_fetch_daily_media(monkeypatch):
         {
             "Name": "Skip",
             "SeriesName": "Show",
-            "UserData": {"LastPlayedDate": "2025-07-25T12:00:00Z", "PlayedPercentage": 20},
+            "UserData": {
+                "LastPlayedDate": "2025-07-25T12:00:00Z",
+                "PlayedPercentage": 20,
+            },
         },
     ]
 

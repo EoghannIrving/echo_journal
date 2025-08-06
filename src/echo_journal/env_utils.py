@@ -10,12 +10,16 @@ from typing import Dict
 # Absolute path to the project's ``.env`` file. It can be overridden with the
 # ``ECHO_JOURNAL_ENV_PATH`` environment variable so that calls from any working
 # directory can locate the file.
-ENV_PATH = Path(
-    os.environ.get(
-        "ECHO_JOURNAL_ENV_PATH",
-        Path(__file__).resolve().parents[2] / ".env",
+ENV_PATH = (
+    Path(
+        os.environ.get(
+            "ECHO_JOURNAL_ENV_PATH",
+            Path(__file__).resolve().parents[2] / ".env",
+        )
     )
-).expanduser().resolve()
+    .expanduser()
+    .resolve()
+)
 
 logger = logging.getLogger("ej.env")
 
