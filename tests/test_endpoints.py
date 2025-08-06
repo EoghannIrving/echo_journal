@@ -17,9 +17,9 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import aiofiles  # type: ignore  # pylint: disable=import-error
-from fastapi.testclient import TestClient  # pylint: disable=import-error
 import httpx  # pylint: disable=import-error
 import pytest  # pylint: disable=import-error
+from fastapi.testclient import TestClient  # pylint: disable=import-error
 
 # Prepare required directories before importing the app
 ROOT = Path(__file__).resolve().parents[1]
