@@ -4,7 +4,7 @@
 
 import asyncio
 import logging
-import random
+import secrets
 from datetime import date
 
 import aiofiles
@@ -43,7 +43,7 @@ def _choose_anchor(mood: str | None, energy: int | None) -> str | None:
             if mood_l in {"drained", "self-doubt", "sad"}
             else ["micro", "soft"]
         )
-        anchor = random.choice(anchors)
+        anchor = secrets.choice(anchors)
         logger.debug(
             "Selected anchor '%s' for mood=%s energy=%s from %s",
             anchor,
@@ -77,7 +77,7 @@ def _choose_anchor(mood: str | None, energy: int | None) -> str | None:
         logger.debug("No anchor matches for mood=%s energy=%s", mood_l, energy)
         return None
 
-    anchor = random.choice(anchors)
+    anchor = secrets.choice(anchors)
     logger.debug(
         "Selected anchor '%s' for mood=%s energy=%s from %s",
         anchor,
@@ -197,7 +197,7 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
             result["debug"] = debug_info
         return result
 
-    chosen = random.choice(candidates)
+    chosen = secrets.choice(candidates)
     logger.debug("Chosen prompt: %s", chosen.get("id"))
     prompt_text = chosen.get("prompt", "")
     prompt_text = prompt_text.replace("{{weekday}}", weekday).replace(
