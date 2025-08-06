@@ -13,7 +13,7 @@ import os
 import shutil
 import sys
 import tempfile
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import aiofiles  # type: ignore  # pylint: disable=import-error
@@ -177,8 +177,11 @@ def test_save_entry_uses_timezone_offset(test_client, monkeypatch):
         """Test helper returning a fixed UTC timestamp for deterministic saves."""
 
         @classmethod
-        def utcnow(cls):
-            return cls(2020, 1, 4, 15, 0, 0)
+        def now(cls, tz=None):
+            base = cls(2020, 1, 4, 15, 0, 0, tzinfo=timezone.utc)
+            if tz is None:
+                return base.replace(tzinfo=None)
+            return base.astimezone(tz)
 
     async def fake_wotd():
         return None
@@ -200,6 +203,42 @@ def test_save_entry_uses_timezone_offset(test_client, monkeypatch):
     file_path = main.DATA_DIR / "2020-01-04.md"
     text = file_path.read_text(encoding="utf-8")
     assert "save_time: Morning" in text
+
+
+@pytest.mark.parametrize(
+    "payload,utc_time",
+    [
+        (
+            {"date": "2020-01-05", "content": "entry", "prompt": "prompt"},
+            datetime(2020, 1, 5, 15, 0, 0, tzinfo=timezone.utc),
+        ),
+        (
+            {
+                "date": "2020-01-06",
+                "content": "entry",
+                "prompt": "prompt",
+                "tz_offset": -360,
+            },
+            datetime(2020, 1, 6, 21, 0, 0, tzinfo=timezone.utc),
+        ),
+    ],
+)
+def test_save_entry_records_afternoon(test_client, monkeypatch, payload, utc_time):
+    """Saving at 3 PM local time records an Afternoon label."""
+
+    class FakeDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            if tz is None:
+                return utc_time.replace(tzinfo=None)
+            return utc_time.astimezone(tz)
+
+    monkeypatch.setattr(main, "datetime", FakeDatetime)
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    file_path = main.DATA_DIR / f"{payload['date']}.md"
+    text = file_path.read_text(encoding="utf-8")
+    assert "save_time: Afternoon" in text
 
 
 def test_word_of_day_in_frontmatter(test_client, monkeypatch):
