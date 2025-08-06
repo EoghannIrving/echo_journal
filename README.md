@@ -164,18 +164,6 @@ For development with auto reload:
 uvicorn echo_journal.main:app --reload
 ```
 
-## Testing
-
-Run the test suite to verify your setup:
-
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -e .
-pytest
-```
-
-If you modify `tailwind_src.css`, run `npm install` to rebuild `static/tailwind.css` (the postinstall script handles the build).
-
 ## Roadmap
 
 Echo Journal's development roadmap is maintained in [ROADMAP.md](ROADMAP.md). Highlights:
@@ -218,6 +206,8 @@ Run the test suite with:
 ```bash
 pytest
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup and testing details.
 
 ## Bugs and Issues
 
