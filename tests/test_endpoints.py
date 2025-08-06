@@ -164,8 +164,11 @@ def test_word_of_day_in_frontmatter(test_client, monkeypatch):
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
     text = (main.DATA_DIR / "2020-10-10.md").read_text(encoding="utf-8")
-    assert "wotd: serendipity" in text
-    assert "wotd_def: fortunate discovery" in text
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    assert "wotd: serendipity" in frontmatter
+    assert "wotd_def: fortunate discovery" in frontmatter
+    assert "..." not in frontmatter
 
 
 def test_wordnik_disabled_in_frontmatter(test_client, monkeypatch):
@@ -194,7 +197,10 @@ def test_fact_of_day_in_frontmatter(test_client):
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
     text = (main.DATA_DIR / "2020-02-02.md").read_text(encoding="utf-8")
-    assert "fact: test fact" in text
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    assert "fact: test fact" in frontmatter
+    assert "..." not in frontmatter
 
 
 def test_fact_with_colon_is_yaml_safe(test_client, monkeypatch):
@@ -212,7 +218,9 @@ def test_fact_with_colon_is_yaml_safe(test_client, monkeypatch):
 
     text = (main.DATA_DIR / "2020-02-03.md").read_text(encoding="utf-8")
     frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
     meta = parse_frontmatter(frontmatter or "")
+    assert "..." not in frontmatter
     assert meta.get("fact") == "mind-blowing fact: in 1970 something happened"
 
 
@@ -227,7 +235,10 @@ def test_category_saved_in_frontmatter(test_client):
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
     text = (main.DATA_DIR / "2020-12-12.md").read_text(encoding="utf-8")
-    assert "category: Fun" in text
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    assert "category: Fun" in frontmatter
+    assert "..." not in frontmatter
 
 
 def test_category_sanitized_and_yaml_safe(test_client):
@@ -258,7 +269,10 @@ def test_weather_saved_when_provided(test_client):
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
     text = (main.DATA_DIR / "2021-01-01.md").read_text(encoding="utf-8")
-    assert "weather: 20°C code 1" in text
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    assert "weather: 20°C code 1" in frontmatter
+    assert "..." not in frontmatter
 
 
 def test_mood_and_energy_saved(test_client):
@@ -273,8 +287,11 @@ def test_mood_and_energy_saved(test_client):
     resp = test_client.post("/entry", json=payload)
     assert resp.status_code == 200
     text = (main.DATA_DIR / "2021-04-01.md").read_text(encoding="utf-8")
-    assert "mood: joyful" in text
-    assert "energy: energized" in text
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    assert "mood: joyful" in frontmatter
+    assert "energy: energized" in frontmatter
+    assert "..." not in frontmatter
 
 
 def test_save_entry_missing_fields(test_client):

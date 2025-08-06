@@ -409,7 +409,11 @@ def _update_field(frontmatter: str | None, key: str, value) -> str | None:
     try:
         # ``yaml.safe_dump`` ensures values with special characters are quoted
         # properly for YAML frontmatter.
-        value_str = yaml.safe_dump(value, default_flow_style=True).strip()
+        value_str = (
+            yaml.safe_dump(value, default_flow_style=True, explicit_end=False)
+            .strip()
+            .splitlines()[0]
+        )
     except yaml.YAMLError:
         value_str = str(value)
     if not frontmatter:
