@@ -1,6 +1,5 @@
-"""Tests for Wordnik utilities."""
-
 # pylint: disable=missing-function-docstring,missing-class-docstring,unused-argument,duplicate-code,cyclic-import
+"""Tests for Wordnik utilities."""
 
 import asyncio
 

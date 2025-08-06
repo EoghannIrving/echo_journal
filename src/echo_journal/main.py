@@ -1,6 +1,6 @@
 """Echo Journal FastAPI application."""
 
-# pylint: disable=import-error
+# pylint: disable=import-error,too-many-lines,global-statement
 
 import asyncio
 import base64
@@ -84,7 +84,8 @@ templates: Jinja2Templates
 
 def _refresh_config_vars() -> None:
     """Refresh module-level aliases to configuration values."""
-    global DATA_DIR, PROMPTS_FILE, IMMICH_URL, IMMICH_API_KEY, NOMINATIM_USER_AGENT, IMMICH_ALLOWED_HOSTS
+    global DATA_DIR, PROMPTS_FILE, IMMICH_URL, IMMICH_API_KEY, NOMINATIM_USER_AGENT, \
+        IMMICH_ALLOWED_HOSTS
     DATA_DIR = config.DATA_DIR
     PROMPTS_FILE = config.PROMPTS_FILE
     IMMICH_URL = config.IMMICH_URL
