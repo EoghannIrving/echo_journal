@@ -33,7 +33,7 @@ jobs:
         run: black --check .
 
       - name: Check import sorting
-        run: isort --check-only .
+        run: isort --check-only . --profile black
 
       # ----- Type Checking -----
       - name: Run mypy
