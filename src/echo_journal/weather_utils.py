@@ -1,7 +1,7 @@
 """Helpers for building frontmatter with optional weather data."""
 
-from typing import Optional, Dict
 from datetime import datetime
+from typing import Dict, Optional
 
 import httpx
 import yaml

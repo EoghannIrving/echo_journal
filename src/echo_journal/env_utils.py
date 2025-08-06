@@ -6,7 +6,6 @@ import shlex
 from pathlib import Path
 from typing import Dict
 
-
 # Absolute path to the project's ``.env`` file. It can be overridden with the
 # ``ECHO_JOURNAL_ENV_PATH`` environment variable so that calls from any working
 # directory can locate the file.

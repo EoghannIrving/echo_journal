@@ -6,18 +6,18 @@
 #
 # pylint: disable=redefined-outer-name,too-many-lines,import-outside-toplevel,multiple-imports,wrong-import-order,unused-argument
 
+import base64
 import json
+import logging
 import os
 import shutil
 import sys
 import tempfile
-from datetime import datetime, date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
-import base64
-import logging
-import httpx  # pylint: disable=import-error
 
 import aiofiles  # type: ignore  # pylint: disable=import-error
+import httpx  # pylint: disable=import-error
 import pytest  # pylint: disable=import-error
 from fastapi.testclient import TestClient  # pylint: disable=import-error
 
@@ -53,15 +53,15 @@ sys.path.insert(0, str(ROOT / "src"))
 
 # Import the application after environment setup
 from echo_journal import ai_prompt_utils  # pylint: disable=wrong-import-position
-from echo_journal.file_utils import (  # pylint: disable=wrong-import-position
-    split_frontmatter,
-    parse_frontmatter,
-)
-from echo_journal import main  # type: ignore  # pylint: disable=wrong-import-position
-from echo_journal import weather_utils  # pylint: disable=wrong-import-position
 from echo_journal import immich_utils  # pylint: disable=wrong-import-position
 from echo_journal import jellyfin_utils  # pylint: disable=wrong-import-position
+from echo_journal import main  # type: ignore  # pylint: disable=wrong-import-position
 from echo_journal import numbers_utils  # pylint: disable=wrong-import-position
+from echo_journal import weather_utils  # pylint: disable=wrong-import-position
+from echo_journal.file_utils import (  # pylint: disable=wrong-import-position
+    parse_frontmatter,
+    split_frontmatter,
+)
 
 
 @pytest.fixture()
@@ -1264,6 +1264,7 @@ def test_basic_auth_required(monkeypatch):
     monkeypatch.setenv("BASIC_AUTH_USERNAME", "user")
     monkeypatch.setenv("BASIC_AUTH_PASSWORD", "pass")
     import importlib
+
     from echo_journal import config
 
     importlib.reload(config)
@@ -1298,6 +1299,7 @@ def test_basic_auth_malformed_headers_logged(monkeypatch, caplog, header):
     monkeypatch.setenv("BASIC_AUTH_USERNAME", "user")
     monkeypatch.setenv("BASIC_AUTH_PASSWORD", "pass")
     import importlib
+
     from echo_journal import config
 
     importlib.reload(config)
@@ -1322,7 +1324,8 @@ def test_settings_endpoints(tmp_path, monkeypatch):
     settings_file.write_text("FOO: baz\n", encoding="utf-8")
 
     import importlib
-    from echo_journal import settings_utils, config
+
+    from echo_journal import config, settings_utils
 
     monkeypatch.setattr(settings_utils, "SETTINGS_PATH", settings_file)
 
