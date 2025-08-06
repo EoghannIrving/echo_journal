@@ -1,4 +1,4 @@
-"""Helpers for fetching date facts from numbersapi.com."""
+"""Helpers for fetching random facts from uselessfacts.jsph.pl."""
 
 from datetime import date
 from typing import Optional
@@ -6,16 +6,16 @@ from typing import Optional
 import httpx
 
 
-async def fetch_date_fact(day: date) -> Optional[str]:
-    """Return a fact string for the given date.
+async def fetch_date_fact(_: date) -> Optional[str]:
+    """Return a random useless fact.
 
-    Uses numbersapi.com to fetch a trivia fact about the supplied date.
-    Returns ``None`` if the request fails or the response is malformed.
+    Fetches a random fact from ``uselessfacts.jsph.pl``. The ``date`` argument is
+    ignored. Returns ``None`` if the request fails or the response is malformed.
     """
-    url = f"https://numbersapi.com/{day.month}/{day.day}/date?json"
+    url = "https://uselessfacts.jsph.pl/api/v2/facts/random"
     try:
         async with httpx.AsyncClient() as client:
-            resp = await client.get(url, timeout=10)
+            resp = await client.get(url, params={"language": "en"}, timeout=10)
             resp.raise_for_status()
             data = resp.json()
             text = data.get("text")

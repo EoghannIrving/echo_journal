@@ -57,7 +57,7 @@ Journalling should not feel like a chore or a responsibility. I have bounced off
 - Stats and archive views for gentle pattern tracking.  
 
 **🔌 Optional integrations**  
-- **Wordnik** (word of the day), **Immich** (photos), **Jellyfin** (media history), **NumbersAPI** (Fact of the day).  
+- **Wordnik** (word of the day), **Immich** (photos), **Jellyfin** (media history), **Useless Facts** (random fact).
 - Per-browser toggles — nothing is forced, nothing runs you didn’t ask for.
 - See your day in context.
 
