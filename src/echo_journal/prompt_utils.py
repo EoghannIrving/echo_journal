@@ -160,7 +160,10 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
     prompts = await load_prompts()
     logger.debug("Loaded %d prompts", len(prompts) if isinstance(prompts, list) else 0)
     if not isinstance(prompts, list) or not prompts:
-        result = {"category": None, "prompt": "Prompts file not found"}
+        result: dict[str, object] = {
+            "category": None,
+            "prompt": "Prompts file not found",
+        }
         if debug:
             result["debug"] = {
                 "initial": [],

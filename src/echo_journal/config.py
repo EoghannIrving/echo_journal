@@ -1,12 +1,20 @@
 """Core application paths and configuration constants."""
 
 import os
-from importlib.resources import files
 from pathlib import Path
+from typing import overload
 
 from .settings_utils import load_settings
 
 _SETTINGS = load_settings()
+
+
+@overload
+def _get_setting(key: str, default: str) -> str: ...
+
+
+@overload
+def _get_setting(key: str, default: None = None) -> str | None: ...
 
 
 def _get_setting(key: str, default: str | None = None) -> str | None:
@@ -24,11 +32,11 @@ def _get_setting(key: str, default: str | None = None) -> str | None:
     return value
 
 
-# Derive the application directory from the installed package location.  This
-# allows the code to run from arbitrary paths without requiring users to set
-# ``APP_DIR`` manually.  An environment variable can still override the value
-# for advanced scenarios such as tests or non-standard deployments.
-DEFAULT_APP_DIR = files("echo_journal").parent
+# Derive the application directory from this file location.  This allows the
+# code to run from arbitrary paths without requiring users to set ``APP_DIR``
+# manually.  An environment variable can still override the value for advanced
+# scenarios such as tests or non-standard deployments.
+DEFAULT_APP_DIR = Path(__file__).resolve().parent.parent
 # Allow overriding important paths via environment variables for easier testing
 # and deployment in restricted environments.
 APP_DIR = Path(_get_setting("APP_DIR", str(DEFAULT_APP_DIR)))

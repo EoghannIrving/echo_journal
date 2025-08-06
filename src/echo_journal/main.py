@@ -16,7 +16,7 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Dict
+from typing import DefaultDict, Dict
 from urllib.parse import urlparse
 
 import aiofiles
@@ -60,7 +60,7 @@ if not hasattr(Path, "is_relative_to"):
         except ValueError:
             return False
 
-    Path.is_relative_to = _is_relative_to  # type: ignore[attr-defined]
+    setattr(Path, "is_relative_to", _is_relative_to)
 
 app = FastAPI()
 
@@ -117,7 +117,7 @@ def _configure_logging() -> None:
     """Configure application logging handlers and loggers."""
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    handlers = [logging.StreamHandler()]
+    handlers: list[logging.Handler] = [logging.StreamHandler()]
     try:
         config.DATA_DIR.mkdir(parents=True, exist_ok=True)
         config.LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -197,7 +197,7 @@ MAX_TIMINGS = 50
 app.state.request_timings = []
 
 # Locks for concurrent saves keyed by entry path
-SAVE_LOCKS = defaultdict(asyncio.Lock)
+SAVE_LOCKS: DefaultDict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
 ASSET_ID_RE = re.compile(r"^[a-fA-F0-9-]+$")
 
@@ -239,8 +239,8 @@ async def basic_auth_middleware(request: Request, call_next):
             auth_logger.warning("Invalid Basic auth header: %s", exc)
             return Response(status_code=401, headers={"WWW-Authenticate": "Basic"})
         if not (
-            hmac.compare_digest(username, config.BASIC_AUTH_USERNAME)
-            and hmac.compare_digest(password, config.BASIC_AUTH_PASSWORD)
+            hmac.compare_digest(username, config.BASIC_AUTH_USERNAME or "")
+            and hmac.compare_digest(password, config.BASIC_AUTH_PASSWORD or "")
         ):
             return Response(status_code=401, headers={"WWW-Authenticate": "Basic"})
     return await call_next(request)
@@ -469,7 +469,9 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
         )
     first_save = not file_path.exists()
     if first_save:
-        frontmatter = await build_frontmatter(location, weather, integrations)
+        frontmatter: str | None = await build_frontmatter(
+            location, weather, integrations
+        )
     else:
         frontmatter = await read_existing_frontmatter(file_path)
 
@@ -604,11 +606,10 @@ async def archive_view(  # pylint: disable=too-many-branches
     elif filter_ == "has_media":
         all_entries = [e for e in all_entries if e["meta"].get("media")]
 
+    def _sort_key(e: dict) -> date:
+        return e["date"] or date.min
+
     if sort_by == "date":
-
-        def _sort_key(e: dict) -> date:
-            return e["date"] or date.min
-
         all_entries.sort(key=_sort_key, reverse=True)
     elif sort_by in {"location", "weather", "photos", "songs", "media"}:
         all_entries.sort(key=lambda e: e["meta"].get(sort_by) or "")
@@ -734,7 +735,7 @@ async def metrics() -> JSONResponse:
 
 async def _gather_entry_stats() -> tuple[dict, int, int, list[date]]:
     """Return aggregated entry counts, total words and entry dates."""
-    counts = {
+    counts: dict[str, DefaultDict[str, int]] = {
         "week": defaultdict(int),
         "month": defaultdict(int),
         "year": defaultdict(int),
@@ -885,13 +886,13 @@ async def new_prompt(
 async def reverse_geocode(lat: float, lon: float):
     """Return location details for given coordinates using Nominatim."""
     url = "https://nominatim.openstreetmap.org/reverse"
-    params = {
+    params: dict[str, float | int | str] = {
         "lat": lat,
         "lon": lon,
         "format": "json",
         "zoom": 18,
     }
-    headers = {"User-Agent": config.NOMINATIM_USER_AGENT}
+    headers = {"User-Agent": config.NOMINATIM_USER_AGENT or ""}
 
     try:
         async with httpx.AsyncClient() as client:
@@ -1027,15 +1028,12 @@ def main() -> None:
     ssl_keyfile = os.getenv("ECHO_JOURNAL_SSL_KEYFILE")
     ssl_certfile = os.getenv("ECHO_JOURNAL_SSL_CERTFILE")
 
-    ssl_args = {}
-    if ssl_keyfile and ssl_certfile:
-        ssl_args = {"ssl_keyfile": ssl_keyfile, "ssl_certfile": ssl_certfile}
-
     uvicorn.run(
         "echo_journal.main:app",
         host=host,
         port=port,
-        **ssl_args,
+        ssl_keyfile=ssl_keyfile,
+        ssl_certfile=ssl_certfile,
     )
 
 

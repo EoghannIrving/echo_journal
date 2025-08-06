@@ -3,7 +3,6 @@
 import importlib
 import logging
 import os
-from importlib.resources import files
 from pathlib import Path
 from typing import Any, Dict
 
@@ -17,11 +16,11 @@ import yaml
 # data directory does not contain a settings file we fall back to looking
 # inside ``APP_DIR`` so that bundled defaults can be used on first run.
 DATA_DIR = Path(os.getenv("DATA_DIR", "/journals"))
-# Derive ``APP_DIR`` from the installed package location so the application can
-# locate bundled resources without requiring manual configuration. Advanced
-# deployments can still override this via the ``APP_DIR`` environment variable.
-DEFAULT_APP_DIR = files("echo_journal").parent
-APP_DIR = Path(os.getenv("APP_DIR", DEFAULT_APP_DIR))
+# Derive ``APP_DIR`` from this file location so the application can locate
+# bundled resources without manual configuration. Advanced deployments can
+# still override this via the ``APP_DIR`` environment variable.
+DEFAULT_APP_DIR = Path(__file__).resolve().parent.parent
+APP_DIR = Path(os.getenv("APP_DIR", str(DEFAULT_APP_DIR)))
 SETTINGS_PATH = Path(
     os.getenv("SETTINGS_PATH", DATA_DIR / ".settings" / "settings.yaml")
 )
@@ -69,16 +68,16 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
             logger.debug("Falling back to default settings at %s", fallback)
             with fallback.open("r", encoding="utf-8") as fh:
                 data = yaml.safe_load(fh) or {}
-                cleaned: Dict[str, str] = {}
+                fallback_cleaned: Dict[str, str] = {}
                 for k, v in data.items():
                     if v is None:
-                        cleaned[str(k)] = ""
+                        fallback_cleaned[str(k)] = ""
                     elif isinstance(v, bool):
-                        cleaned[str(k)] = "true" if v else "false"
+                        fallback_cleaned[str(k)] = "true" if v else "false"
                     else:
-                        cleaned[str(k)] = str(v)
-                logger.debug("Loaded default settings: %s", cleaned)
-                return cleaned
+                        fallback_cleaned[str(k)] = str(v)
+                logger.debug("Loaded default settings: %s", fallback_cleaned)
+                return fallback_cleaned
         logger.warning(
             "No settings file found at %s; using environment variables only", path
         )

@@ -11,7 +11,7 @@ class FakeClient:
     def __init__(self, items=None) -> None:
         """Initialize the fake client."""
         self.url = ""
-        self.calls = []
+        self.calls: list[dict | None] = []
         self.items = items
 
     async def __aenter__(self):

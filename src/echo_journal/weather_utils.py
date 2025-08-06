@@ -56,6 +56,7 @@ async def build_frontmatter(
     lat = float(location.get("lat") or 0)
     lon = float(location.get("lon") or 0)
     label = location.get("label") or ""
+    weather_str: str | None
     if weather and "temperature" in weather and "code" in weather:
         weather_str = f"{weather['temperature']}°C code {int(weather['code'])}"
     else:
