@@ -1,9 +1,9 @@
 """Helpers for reading and writing ``settings.yaml`` files."""
 
 import importlib
+from importlib.resources import files
 import logging
 import os
-from importlib.resources import files
 from pathlib import Path
 from typing import Any, Dict
 
