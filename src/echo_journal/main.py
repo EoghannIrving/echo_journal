@@ -79,7 +79,7 @@ auth_logger: logging.Logger
 ai_logger: logging.Logger
 immich_logger: logging.Logger
 fact_logger: logging.Logger
-templates: Jinja2Templates
+templates: Jinja2Templates | None
 
 
 def _refresh_config_vars() -> None:
@@ -154,7 +154,18 @@ def _configure_mounts_and_templates() -> None:
         if isinstance(route, Mount) and route.path == "/static":
             app.routes.remove(route)
     app.mount("/static", StaticFiles(directory=config.STATIC_DIR), name="static")
-    templates = Jinja2Templates(directory=str(config.TEMPLATES_DIR))
+    try:
+        templates = Jinja2Templates(directory=str(config.TEMPLATES_DIR))
+    except AssertionError:
+        logging.getLogger(__name__).warning(
+            "Jinja2 is not installed; template rendering is disabled"
+        )
+
+        class _MissingTemplates:  # pragma: no cover - simple runtime guard
+            def TemplateResponse(self, *_args, **_kwargs) -> HTMLResponse:  # type: ignore[override]
+                raise RuntimeError("Jinja2 must be installed to render templates")
+
+        templates = _MissingTemplates()  # type: ignore[assignment]
 
 
 def reload_from_config() -> None:
