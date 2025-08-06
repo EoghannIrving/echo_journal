@@ -321,6 +321,8 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         anchor = meta.get("anchor", "")
         wotd = meta.get("wotd", "")
         wotd_def = meta.get("wotd_def", "")
+        mood = meta.get("mood", "")
+        energy = meta.get("energy", "")
     else:
         prompt = ""
         category = ""
@@ -328,6 +330,8 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         entry = ""
         wotd = ""
         wotd_def = ""
+        mood = ""
+        energy = ""
 
     gap = _days_since_last_entry(config.DATA_DIR, today)
     missing_yesterday = gap is None or gap > 1
@@ -357,6 +361,8 @@ async def index(request: Request):  # pylint: disable=too-many-locals
             "active_page": "home",
             "wotd": wotd,
             "wotd_def": wotd_def,
+            "mood": mood,
+            "energy": energy,
             "missing_yesterday": missing_yesterday,
             "integrations": integrations,
             "csrf_token": request.state.csrf_token,

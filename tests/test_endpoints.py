@@ -96,6 +96,23 @@ def test_index_returns_page(test_client):
     assert "Echo Journal" in resp.text
 
 
+def test_mood_energy_prefilled_on_reload(test_client):
+    """Mood and energy selections persist when reloading an existing entry."""
+    today = date.today().isoformat()
+    file_path = main.DATA_DIR / f"{today}.md"
+    file_path.write_text(
+        "---\nmood: joyful\nenergy: energized\n---\n# Prompt\nA\n\n# Entry\nB",
+        encoding="utf-8",
+    )
+    try:
+        resp = test_client.get("/")
+        assert resp.status_code == 200
+        assert '<option value="joyful" selected>' in resp.text
+        assert '<option value="energized" selected>' in resp.text
+    finally:
+        file_path.unlink()
+
+
 def test_restart_notice_shown_when_yesterday_missing(test_client):
     """Index shows restart message when there's no entry for yesterday."""
     two_days_ago = (date.today() - timedelta(days=2)).isoformat()

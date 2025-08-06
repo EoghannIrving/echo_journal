@@ -27,20 +27,20 @@
     <legend class="sr-only">Mood and energy (optional)</legend>
     <label for="mood-select" class="sr-only">Mood</label>
     <select id="mood-select" class="border rounded px-2 py-1 text-sm">
-      <option value="">Mood</option>
-      <option value="sad">😔 Sad</option>
-      <option value="self-doubt">😶 Self-doubt</option>
-      <option value="meh">😐 Meh</option>
-      <option value="okay">😊 Okay</option>
-      <option value="joyful">😍 Joyful</option>
+      <option value="" {% if not mood %}selected{% endif %}>Mood</option>
+      <option value="sad" {% if mood == 'sad' %}selected{% endif %}>😔 Sad</option>
+      <option value="self-doubt" {% if mood == 'self-doubt' %}selected{% endif %}>😶 Self-doubt</option>
+      <option value="meh" {% if mood == 'meh' %}selected{% endif %}>😐 Meh</option>
+      <option value="okay" {% if mood == 'okay' %}selected{% endif %}>😊 Okay</option>
+      <option value="joyful" {% if mood == 'joyful' %}selected{% endif %}>😍 Joyful</option>
     </select>
     <label for="energy-select" class="sr-only">Energy</label>
     <select id="energy-select" class="border rounded px-2 py-1 text-sm">
-      <option value="">Energy</option>
-      <option value="drained">🪫 Drained</option>
-      <option value="low">😴 Low</option>
-      <option value="ok">🙂 OK</option>
-      <option value="energized">⚡ Energized</option>
+      <option value="" {% if not energy %}selected{% endif %}>Energy</option>
+      <option value="drained" {% if energy == 'drained' %}selected{% endif %}>🪫 Drained</option>
+      <option value="low" {% if energy == 'low' %}selected{% endif %}>😴 Low</option>
+      <option value="ok" {% if energy == 'ok' %}selected{% endif %}>🙂 OK</option>
+      <option value="energized" {% if energy == 'energized' %}selected{% endif %}>⚡ Energized</option>
     </select>
   </fieldset>
 </section>
