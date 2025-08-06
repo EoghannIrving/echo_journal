@@ -53,10 +53,10 @@ sys.path.insert(0, str(ROOT / "src"))
 
 # Import the application after environment setup
 from echo_journal import ai_prompt_utils  # pylint: disable=wrong-import-position
-from echo_journal.file_utils import (
+from echo_journal.file_utils import (  # pylint: disable=wrong-import-position
     split_frontmatter,
     parse_frontmatter,
-)  # pylint: disable=wrong-import-position
+)
 from echo_journal import main  # type: ignore  # pylint: disable=wrong-import-position
 from echo_journal import weather_utils  # pylint: disable=wrong-import-position
 from echo_journal import immich_utils  # pylint: disable=wrong-import-position
