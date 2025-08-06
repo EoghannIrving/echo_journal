@@ -174,6 +174,8 @@ def test_save_entry_uses_timezone_offset(test_client, monkeypatch):
     """Timezone offset should adjust save_time label."""
 
     class FakeDatetime(datetime):
+        """Deterministic datetime for timezone tests."""
+
         @classmethod
         def utcnow(cls):
             return cls(2020, 1, 4, 15, 0, 0)
