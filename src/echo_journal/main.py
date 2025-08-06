@@ -429,12 +429,14 @@ def _update_field(frontmatter: str | None, key: str, value) -> str | None:
         return frontmatter
     try:
         # ``yaml.safe_dump`` ensures values with special characters are quoted
-        # properly for YAML frontmatter.
-        value_str = (
-            yaml.safe_dump(value, default_flow_style=True, explicit_end=False)
-            .strip()
-            .splitlines()[0]
-        )
+        # properly for YAML frontmatter. ``width`` is set high so the dump does
+        # not wrap long strings, and any YAML document terminator is removed.
+        value_str = yaml.safe_dump(
+            value, default_flow_style=True, explicit_end=False, width=1000
+        ).strip()
+        if value_str.endswith("\n..."):
+            value_str = value_str[:-4]
+        value_str = " ".join(value_str.splitlines())
     except yaml.YAMLError:
         value_str = str(value)
     if not frontmatter:
