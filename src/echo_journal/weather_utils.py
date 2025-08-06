@@ -85,6 +85,4 @@ async def build_frontmatter(
                 if line.strip() and line.strip() != "..."
             )
             lines.append(f"wotd_def: {dumped}")
-    if integrations.get("immich", True):
-        lines.append("photos: []")
     return "\n".join(lines)
