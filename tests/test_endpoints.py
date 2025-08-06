@@ -393,7 +393,6 @@ def test_view_entry_uses_frontmatter(test_client):
         "---\n"
         "location: Testville\n"
         "weather: 12\u00b0C code 1\n"
-        "photos: []\n"
         "---\n"
         "# Prompt\nP\n\n# Entry\nE"
     )
@@ -504,20 +503,19 @@ def test_archive_filter_and_sort(test_client):
         "---\n"
         "location: Btown\n"
         "weather: 10\u00b0C code 1\n"
-        "photos: []\n"
         "---\n"
         "# Prompt\nP1\n\n# Entry\nE1"
     )
-    entry2 = (
-        "---\n"
-        "weather: 12\u00b0C code 2\n"
-        "photos: []\n"
-        "---\n"
-        "# Prompt\nP2\n\n# Entry\nE2"
-    )
+    entry2 = """---
+weather: 12°C code 2
+---
+# Prompt
+P2
+
+# Entry
+E2"""
     entry3 = """---
 location: Atown
-photos: []
 ---
 # Prompt
 P3
@@ -592,7 +590,6 @@ def test_view_entry_shows_wotd(test_client):
     content = """---
 wotd: luminous
 wotd_def: emitting light
-photos: []
 ---
 # Prompt
 P
@@ -611,7 +608,6 @@ def test_archive_shows_wotd_icon(test_client):
     content = """---
 wotd: zephyr
 wotd_def: gentle breeze
-photos: []
 ---
 # Prompt
 P
