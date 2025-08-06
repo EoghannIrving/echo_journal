@@ -407,9 +407,11 @@ def _update_field(frontmatter: str | None, key: str, value) -> str | None:
     """Generic helper to update or insert a frontmatter field."""
     if value is None or value == "" or value == []:
         return frontmatter
-    if isinstance(value, list):
-        value_str = "[" + ", ".join(map(str, value)) + "]"
-    else:
+    try:
+        # ``yaml.safe_dump`` ensures values with special characters are quoted
+        # properly for YAML frontmatter.
+        value_str = yaml.safe_dump(value, default_flow_style=True).strip()
+    except yaml.YAMLError:
         value_str = str(value)
     if not frontmatter:
         return f"{key}: {value_str}"

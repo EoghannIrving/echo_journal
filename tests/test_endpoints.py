@@ -192,6 +192,24 @@ def test_fact_of_day_in_frontmatter(test_client):
     assert "fact: test fact" in text
 
 
+def test_fact_with_colon_is_yaml_safe(test_client, monkeypatch):
+    """Facts containing colons should be quoted and parsed correctly."""
+    async def colon_fact(_):
+        return "mind-blowing fact: in 1970 something happened"
+
+    monkeypatch.setattr(main, "fetch_date_fact", colon_fact)
+    monkeypatch.setattr(numbers_utils, "fetch_date_fact", colon_fact)
+
+    payload = {"date": "2020-02-03", "content": "entry", "prompt": "prompt"}
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+
+    text = (main.DATA_DIR / "2020-02-03.md").read_text(encoding="utf-8")
+    frontmatter, _ = split_frontmatter(text)
+    meta = parse_frontmatter(frontmatter or "")
+    assert meta.get("fact") == "mind-blowing fact: in 1970 something happened"
+
+
 
 def test_category_saved_in_frontmatter(test_client):
     """Prompt category should be stored in frontmatter when provided."""
