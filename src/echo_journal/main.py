@@ -338,6 +338,8 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         "fact": settings.get("INTEGRATION_FACT", "true").lower() != "false",
     }
     integrations["ai"] = bool(config.OPENAI_API_KEY)
+    if templates is None:
+        raise RuntimeError("Templates not configured")
 
     return templates.TemplateResponse(
         request,
@@ -650,6 +652,9 @@ async def archive_view(  # pylint: disable=too-many-branches
     else:
         current_month = datetime.now().strftime("%Y-%m")
 
+    if templates is None:
+        raise RuntimeError("Templates not configured")
+
     return templates.TemplateResponse(
         request,
         "archives.html",
@@ -694,6 +699,8 @@ async def archive_entry(request: Request, entry_date: str):
     songs = await load_json_file(meta_dir / f"{file_path.stem}.songs.json")
 
     media = await load_json_file(meta_dir / f"{file_path.stem}.media.json")
+    if templates is None:
+        raise RuntimeError("Templates not configured")
 
     return templates.TemplateResponse(
         request,
@@ -731,6 +738,9 @@ async def archive_entry(request: Request, entry_date: str):
 @app.get("/settings", response_class=HTMLResponse)
 async def settings_page(request: Request):
     """Render the user settings page."""
+    if templates is None:
+        raise RuntimeError("Templates not configured")
+
     return templates.TemplateResponse(
         request,
         "settings.html",
@@ -850,6 +860,8 @@ async def stats_page(request: Request):
         "average_words": round(total_words / total_entries, 1) if total_entries else 0,
         **streaks,
     }
+    if templates is None:
+        raise RuntimeError("Templates not configured")
 
     return templates.TemplateResponse(
         "stats.html",
