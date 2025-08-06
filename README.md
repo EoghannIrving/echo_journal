@@ -1,7 +1,5 @@
 # Echo Journal
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml/badge.svg)](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-blue)
-
 > **A low-friction, neurodivergent-friendly journaling app that stores your words in timeless Markdown and adapts to your mood and energy.**  
 
 Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds** and anyone who values simplicity, flexibility, and control over their own data.  
@@ -11,6 +9,7 @@ Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds*
 - **Ultra-low friction** — open → type → save. No clutter, no pressure.  
 - **Optional enrichment** — mood, energy, location, weather, photos, media — all if you want, none if you don’t.  
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml/badge.svg)](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-blue) [![Built with Human + AI Collaboration](https://img.shields.io/badge/Built%20with-Human%20+%20AI%20Collaboration-blueviolet?style=flat-square)](#about-the-development)
 
 - [Features](#features)
 - [Prerequisites](#prerequisites)
