@@ -1,8 +1,8 @@
 """Core application paths and configuration constants."""
 
+import os
 from importlib.resources import files
 from pathlib import Path
-import os
 
 from .settings_utils import load_settings
 

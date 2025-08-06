@@ -9,24 +9,24 @@ import hmac
 import json
 import logging
 import os
-import time
+import re
 import secrets
+import time
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Dict
-import re
 from urllib.parse import urlparse
 
 import aiofiles
 import bleach
 import httpx
 import markdown
-import yaml
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request, Query
-from fastapi.responses import HTMLResponse, JSONResponse, Response, RedirectResponse
+import yaml
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.routing import Mount
@@ -34,22 +34,21 @@ from starlette.routing import Mount
 from . import config
 from .ai_prompt_utils import fetch_ai_prompt
 from .file_utils import (
-    safe_entry_path,
-    parse_entry,
-    read_existing_frontmatter,
-    split_frontmatter,
-    parse_frontmatter,
     format_weather,
-    weather_description,
     load_json_file,
+    parse_entry,
+    parse_frontmatter,
+    read_existing_frontmatter,
+    safe_entry_path,
+    split_frontmatter,
+    weather_description,
 )
 from .immich_utils import update_photo_metadata
 from .jellyfin_utils import update_media_metadata, update_song_metadata
-from .prompt_utils import generate_prompt, _choose_anchor, load_prompts
-from .settings_utils import load_settings, save_settings, SETTINGS_PATH
-from .weather_utils import build_frontmatter, time_of_day_label
 from .numbers_utils import fetch_date_fact
-
+from .prompt_utils import _choose_anchor, generate_prompt, load_prompts
+from .settings_utils import SETTINGS_PATH, load_settings, save_settings
+from .weather_utils import build_frontmatter, time_of_day_label
 
 # Provide pathlib.Path.is_relative_to on Python < 3.9
 if not hasattr(Path, "is_relative_to"):

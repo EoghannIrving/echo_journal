@@ -2,8 +2,8 @@
 
 # pylint: disable=protected-access
 
-from datetime import date
 import importlib
+from datetime import date
 
 from echo_journal import main
 
