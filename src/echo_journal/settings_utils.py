@@ -119,11 +119,17 @@ def save_settings(values: Dict[str, Any], path: Path | None = None) -> Dict[str,
                 config_module = importlib.import_module("echo_journal.config")
                 importlib.reload(config_module)
                 try:
-                    from echo_journal import immich_utils, jellyfin_utils
                     from echo_journal import (
-                        main as main_module,
-                    )  # pylint: disable=import-outside-toplevel
-                    from echo_journal import prompt_utils, wordnik_utils
+                        immich_utils,
+                        jellyfin_utils,
+                    )
+                    from echo_journal import (
+                        main as main_module,  # pylint: disable=import-outside-toplevel
+                    )
+                    from echo_journal import (
+                        prompt_utils,
+                        wordnik_utils,
+                    )
 
                     if hasattr(main_module, "reload_from_config"):
                         main_module.reload_from_config()
