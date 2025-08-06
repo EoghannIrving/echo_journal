@@ -432,6 +432,7 @@
 
         const status = document.getElementById('save-status');
         try {
+          console.debug('Saving entry with tz_offset', tz_offset, 'client time', new Date().toString());
           const response = await fetch('/entry', {
             method: 'POST',
             headers: {
@@ -460,6 +461,7 @@
           }
 
           const result = await response.json();
+          console.debug('Save entry response', result);
           if (result.status === 'success') {
             status.textContent = 'Last saved: just now — Echo Journal';
             status.classList.remove('error-text');
