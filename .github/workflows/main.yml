@@ -43,7 +43,7 @@ jobs:
 
       # ----- Security -----
       - name: Run Bandit
-        run: bandit -r . -x tests
+        run: bandit -r . -s B101
 
       - name: Run pip-audit
         run: pip-audit
