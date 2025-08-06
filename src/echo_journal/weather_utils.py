@@ -72,7 +72,6 @@ async def build_frontmatter(
         lines.append(f"location: {label}")
     if weather_str:
         lines.append(f"weather: {weather_str}")
-    lines.append(f"save_time: {time_of_day_label()}")
     if wotd_word:
         lines.append(f"wotd: {wotd_word}")
         if wotd_def:

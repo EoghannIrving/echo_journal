@@ -73,7 +73,6 @@ def test_build_frontmatter(monkeypatch):
 
     monkeypatch.setattr(weather_utils, "fetch_weather", fake_fetch_weather)
     monkeypatch.setattr(weather_utils, "fetch_word_of_day", fake_wotd)
-    monkeypatch.setattr(weather_utils, "time_of_day_label", lambda: "Morning")
     fm = asyncio.run(
         weather_utils.build_frontmatter(
             {"lat": 1, "lon": 2, "label": "Town"},
@@ -99,7 +98,6 @@ def test_build_frontmatter_multiline_definition(monkeypatch):
 
     monkeypatch.setattr(weather_utils, "fetch_weather", fake_fetch_weather)
     monkeypatch.setattr(weather_utils, "fetch_word_of_day", fake_wotd)
-    monkeypatch.setattr(weather_utils, "time_of_day_label", lambda: "Morning")
 
     fm = asyncio.run(
         weather_utils.build_frontmatter(

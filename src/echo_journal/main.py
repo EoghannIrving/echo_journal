@@ -475,6 +475,11 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
     mood = bleach.clean(data.get("mood") or "").strip() or None
     energy = bleach.clean(data.get("energy") or "").strip() or None
     integrations = data.get("integrations") or {}
+    tz_offset = data.get("tz_offset")
+    try:
+        tz_offset = int(tz_offset) if tz_offset is not None else None
+    except (TypeError, ValueError):
+        tz_offset = None
 
     if not entry_date or not content or not prompt:
         return JSONResponse(
@@ -501,7 +506,10 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
         frontmatter = await read_existing_frontmatter(file_path)
 
     # Update or add save_time field
-    label = time_of_day_label()
+    now = datetime.utcnow()
+    if tz_offset is not None:
+        now += timedelta(minutes=tz_offset)
+    label = time_of_day_label(now)
     frontmatter = _with_updated_save_time(frontmatter, label)
     frontmatter = _with_updated_category(frontmatter, category)
     frontmatter = _with_updated_mood(frontmatter, mood)
