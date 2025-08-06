@@ -89,6 +89,7 @@ def load_settings(path: Path | None = None) -> Dict[str, str]:
 
 
 def save_settings(values: Dict[str, Any], path: Path | None = None) -> Dict[str, str]:
+    # pylint: disable=too-many-branches,too-many-nested-blocks
     """Merge ``values`` into the settings file and return updated mapping."""
     if path is None:
         path = SETTINGS_PATH
@@ -118,7 +119,7 @@ def save_settings(values: Dict[str, Any], path: Path | None = None) -> Dict[str,
                 config_module = importlib.import_module("echo_journal.config")
                 importlib.reload(config_module)
                 try:
-                    from echo_journal import (
+                    from echo_journal import (  # pylint: disable=import-outside-toplevel
                         main as main_module,
                         prompt_utils,
                         wordnik_utils,
@@ -131,7 +132,7 @@ def save_settings(values: Dict[str, Any], path: Path | None = None) -> Dict[str,
                     for mod in (prompt_utils, wordnik_utils, immich_utils, jellyfin_utils):
                         if hasattr(mod, "refresh_config"):
                             mod.refresh_config()
-                except Exception as exc:  # pragma: no cover - unexpected
+                except Exception as exc:  # pragma: no cover - unexpected  # pylint: disable=broad-exception-caught
                     logger.error("Could not reinitialize app: %s", exc)
             except ImportError as exc:  # pragma: no cover - unexpected
                 logger.error("Could not reload config: %s", exc)

@@ -1,5 +1,7 @@
 """Prompt loading and generation helpers."""
 
+# pylint: disable=global-statement
+
 import asyncio
 import logging
 import random
