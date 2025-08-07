@@ -31,6 +31,26 @@ server {
 }
 ```
 
+### Nginx Proxy Manager
+
+If you prefer a UI to manage Nginx, [Nginx Proxy Manager](https://nginxproxymanager.com/) can front Echo Journal and handle
+TLS termination.
+
+1. In **Hosts → Proxy Hosts** click **Add Proxy Host**.
+2. Enter your domain (e.g. `journal.example.com`) under **Domain Names**.
+3. Set **Scheme** to `http` and forward traffic to `http://echo-journal:8000`.
+4. Enable **Block Common Exploits** and **Websockets Support**.
+5. In the **Advanced** tab add:
+
+   ```nginx
+   proxy_set_header Host $host;
+   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+   proxy_set_header X-Forwarded-Proto $scheme;
+   ```
+
+   These headers preserve the original host and client IP information.
+6. On the **SSL** tab request a Let's Encrypt certificate, enable **Force SSL**, and save.
+
 ## Direct HTTPS
 
 Echo Journal can serve HTTPS directly when provided with a TLS key and
