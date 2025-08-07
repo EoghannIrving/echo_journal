@@ -301,10 +301,11 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 ## About the Development
 
 Echo Journal was created using an AI-assisted development workflow guided by human design and review.
-This process allowed for rapid prototyping, iterative feature testing, and fast refinement while maintaining control over architecture, security, and usability.
-Every feature in this Alpha is been reviewed, tested, and integrated with a focus on privacy, accessibility, and low-friction journaling.
+This process allowed me as a single developer to do rapid prototyping, iterative feature testing, and fast refinement while maintaining control over architecture, security, and usability.
 
-Human contributors are encouraged and welcome — your insight, creativity, and lived experience can help shape Echo Journal’s future.
+Every feature in this Alpha is being reviewed, tested, and integrated with a focus on privacy, accessibility, and low-friction journaling.
+
+Human contributors are encouraged and welcome. Your insight, creativity, and lived experience can help shape Echo Journal’s future.
 
 ## License
 
