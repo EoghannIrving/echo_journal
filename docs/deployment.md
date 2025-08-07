@@ -31,4 +31,19 @@ server {
 }
 ```
 
+## Direct HTTPS
+
+Echo Journal can serve HTTPS directly when provided with a TLS key and
+certificate. Set `ECHO_JOURNAL_SSL_KEYFILE` and
+`ECHO_JOURNAL_SSL_CERTFILE` to the paths of these files to enable the
+built-in server to handle TLS:
+
+```bash
+ECHO_JOURNAL_SSL_KEYFILE=/etc/ssl/private/journal.key \
+ECHO_JOURNAL_SSL_CERTFILE=/etc/ssl/certs/journal.pem \
+echo-journal
+```
+
+Ensure the key and certificate are valid and readable by the process.
+
 When exposing the app publicly, enable Basic Auth by setting `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` so unauthenticated requests are rejected with a `401` response.
