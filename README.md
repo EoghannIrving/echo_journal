@@ -35,6 +35,7 @@ Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds*
 - [YAML Frontmatter Reference](#yaml-frontmatter-reference)
 - [Deployment](#deployment)
 - [Testing](#testing)
+- [Alpha Feedback](#alpha-feedback)
 - [Bugs and Issues](#bugs-and-issues)
 - [Contributing](#contributing)
 - [About the Development](#about-the-development)
@@ -270,6 +271,24 @@ pytest
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup and testing details.
+
+## Alpha Feedback
+
+Echo Journal is currently in alpha so while the core features are functional it is still evolving. Your feedback at this stage could have a big impact.
+
+If you're trying it out, please consider sharing:
+
+- What’s working well for you?
+- What’s confusing, frustrating, or missing?
+- Any bugs or quirks you noticed?
+- Feature ideas that could make journaling even easier?
+
+Ways to give feedback:
+- Open an issue on GitHub
+- Email me directly if you prefer something more private
+- Start a discussion in the GitHub Discussions tab (if enabled)
+
+I’d especially love to hear from AuADHD users, privacy-conscious folks, and anyone who usually bounces off journaling apps. Even short notes make a difference.
 
 ## Bugs and Issues
 
