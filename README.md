@@ -117,7 +117,15 @@ Docker Compose offers the fastest way to get Echo Journal running, while the Pyt
    mkdir -p data
    ```
 
-3. **Start the container:**
+3. **Add the Settings.yaml**
+
+   ```bash
+   mkdir -p data/.settings
+   cp .settings.example.yaml data/.settings/settings.yaml
+   #edit .settings.yaml
+   ```
+
+4. **Start the container:**
 
    ```bash
    docker compose up -d
@@ -125,15 +133,14 @@ Docker Compose offers the fastest way to get Echo Journal running, while the Pyt
 
    Then open <http://localhost:8510> (or your chosen `HOST_PORT`) in your browser.
 
-4. **Stop the container while preserving data:**
+5. **Stop the container while preserving data:**
 
    ```bash
    docker compose down
    ```
 
    Journal files remain in the mounted `data` directory on the host.
-
-
+   
 ### Automated Python setup
 
 ```bash
