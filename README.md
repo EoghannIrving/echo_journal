@@ -121,23 +121,7 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
 
 ## Usage
 
-### Run with Python
-
-1. Create a virtual environment and install dependencies:
-
-   ```bash
-   python -m venv .venv && source .venv/bin/activate
-   pip install .
-   # npm install  # only needed if modifying Tailwind styles
-   ```
-
-2. Start the development server:
-
-   ```bash
-   uvicorn echo_journal.main:app --reload
-   # or use the console script
-   echo-journal
-   ```
+Docker Compose offers the fastest way to get Echo Journal running, while the Python workflow is ideal for development or customization.
 
 ### Run with Docker Compose
 
@@ -171,6 +155,24 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
    ```
 
    Journal files remain in the mounted `data` directory on the host.
+
+### Run with Python
+
+1. Create a virtual environment and install dependencies:
+
+   ```bash
+   python -m venv .venv && source .venv/bin/activate
+   pip install .
+   # npm install  # only needed if modifying Tailwind styles
+   ```
+
+2. Start the development server:
+
+   ```bash
+   uvicorn echo_journal.main:app --reload
+   # or use the console script
+   echo-journal
+   ```
 
 ## Configuration
 
