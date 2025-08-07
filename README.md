@@ -96,30 +96,7 @@ Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds*
 
 ## Installation
 
-### Automated setup
-
-```bash
-git clone https://github.com/EoghannIrving/echo_journal.git
-cd echo_journal
-./scripts/setup.sh
-```
-
-The `setup.sh` script creates a `.venv`, installs Python dependencies, runs `npm install`, and builds the Tailwind CSS bundle.
-
-### Manual setup
-
-```bash
-git clone https://github.com/EoghannIrving/echo_journal.git
-cd echo_journal
-python -m venv .venv && source .venv/bin/activate
-pip install .  # installs Echo Journal and its Python dependencies
-```
-
-The repository bundles a compiled `static/tailwind.css`, so Node.js and npm are only needed if you want to change styles. Running `npm install` will automatically rebuild the CSS via the `postinstall` script.
-
-Python dependencies are defined in `pyproject.toml` and installed with `pip install .`.
-
-## Usage
+## Docker
 
 Docker Compose offers the fastest way to get Echo Journal running, while the Python workflow is ideal for development or customization.
 
@@ -143,7 +120,7 @@ Docker Compose offers the fastest way to get Echo Journal running, while the Pyt
 3. **Start the container:**
 
    ```bash
-   docker compose up --build
+   docker compose up -d
    ```
 
    Then open <http://localhost:8510> (or your chosen `HOST_PORT`) in your browser.
@@ -155,6 +132,30 @@ Docker Compose offers the fastest way to get Echo Journal running, while the Pyt
    ```
 
    Journal files remain in the mounted `data` directory on the host.
+
+
+### Automated Python setup
+
+```bash
+git clone https://github.com/EoghannIrving/echo_journal.git
+cd echo_journal
+./scripts/setup.sh
+```
+
+The `setup.sh` script creates a `.venv`, installs Python dependencies, runs `npm install`, and builds the Tailwind CSS bundle.
+
+### Manual setup
+
+```bash
+git clone https://github.com/EoghannIrving/echo_journal.git
+cd echo_journal
+python -m venv .venv && source .venv/bin/activate
+pip install .  # installs Echo Journal and its Python dependencies
+```
+
+The repository bundles a compiled `static/tailwind.css`, so Node.js and npm are only needed if you want to change styles. Running `npm install` will automatically rebuild the CSS via the `postinstall` script.
+
+Python dependencies are defined in `pyproject.toml` and installed with `pip install .`.
 
 ### Run with Python
 
