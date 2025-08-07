@@ -11,7 +11,7 @@
 
 ## Reverse Proxy
 
-Echo Journal binds to `127.0.0.1` by default so it's only reachable from the local machine. To make it available elsewhere, run it behind your VPN (e.g. WireGuard) or a reverse proxy such as Nginx or Caddy. The proxy can handle TLS termination and restrict access to known networks. Set `ECHO_JOURNAL_HOST=0.0.0.0` if the proxy needs to reach the app over the network.
+Echo Journal binds to `127.0.0.1:8000` by default so it's only reachable from the local machine. To make it available elsewhere, run it behind your VPN (e.g. WireGuard) or a reverse proxy such as Nginx or Caddy. The proxy can handle TLS termination and restrict access to known networks. Set `ECHO_JOURNAL_HOST=0.0.0.0` if the proxy needs to reach the app over the network. Change the port with `ECHO_JOURNAL_PORT`.
 
 Example Nginx configuration terminating TLS and proxying requests:
 
@@ -24,7 +24,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/journal.example.com/privkey.pem;
 
     location / {
-       proxy_pass http://127.0.0.1:8510;
+       proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
