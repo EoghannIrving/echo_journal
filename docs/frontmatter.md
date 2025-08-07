@@ -23,7 +23,6 @@ category: Gratitude
 | `wotd` | Wordnik word of the day. | Displayed in the entry sidebar and as an icon in the archive list. |
 | `wotd_def` | Definition for the word of the day. | Shown alongside the word in entry views. |
 | `category` | Prompt category selected when saving. | Stored for filtering and prompt history. |
-| `photos` | List of photo objects from Immich, when available. | Adds a 📸 icon in the archive and shows thumbnails under the entry. |
 
 Additional keys may be introduced in future integrations (e.g., facts, mood tracking). Unknown keys are ignored.
 
