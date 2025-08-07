@@ -1,5 +1,7 @@
 # Deployment
 
+> **Warning:** Echo Journal is in an alpha state and should not be exposed directly to the public internet. If remote access is required, use a VPN, reverse proxy, or other access controls to restrict who can reach the service.
+
 ## Security
 
 - Set `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` before exposing the app to the internet. Without these variables, anyone can access your journal.
