@@ -17,7 +17,7 @@ Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds*
 - **Ultra-low friction** — open → type → save. No clutter, no pressure.  
 - **Optional enrichment** — mood, energy, location, weather, photos, media — all if you want, none if you don’t.
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/EoghannIrving/echo_journal/actions/workflows/main.yml/badge.svg)](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Version 0.1.0-alpha](https://img.shields.io/badge/version-0.1.0-blue) [![Built with Human + AI Collaboration](https://img.shields.io/badge/Built%20with-Human%20+%20AI%20Collaboration-blue)](#about-the-development)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/EoghannIrving/echo_journal/actions/workflows/main.yml/badge.svg)](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Version 0.1.0-alpha](https://img.shields.io/badge/version-0.1.0-blue) ![Last Commit](https://img.shields.io/github/last-commit/EchoJournalOrg/echo-journal) [![Built with Human + AI Collaboration](https://img.shields.io/badge/Built%20with-Human%20+%20AI%20Collaboration-blue)](#about-the-development)
 
 ## Table of Contents
 
