@@ -11,6 +11,9 @@ save_time: Evening
 wotd: luminous
 wotd_def: emitting light
 category: Gratitude
+mood: joyful
+energy: energized
+fact: 42 is the answer
 ```
 
 ## Field details
@@ -23,8 +26,11 @@ category: Gratitude
 | `wotd` | Wordnik word of the day. | Displayed in the entry sidebar and as an icon in the archive list. |
 | `wotd_def` | Definition for the word of the day. | Shown alongside the word in entry views. |
 | `category` | Prompt category selected when saving. | Stored for filtering and prompt history. |
+| `mood` | Mood chosen when saving. | Displayed in entry views and sortable in the archive. |
+| `energy` | Energy level chosen when saving. | Used to tailor prompts and shown in metadata. |
+| `fact` | Numbers API fact of the day. | Displayed in the entry sidebar. |
 
-Additional keys may be introduced in future integrations (e.g., facts, mood tracking). Unknown keys are ignored.
+Additional keys may be introduced in future integrations. Unknown keys are ignored.
 
 ## Energy level mapping
 
@@ -37,3 +43,17 @@ This allows the backend to score prompts based on numeric intensity.
 | `low` | 2 |
 | `ok` | 3 |
 | `energized` | 4 |
+
+## Media metadata JSON files
+
+Photos, music, and video history are stored separately from the YAML frontmatter.
+When integrations are enabled, the application creates JSON files under the
+`.meta/` directory next to your journal files:
+
+- `<date>.photos.json` for Immich photo links
+- `<date>.songs.json` for music listening history
+- `<date>.media.json` for Jellyfin movies and TV
+
+These files are loaded when viewing or filtering entries so the interface can
+show thumbnails, track counts, and other details without bloating the
+frontmatter itself.
