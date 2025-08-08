@@ -64,9 +64,13 @@ Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds*
 - Per-browser toggles — nothing is forced, nothing runs you didn’t ask for.
 - See your day in context.
 
-**🔐 Local-first & private**  
-- Runs on your machine or private server.  
-- Optional HTTP Basic authentication for remote use.  
+**🔐 Local-first & private**
+- Runs on your machine or private server.
+- Optional HTTP Basic authentication for remote use.
+
+**♿ Accessibility**
+- Toggle "Text-only tags" under mood & energy to remove emoji from selectors. Your choice is remembered per browser.
+- "Prompt Style" dropdown includes tooltips explaining each prompt category.
 
 ## How It Looks
 

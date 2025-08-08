@@ -43,6 +43,19 @@
       <option value="energized" {% if energy == 'energized' %}selected{% endif %}>⚡ Energized</option>
     </select>
   </fieldset>
+  <div class="flex justify-center items-center gap-2 text-sm">
+    <input type="checkbox" id="text-only-toggle" class="h-4 w-4">
+    <label for="text-only-toggle" title="Show mood and energy choices without emoji">Text-only tags</label>
+  </div>
+  <div class="mt-2">
+    <label for="style-select" class="sr-only">Prompt Style</label>
+    <select id="style-select" class="border rounded px-2 py-1 text-sm">
+      <option value="" title="Let Echo Journal choose based on mood and energy">Any Style</option>
+      <option value="memory" title="Reflect on past experiences">Memory</option>
+      <option value="routines" title="Consider daily habits and patterns">Routines</option>
+      <option value="micro" title="Ultra-light prompts for low energy">Micro</option>
+    </select>
+  </div>
 </section>
 <section id="prompt-section" class="hidden">
   <section class="w-full mx-auto space-y-2 p-4 rounded-xl text-left">
