@@ -6,6 +6,7 @@ import asyncio
 import logging
 import secrets
 from datetime import date, datetime
+from collections.abc import Iterable
 
 import aiofiles
 import yaml
@@ -220,7 +221,10 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
 
     if time_label:
         candidates = [
-            p for p in candidates if not p.get("times") or time_label in p.get("times")
+            p
+            for p in candidates
+            if (times := p.get("times")) is None
+            or (isinstance(times, Iterable) and time_label in times)
         ]
         if debug:
             debug_info["after_time"] = [p.get("id") for p in candidates]
