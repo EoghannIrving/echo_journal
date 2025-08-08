@@ -75,8 +75,8 @@ def test_client(tmp_path, monkeypatch):
     async def fake_fact(_):
         return "test fact"
 
-    monkeypatch.setattr(main, "fetch_date_fact", fake_fact)
-    monkeypatch.setattr(numbers_utils, "fetch_date_fact", fake_fact)
+    monkeypatch.setattr(main, "fetch_random_fact", fake_fact)
+    monkeypatch.setattr(numbers_utils, "fetch_random_fact", fake_fact)
     # ensure settings file exists in case other tests removed it
     main.SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
     if not main.SETTINGS_PATH.exists():
@@ -299,8 +299,8 @@ def test_fact_with_colon_is_yaml_safe(test_client, monkeypatch):
     async def colon_fact(_):
         return "mind-blowing fact: in 1970 something happened"
 
-    monkeypatch.setattr(main, "fetch_date_fact", colon_fact)
-    monkeypatch.setattr(numbers_utils, "fetch_date_fact", colon_fact)
+    monkeypatch.setattr(main, "fetch_random_fact", colon_fact)
+    monkeypatch.setattr(numbers_utils, "fetch_random_fact", colon_fact)
 
     payload = {"date": "2020-02-03", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
@@ -326,8 +326,8 @@ def test_long_fact_not_truncated(test_client, monkeypatch):
     async def long_fact_fn(_):
         return long_fact
 
-    monkeypatch.setattr(main, "fetch_date_fact", long_fact_fn)
-    monkeypatch.setattr(numbers_utils, "fetch_date_fact", long_fact_fn)
+    monkeypatch.setattr(main, "fetch_random_fact", long_fact_fn)
+    monkeypatch.setattr(numbers_utils, "fetch_random_fact", long_fact_fn)
 
     payload = {"date": "2020-02-05", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
@@ -346,8 +346,8 @@ def test_fact_unavailable_logs_warning(test_client, monkeypatch, caplog):
     async def none_fact(_):
         return None
 
-    monkeypatch.setattr(main, "fetch_date_fact", none_fact)
-    monkeypatch.setattr(numbers_utils, "fetch_date_fact", none_fact)
+    monkeypatch.setattr(main, "fetch_random_fact", none_fact)
+    monkeypatch.setattr(numbers_utils, "fetch_random_fact", none_fact)
 
     payload = {"date": "2020-02-04", "content": "entry", "prompt": "prompt"}
     with caplog.at_level(logging.WARNING, logger="ej.fact"):

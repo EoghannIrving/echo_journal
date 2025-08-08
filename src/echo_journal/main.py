@@ -45,7 +45,7 @@ from .file_utils import (
 )
 from .immich_utils import update_photo_metadata
 from .jellyfin_utils import update_media_metadata, update_song_metadata
-from .numbers_utils import fetch_date_fact
+from .numbers_utils import fetch_random_fact
 from .prompt_utils import _choose_anchor, generate_prompt, load_prompts
 from .settings_utils import SETTINGS_PATH, load_settings, save_settings
 from .weather_utils import build_frontmatter, time_of_day_label
@@ -544,7 +544,7 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
         retries = config.NUMBERS_API_RETRIES
         fact = None
         for _ in range(retries + 1):
-            fact = await fetch_date_fact(fact_date)
+            fact = await fetch_random_fact(fact_date)
             if fact:
                 break
         if fact is None:

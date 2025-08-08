@@ -6,11 +6,12 @@ from typing import Optional
 import httpx
 
 
-async def fetch_date_fact(_: date) -> Optional[str]:
+async def fetch_random_fact(_: date) -> Optional[str]:
     """Return a random useless fact.
 
-    Fetches a random fact from ``uselessfacts.jsph.pl``. The ``date`` argument is
-    ignored. Returns ``None`` if the request fails or the response is malformed.
+    Fetches a random fact from ``uselessfacts.jsph.pl``. The supplied
+    ``date`` argument is ignored. Returns ``None`` if the request fails or the
+    response is malformed.
     """
     url = "https://uselessfacts.jsph.pl/api/v2/facts/random"
     try:
