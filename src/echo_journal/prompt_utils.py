@@ -5,8 +5,8 @@
 import asyncio
 import logging
 import secrets
-from datetime import date, datetime
 from collections.abc import Iterable
+from datetime import date, datetime
 
 import aiofiles
 import yaml
