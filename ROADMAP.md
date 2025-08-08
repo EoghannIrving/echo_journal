@@ -46,7 +46,7 @@
 ## Phase 5: Enrichment and polish (in progress)
 - Document YAML frontmatter structure in the README ✅ Completed
 - Evaluate secure remote access options and toggles for integrations ✅ Completed
-- Add optional "Fact of the Day" integration
+- ~~Add optional "Fact of the Day" integration~~ ✅ Completed
 
 
 ### Backdated journaling support

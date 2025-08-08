@@ -60,9 +60,10 @@ Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds*
 - Stats and archive views for gentle pattern tracking.  
 
 **🔌 Optional integrations**
-- **Wordnik** (word of the day), **Immich** (photos), **Jellyfin** (media history), **Useless Facts** (random fact), **Location**, **Weather**.
-- Per-browser toggles — nothing is forced, nothing runs you didn’t ask for.
-- See your day in context.
+  - **Wordnik** (word of the day), **Immich** (photos), **Jellyfin** (media history), **Useless Facts** (random fact), **Location**, **Weather**.
+  - Shows a daily random fact beneath the date using the Useless Facts API.
+  - Per-browser toggles — nothing is forced, nothing runs you didn’t ask for.
+  - See your day in context.
 
 **🔐 Local-first & private**  
 - Runs on your machine or private server.  
