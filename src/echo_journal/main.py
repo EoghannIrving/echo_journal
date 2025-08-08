@@ -345,6 +345,8 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         "immich": settings.get("INTEGRATION_IMMICH", "true").lower() != "false",
         "jellyfin": settings.get("INTEGRATION_JELLYFIN", "true").lower() != "false",
         "fact": settings.get("INTEGRATION_FACT", "true").lower() != "false",
+        "location": settings.get("INTEGRATION_LOCATION", "true").lower() != "false",
+        "weather": settings.get("INTEGRATION_WEATHER", "true").lower() != "false",
     }
     integrations["ai"] = bool(config.OPENAI_API_KEY)
     if templates is None:

@@ -8,7 +8,15 @@
   const readonly = cfg.readonly === true || cfg.readonly === "true";
   const energyLevels = { drained: 1, low: 2, ok: 3, energized: 4 };
   const getEnergyValue = (level) => energyLevels[level] || null;
-  const defaultIntegrations = { wordnik: true, immich: true, jellyfin: true, fact: true, ai: true };
+  const defaultIntegrations = {
+    wordnik: true,
+    immich: true,
+    jellyfin: true,
+    fact: true,
+    ai: true,
+    location: true,
+    weather: true,
+  };
   const integrationSettings = { ...defaultIntegrations, ...(cfg.integrations || {}) };
   const tz_offset = -new Date().getTimezoneOffset();
 
@@ -51,7 +59,7 @@
   };
 
   async function fetchGeolocationDetails() {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation || !integrationSettings.location) return;
 
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude, accuracy } = pos.coords;
@@ -77,7 +85,7 @@
       }
 
       const weatherEl = document.getElementById('weather-display');
-      if (weatherEl) {
+      if (weatherEl && integrationSettings.weather) {
         const weather = await fetchWeather(latitude, longitude);
         if (weather) {
           weatherEl.dataset.temp = weather.temperature;
@@ -511,7 +519,22 @@
       });
     });
 
-    if (!readonly) {
+    const metaDetails = document.getElementById('meta-details');
+    if (metaDetails) {
+      if (!integrationSettings.location) {
+        const locEl = document.getElementById('location-display');
+        if (locEl) locEl.remove();
+      }
+      if (!integrationSettings.weather) {
+        const weatherEl = document.getElementById('weather-display');
+        if (weatherEl) weatherEl.remove();
+      }
+      if (!integrationSettings.location && !integrationSettings.weather) {
+        metaDetails.remove();
+      }
+    }
+
+    if (!readonly && integrationSettings.location) {
       fetchGeolocationDetails();
     }
   });
