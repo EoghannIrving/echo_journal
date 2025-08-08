@@ -59,8 +59,8 @@ Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds*
 - Optional auto-enrichment (location, weather, media, photos, trivia).  
 - Stats and archive views for gentle pattern tracking.  
 
-**🔌 Optional integrations**  
-- **Wordnik** (word of the day), **Immich** (photos), **Jellyfin** (media history), **Useless Facts** (random fact).
+**🔌 Optional integrations**
+- **Wordnik** (word of the day), **Immich** (photos), **Jellyfin** (media history), **Useless Facts** (random fact), **Location**, **Weather**.
 - Per-browser toggles — nothing is forced, nothing runs you didn’t ask for.
 - See your day in context.
 
@@ -259,11 +259,10 @@ Details about the entry front matter and energy level mapping have moved to [doc
 ### Disabling integrations
 
 The web UI includes a **Settings** page where optional integrations can be
-toggled per browser. Uncheck Wordnik, Immich, or Jellyfin integrations to
-disable their metadata. A future "Fact of the Day" option will also be
-toggleable here once implemented. Your choices are stored in `localStorage` and
-the server skips fetching data for any disabled integrations when building
-frontmatter.
+toggled per browser. Uncheck Wordnik, Immich, Jellyfin, Location, Weather, or
+Fact integrations to disable their metadata. Your choices are stored in
+`localStorage` and the server skips fetching data for any disabled integrations
+when building frontmatter.
 
 ## Deployment
 

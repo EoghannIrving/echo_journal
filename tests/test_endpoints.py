@@ -412,6 +412,44 @@ def test_weather_saved_when_provided(test_client):
     assert "..." not in frontmatter
 
 
+def test_location_disabled_in_frontmatter(test_client):
+    """Location is omitted when integration is disabled."""
+    payload = {
+        "date": "2021-01-02",
+        "content": "entry",
+        "prompt": "prompt",
+        "location": {"lat": 1, "lon": 2, "accuracy": 0, "label": "Town"},
+        "weather": {"temperature": 20, "code": 1},
+        "integrations": {"location": False},
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    text = (main.DATA_DIR / "2021-01-02.md").read_text(encoding="utf-8")
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    assert "location:" not in frontmatter
+    assert "weather: 20°C code 1" in frontmatter
+
+
+def test_weather_disabled_in_frontmatter(test_client):
+    """Weather is omitted when integration is disabled."""
+    payload = {
+        "date": "2021-01-03",
+        "content": "entry",
+        "prompt": "prompt",
+        "location": {"lat": 1, "lon": 2, "accuracy": 0, "label": "Town"},
+        "weather": {"temperature": 20, "code": 1},
+        "integrations": {"weather": False},
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    text = (main.DATA_DIR / "2021-01-03.md").read_text(encoding="utf-8")
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    assert "weather:" not in frontmatter
+    assert "location: Town" in frontmatter
+
+
 def test_mood_and_energy_saved(test_client):
     """Selected mood and energy values are stored in frontmatter."""
     payload = {
