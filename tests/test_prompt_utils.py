@@ -1,6 +1,7 @@
 """Tests for prompt utility helpers."""
 
 import asyncio
+from datetime import datetime
 
 from echo_journal import prompt_utils
 
@@ -62,8 +63,46 @@ def test_generate_prompt_debug(tmp_path, monkeypatch):
     assert res["id"] == "cat-001"
     assert res["debug"]["initial"] == ["cat-001", "dog_001"]
     assert res["debug"]["after_anchor"] == ["cat-001", "dog_001"]
+    assert res["debug"]["after_style"] == ["cat-001", "dog_001"]
+    assert res["debug"]["after_time"] == ["cat-001", "dog_001"]
     assert res["debug"]["chosen"] == "cat-001"
-    assert set(res["debug"].keys()) == {"initial", "after_anchor", "chosen"}
+    assert set(res["debug"].keys()) == {
+        "initial",
+        "after_anchor",
+        "after_style",
+        "after_time",
+        "chosen",
+    }
+
+
+def test_generate_prompt_filters_style_and_time(tmp_path, monkeypatch):
+    """Prompts can be filtered by style and time of day."""
+    content = (
+        "- id: daily-001\n"
+        "  prompt: 'Morning'\n"
+        "  anchor: soft\n"
+        "  style: daily\n"
+        "  times:\n    - Morning\n"
+        "- id: daily-002\n"
+        "  prompt: 'Evening'\n"
+        "  anchor: soft\n"
+        "  style: daily\n"
+        "  times:\n    - Evening\n"
+    )
+    pfile = tmp_path / "prompts.yaml"
+    pfile.write_text(content, encoding="utf-8")
+    monkeypatch.setattr(prompt_utils, "PROMPTS_FILE", pfile)
+    prompt_utils._prompts_cache = {"data": None, "mtime": None}
+    monkeypatch.setattr(prompt_utils.secrets, "choice", lambda seq: seq[0])
+
+    morning = datetime(2024, 1, 1, 8)
+    evening = datetime(2024, 1, 1, 20)
+
+    res_morn = asyncio.run(prompt_utils.generate_prompt(style="daily", now=morning))
+    res_eve = asyncio.run(prompt_utils.generate_prompt(style="daily", now=evening))
+
+    assert res_morn["prompt"] == "Morning"
+    assert res_eve["prompt"] == "Evening"
 
 
 def test_choose_anchor_self_doubt(monkeypatch):
