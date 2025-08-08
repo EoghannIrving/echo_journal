@@ -1381,28 +1381,30 @@ def test_new_prompt_endpoint(test_client, monkeypatch):
 
     captured: dict[str, object] = {}
 
-    async def fake_prompt(*, mood=None, energy=None, debug=False):
+    async def fake_prompt(*, mood=None, energy=None, style=None, debug=False):
         captured["mood"] = mood
         captured["energy"] = energy
+        captured["style"] = style
         captured["debug"] = debug
         return {"prompt": "P", "category": "Test"}
 
     monkeypatch.setattr(main, "generate_prompt", fake_prompt)
 
-    resp = test_client.get("/api/new_prompt?mood=ok&energy=2")
+    resp = test_client.get("/api/new_prompt?mood=ok&energy=2&style=memory")
 
     assert resp.status_code == 200
     assert resp.json() == {"prompt": "P", "category": "Test"}
     assert captured["mood"] == "ok"
     assert captured["energy"] == 2
+    assert captured["style"] == "memory"
     assert captured["debug"] is False
 
 
 def test_new_prompt_endpoint_no_params(test_client, monkeypatch):
     """/api/new_prompt still returns a prompt without optional params."""
 
-    async def fake_prompt(*, mood=None, energy=None, debug=False):
-        assert mood is None and energy is None and debug is False
+    async def fake_prompt(*, mood=None, energy=None, style=None, debug=False):
+        assert mood is None and energy is None and style is None and debug is False
         return {"prompt": "P", "category": "Test"}
 
     monkeypatch.setattr(main, "generate_prompt", fake_prompt)
@@ -1418,7 +1420,7 @@ def test_new_prompt_endpoint_debug_param(test_client, monkeypatch):
 
     captured: dict[str, object] = {}
 
-    async def fake_prompt(*, mood=None, energy=None, debug=False):
+    async def fake_prompt(*, mood=None, energy=None, style=None, debug=False):
         captured["debug"] = debug
         return {"prompt": "P", "category": "Test"}
 
@@ -1435,7 +1437,7 @@ def test_save_entry_after_refresh(test_client, monkeypatch):
     """Entries saved after fetching a new prompt use that prompt."""
 
     async def fake_prompt(
-        *, mood=None, energy=None, debug=False
+        *, mood=None, energy=None, style=None, debug=False
     ):  # pylint: disable=unused-argument
         return {"prompt": "New", "category": "Cat"}
 

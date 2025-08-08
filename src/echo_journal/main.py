@@ -952,10 +952,11 @@ async def ai_prompt(mood: str | None = None, energy: int | None = None) -> dict:
 async def new_prompt(
     mood: str | None = None,
     energy: int | None = None,
+    style: str | None = None,
     debug: bool = False,
 ) -> dict:
     """Return a freshly generated journal prompt."""
-    return await generate_prompt(mood=mood, energy=energy, debug=debug)
+    return await generate_prompt(mood=mood, energy=energy, style=style, debug=debug)
 
 
 @app.get("/api/reverse_geocode")

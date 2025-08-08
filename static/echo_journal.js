@@ -147,6 +147,35 @@
     const editorSection = document.getElementById('editor-section');
     const moodSelect = document.getElementById('mood-select');
     const energySelect = document.getElementById('energy-select');
+    const styleSelect = document.getElementById('style-select');
+    const textOnlyToggle = document.getElementById('text-only-toggle');
+    const TEXT_ONLY_KEY = 'ej-text-only-tags';
+
+    const updateTagLabels = (textOnly) => {
+      [moodSelect, energySelect].forEach((sel) => {
+        if (!sel) return;
+        Array.from(sel.options).forEach((opt) => {
+          if (!opt.dataset.label) opt.dataset.label = opt.textContent;
+          const label = opt.dataset.label;
+          if (textOnly) {
+            opt.textContent = label.replace(/^([^A-Za-z0-9\s]+\s*)/, '');
+          } else {
+            opt.textContent = label;
+          }
+        });
+      });
+    };
+
+    const storedTextOnly = localStorage.getItem(TEXT_ONLY_KEY) === '1';
+    updateTagLabels(storedTextOnly);
+    if (textOnlyToggle) {
+      textOnlyToggle.checked = storedTextOnly;
+      textOnlyToggle.addEventListener('change', () => {
+        const val = textOnlyToggle.checked;
+        localStorage.setItem(TEXT_ONLY_KEY, val ? '1' : '0');
+        updateTagLabels(val);
+      });
+    }
     let moodEnergyLocked = false;
     let delay = 0;
     if (restartNotice) {
@@ -236,7 +265,8 @@
       const mood = moodSelect ? moodSelect.value : '';
       const energyStr = energySelect ? energySelect.value : '';
       const energy = getEnergyValue(energyStr);
-      // Only fetch when both fields are chosen
+      const style = styleSelect ? styleSelect.value : '';
+      // Only fetch when mood and energy are chosen
       if (!mood || !energy) return;
       // Hide any existing prompt to avoid flashing stale content
       if (promptSection) promptSection.classList.add('hidden');
@@ -248,6 +278,7 @@
         .forEach(btn => btn.classList.add('hidden'));
       try {
         const params = new URLSearchParams({ mood, energy });
+        if (style) params.set('style', style);
         const res = await fetch(`/api/new_prompt?${params.toString()}`);
         if (res.ok) {
           const data = await res.json();
@@ -266,6 +297,9 @@
     }
     if (energySelect) {
       energySelect.addEventListener('change', maybeFetchPrompt);
+    }
+    if (styleSelect) {
+      styleSelect.addEventListener('change', maybeFetchPrompt);
     }
     const params = new URLSearchParams(window.location.search);
     if (params.get('focus') === '1') {

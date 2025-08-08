@@ -7,8 +7,14 @@ The Echo Journal exposes a small REST API used by the web UI and CLI. All endpoi
 ### GET /api/new_prompt
 Return a journaling prompt.
 
+Optional query params:
+
+- `mood` – mood label such as `ok` or `sad`
+- `energy` – energy level as an integer 1–4
+- `style` – prompt category to filter (e.g., `memory`, `routines`)
+
 ```bash
-curl http://localhost:8510/api/new_prompt
+curl 'http://localhost:8510/api/new_prompt?style=memory'
 ```
 
 ```json
