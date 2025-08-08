@@ -2,8 +2,8 @@
 
 This list only tracks outstanding items from the roadmap.
 
-- [ ] **Fact of the Day integration**
-  - [ ] Pull a "Fact of the Day" and add that to the journal.
+- [x] **Fact of the Day integration**
+  - [x] Pull a "Fact of the Day" and add that to the journal.
 
 - [ ] **Backdated journaling support**
   - [ ] Create or edit entries for past dates with a clear date banner.
