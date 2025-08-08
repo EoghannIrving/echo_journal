@@ -64,6 +64,30 @@
             class="h-5 w-5"
           />
         </div>
+        <div class="meta-card flex items-center justify-between gap-4">
+          <label for="integration-location" class="flex items-center gap-2 cursor-pointer">
+            <span class="text-2xl">📍</span>
+            <span id="integration-location-label" class="text-sm">Location</span>
+          </label>
+          <input
+            type="checkbox"
+            id="integration-location"
+            aria-labelledby="integration-location-label"
+            class="h-5 w-5"
+          />
+        </div>
+        <div class="meta-card flex items-center justify-between gap-4">
+          <label for="integration-weather" class="flex items-center gap-2 cursor-pointer">
+            <span class="text-2xl">☁️</span>
+            <span id="integration-weather-label" class="text-sm">Weather</span>
+          </label>
+          <input
+            type="checkbox"
+            id="integration-weather"
+            aria-labelledby="integration-weather-label"
+            class="h-5 w-5"
+          />
+        </div>
       </div>
     </fieldset>
       <div id="settings-fields" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
@@ -137,6 +161,8 @@ document.addEventListener("DOMContentLoaded", () => {
         immich: 'INTEGRATION_IMMICH',
         jellyfin: 'INTEGRATION_JELLYFIN',
         fact: 'INTEGRATION_FACT',
+        location: 'INTEGRATION_LOCATION',
+        weather: 'INTEGRATION_WEATHER',
       };
     const envSettingCategories = {
       Paths: [

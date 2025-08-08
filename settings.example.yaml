@@ -15,3 +15,5 @@ JELLYFIN_URL: http://localhost:8096
 JELLYFIN_API_KEY: your-jellyfin-api-key
 JELLYFIN_USER_ID: your-jellyfin-user-id
 NOMINATIM_USER_AGENT: EchoJournal/1.0 (you@example.com)
+INTEGRATION_LOCATION: true
+INTEGRATION_WEATHER: true

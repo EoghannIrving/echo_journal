@@ -21,6 +21,8 @@ On startup the application looks for a `settings.yaml` file in `<DATA_DIR>/.sett
 | `JELLYFIN_PAGE_SIZE` | Pagination size for Jellyfin API. | Default `200`. |
 | `JELLYFIN_PLAY_THRESHOLD` | Percent threshold for "played". | Default `90`. |
 | `NOMINATIM_USER_AGENT` | Identifies your app when calling the Nominatim reverse geocoding API. | Include contact info per the usage policy. |
+| `INTEGRATION_LOCATION` | Include geolocation data in entry frontmatter. | Default `true`. |
+| `INTEGRATION_WEATHER` | Include current weather in entry frontmatter. | Default `true`. |
 | `LOG_LEVEL` | Logging verbosity. | Default `DEBUG`. |
 | `LOG_FILE` | Path to log file. | Default `/journals/.logs/echo_journal.log`; if empty, logs to stderr. |
 | `LOG_MAX_BYTES` | Max size before log rotation. | Default `1,048,576`. |
