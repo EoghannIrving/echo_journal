@@ -21,7 +21,7 @@ dependencies = [
     "httpx==0.28.1",
     "pyyaml==6.0.2",
     "types-aiofiles==24.1.0.20250801",
-    "types-PyYAML==6.0.12.20250516",
+    "types-PyYAML==6.0.12.20250822",
     "types-bleach==6.2.0.20250514",
     "types-Markdown==3.8.0.20250708",
 ]
