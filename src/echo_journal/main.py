@@ -45,10 +45,6 @@ from .file_utils import (
 )
 from .immich_utils import update_photo_metadata
 from .jellyfin_utils import update_media_metadata, update_song_metadata
-from .mindloom_utils import (
-    load_snapshot as load_mindloom_snapshot,
-    record_entry_if_missing,
-)
 from .numbers_utils import fetch_date_fact
 from .prompt_utils import _choose_anchor, generate_prompt, load_prompts
 from .settings_utils import SETTINGS_PATH, load_settings, save_settings
@@ -368,6 +364,8 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         "immich": settings.get("INTEGRATION_IMMICH", "true").lower() != "false",
         "jellyfin": settings.get("INTEGRATION_JELLYFIN", "true").lower() != "false",
         "fact": settings.get("INTEGRATION_FACT", "true").lower() != "false",
+        "location": settings.get("INTEGRATION_LOCATION", "true").lower() != "false",
+        "weather": settings.get("INTEGRATION_WEATHER", "true").lower() != "false",
     }
     integrations["ai"] = bool(config.OPENAI_API_KEY)
     if templates is None:
@@ -570,7 +568,7 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
         retries = config.NUMBERS_API_RETRIES
         fact = None
         for _ in range(retries + 1):
-            fact = await fetch_date_fact(fact_date)
+            fact = await fetch_random_fact(fact_date)
             if fact:
                 break
         if fact is None:
@@ -984,10 +982,11 @@ async def ai_prompt(mood: str | None = None, energy: int | None = None) -> dict:
 async def new_prompt(
     mood: str | None = None,
     energy: int | None = None,
+    style: str | None = None,
     debug: bool = False,
 ) -> dict:
     """Return a freshly generated journal prompt."""
-    return await generate_prompt(mood=mood, energy=energy, debug=debug)
+    return await generate_prompt(mood=mood, energy=energy, style=style, debug=debug)
 
 
 @app.get("/api/reverse_geocode")

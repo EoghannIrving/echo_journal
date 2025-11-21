@@ -107,3 +107,39 @@ def test_build_frontmatter_multiline_definition(monkeypatch):
     )
     parsed = yaml.safe_load(fm)
     assert parsed["wotd_def"] == "first line second line"
+
+
+def test_build_frontmatter_location_disabled(monkeypatch):
+    """Location is omitted when integration flag is false."""
+
+    async def fake_fetch_weather(lat, lon):
+        return "10\u00b0C code 2"
+
+    monkeypatch.setattr(weather_utils, "fetch_weather", fake_fetch_weather)
+    fm = asyncio.run(
+        weather_utils.build_frontmatter(
+            {"lat": 1, "lon": 2, "label": "Town"},
+            integrations={"location": False},
+        )
+    )
+    assert "location:" not in fm.splitlines()
+
+
+def test_build_frontmatter_weather_disabled(monkeypatch):
+    """Weather fetching and line are skipped when disabled."""
+
+    called = {"count": 0}
+
+    async def fake_fetch_weather(lat, lon):
+        called["count"] += 1
+        return "10\u00b0C code 2"
+
+    monkeypatch.setattr(weather_utils, "fetch_weather", fake_fetch_weather)
+    fm = asyncio.run(
+        weather_utils.build_frontmatter(
+            {"lat": 1, "lon": 2, "label": "Town"},
+            integrations={"weather": False},
+        )
+    )
+    assert "weather:" not in fm.splitlines()
+    assert called["count"] == 0

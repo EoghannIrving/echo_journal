@@ -38,12 +38,12 @@ class FakeClient:
         return Response(self._data)
 
 
-def test_fetch_date_fact(monkeypatch):
+def test_fetch_random_fact(monkeypatch):
     """The request should hit the useless facts API with language parameter."""
     client = FakeClient({"text": "a fact"})
     monkeypatch.setattr(nu.httpx, "AsyncClient", lambda: client)
 
-    result = asyncio.run(nu.fetch_date_fact(date(2024, 1, 2)))
+    result = asyncio.run(nu.fetch_random_fact(date(2024, 1, 2)))
 
     assert result == "a fact"
     assert client.captured["url"] == "https://uselessfacts.jsph.pl/api/v2/facts/random"

@@ -76,8 +76,8 @@ def test_client(tmp_path, monkeypatch):
     async def fake_fact(_):
         return "test fact"
 
-    monkeypatch.setattr(main, "fetch_date_fact", fake_fact)
-    monkeypatch.setattr(numbers_utils, "fetch_date_fact", fake_fact)
+    monkeypatch.setattr(main, "fetch_random_fact", fake_fact)
+    monkeypatch.setattr(numbers_utils, "fetch_random_fact", fake_fact)
     # ensure settings file exists in case other tests removed it
     main.SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
     if not main.SETTINGS_PATH.exists():
@@ -328,8 +328,8 @@ def test_fact_with_colon_is_yaml_safe(test_client, monkeypatch):
     async def colon_fact(_):
         return "mind-blowing fact: in 1970 something happened"
 
-    monkeypatch.setattr(main, "fetch_date_fact", colon_fact)
-    monkeypatch.setattr(numbers_utils, "fetch_date_fact", colon_fact)
+    monkeypatch.setattr(main, "fetch_random_fact", colon_fact)
+    monkeypatch.setattr(numbers_utils, "fetch_random_fact", colon_fact)
 
     payload = {"date": "2020-02-03", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
@@ -355,8 +355,8 @@ def test_long_fact_not_truncated(test_client, monkeypatch):
     async def long_fact_fn(_):
         return long_fact
 
-    monkeypatch.setattr(main, "fetch_date_fact", long_fact_fn)
-    monkeypatch.setattr(numbers_utils, "fetch_date_fact", long_fact_fn)
+    monkeypatch.setattr(main, "fetch_random_fact", long_fact_fn)
+    monkeypatch.setattr(numbers_utils, "fetch_random_fact", long_fact_fn)
 
     payload = {"date": "2020-02-05", "content": "entry", "prompt": "prompt"}
     resp = test_client.post("/entry", json=payload)
@@ -375,8 +375,8 @@ def test_fact_unavailable_logs_warning(test_client, monkeypatch, caplog):
     async def none_fact(_):
         return None
 
-    monkeypatch.setattr(main, "fetch_date_fact", none_fact)
-    monkeypatch.setattr(numbers_utils, "fetch_date_fact", none_fact)
+    monkeypatch.setattr(main, "fetch_random_fact", none_fact)
+    monkeypatch.setattr(numbers_utils, "fetch_random_fact", none_fact)
 
     payload = {"date": "2020-02-04", "content": "entry", "prompt": "prompt"}
     with caplog.at_level(logging.WARNING, logger="ej.fact"):
@@ -439,6 +439,44 @@ def test_weather_saved_when_provided(test_client):
     assert frontmatter is not None
     assert "weather: 20°C code 1" in frontmatter
     assert "..." not in frontmatter
+
+
+def test_location_disabled_in_frontmatter(test_client):
+    """Location is omitted when integration is disabled."""
+    payload = {
+        "date": "2021-01-02",
+        "content": "entry",
+        "prompt": "prompt",
+        "location": {"lat": 1, "lon": 2, "accuracy": 0, "label": "Town"},
+        "weather": {"temperature": 20, "code": 1},
+        "integrations": {"location": False},
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    text = (main.DATA_DIR / "2021-01-02.md").read_text(encoding="utf-8")
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    assert "location:" not in frontmatter
+    assert "weather: 20°C code 1" in frontmatter
+
+
+def test_weather_disabled_in_frontmatter(test_client):
+    """Weather is omitted when integration is disabled."""
+    payload = {
+        "date": "2021-01-03",
+        "content": "entry",
+        "prompt": "prompt",
+        "location": {"lat": 1, "lon": 2, "accuracy": 0, "label": "Town"},
+        "weather": {"temperature": 20, "code": 1},
+        "integrations": {"weather": False},
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    text = (main.DATA_DIR / "2021-01-03.md").read_text(encoding="utf-8")
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    assert "weather:" not in frontmatter
+    assert "location: Town" in frontmatter
 
 
 def test_mood_and_energy_saved(test_client):
@@ -1372,28 +1410,30 @@ def test_new_prompt_endpoint(test_client, monkeypatch):
 
     captured: dict[str, object] = {}
 
-    async def fake_prompt(*, mood=None, energy=None, debug=False):
+    async def fake_prompt(*, mood=None, energy=None, style=None, debug=False):
         captured["mood"] = mood
         captured["energy"] = energy
+        captured["style"] = style
         captured["debug"] = debug
         return {"prompt": "P", "category": "Test"}
 
     monkeypatch.setattr(main, "generate_prompt", fake_prompt)
 
-    resp = test_client.get("/api/new_prompt?mood=ok&energy=2")
+    resp = test_client.get("/api/new_prompt?mood=ok&energy=2&style=memory")
 
     assert resp.status_code == 200
     assert resp.json() == {"prompt": "P", "category": "Test"}
     assert captured["mood"] == "ok"
     assert captured["energy"] == 2
+    assert captured["style"] == "memory"
     assert captured["debug"] is False
 
 
 def test_new_prompt_endpoint_no_params(test_client, monkeypatch):
     """/api/new_prompt still returns a prompt without optional params."""
 
-    async def fake_prompt(*, mood=None, energy=None, debug=False):
-        assert mood is None and energy is None and debug is False
+    async def fake_prompt(*, mood=None, energy=None, style=None, debug=False):
+        assert mood is None and energy is None and style is None and debug is False
         return {"prompt": "P", "category": "Test"}
 
     monkeypatch.setattr(main, "generate_prompt", fake_prompt)
@@ -1409,7 +1449,7 @@ def test_new_prompt_endpoint_debug_param(test_client, monkeypatch):
 
     captured: dict[str, object] = {}
 
-    async def fake_prompt(*, mood=None, energy=None, debug=False):
+    async def fake_prompt(*, mood=None, energy=None, style=None, debug=False):
         captured["debug"] = debug
         return {"prompt": "P", "category": "Test"}
 
@@ -1426,7 +1466,7 @@ def test_save_entry_after_refresh(test_client, monkeypatch):
     """Entries saved after fetching a new prompt use that prompt."""
 
     async def fake_prompt(
-        *, mood=None, energy=None, debug=False
+        *, mood=None, energy=None, style=None, debug=False
     ):  # pylint: disable=unused-argument
         return {"prompt": "New", "category": "Cat"}
 

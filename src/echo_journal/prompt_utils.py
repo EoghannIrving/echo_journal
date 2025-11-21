@@ -5,12 +5,14 @@
 import asyncio
 import logging
 import secrets
-from datetime import date
+from collections.abc import Iterable
+from datetime import date, datetime
 
 import aiofiles
 import yaml
 
 from . import config
+from .weather_utils import time_of_day_label
 
 # Expose path for tests while deriving from configuration
 PROMPTS_FILE = config.PROMPTS_FILE
@@ -88,6 +90,16 @@ def _choose_anchor(mood: str | None, energy: int | None) -> str | None:
     return anchor
 
 
+def _derive_category(pid: str | None) -> str:
+    """Return category/style derived from prompt id."""
+    if not isinstance(pid, str):
+        return ""
+    for sep in ("-", "_"):
+        if sep in pid:
+            return pid.split(sep, 1)[0]
+    return pid
+
+
 async def load_prompts() -> list[dict]:
     """Load and cache journal prompts from ``PROMPTS_FILE``.
 
@@ -144,6 +156,8 @@ def get_season(target_date: date) -> str:
 async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
     mood: str | None = None,
     energy: int | None = None,
+    style: str | None = None,
+    now: datetime | None = None,
     debug: bool = False,
 ) -> dict:
     """Select and return a prompt for the current day.
@@ -152,10 +166,13 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
     are filtered solely by this anchor. If ``debug`` is ``True``, information
     about the selection process is returned under a ``debug`` key.
     """
-    logger.debug("Generating prompt for mood=%s energy=%s", mood, energy)
+    logger.debug(
+        "Generating prompt for mood=%s energy=%s style=%s", mood, energy, style
+    )
     today = date.today()
     weekday = today.strftime("%A")
     season = get_season(today)
+    time_label = time_of_day_label(now)
 
     prompts = await load_prompts()
     logger.debug("Loaded %d prompts", len(prompts) if isinstance(prompts, list) else 0)
@@ -190,6 +207,30 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
     elif debug:
         debug_info["after_anchor"] = [p.get("id") for p in candidates]
 
+    if style:
+        style_l = style.lower()
+        candidates = [
+            p
+            for p in candidates
+            if (p.get("style") or _derive_category(p.get("id"))).lower() == style_l
+        ]
+        if debug:
+            debug_info["after_style"] = [p.get("id") for p in candidates]
+    elif debug:
+        debug_info["after_style"] = [p.get("id") for p in candidates]
+
+    if time_label:
+        candidates = [
+            p
+            for p in candidates
+            if (times := p.get("times")) is None
+            or (isinstance(times, Iterable) and time_label in times)
+        ]
+        if debug:
+            debug_info["after_time"] = [p.get("id") for p in candidates]
+    elif debug:
+        debug_info["after_time"] = [p.get("id") for p in candidates]
+
     if not candidates:
         result = {"category": None, "prompt": "No prompts available"}
         if debug:
@@ -204,18 +245,11 @@ async def generate_prompt(  # pylint: disable=too-many-locals,too-many-branches,
         "{{season}}", season
     )
 
-    # Derive a category from the prompt id or tags
-    category = None
+    # Derive a category from explicit style or prompt id
     pid = chosen.get("id")
-    if isinstance(pid, str):
-        for sep in ("-", "_"):
-            if sep in pid:
-                category = pid.split(sep, 1)[0]
-                break
-    if not category:
-        tags_list = chosen.get("tags")
-        if tags_list:
-            category = tags_list[0]
+    category = _derive_category(pid)
+    if isinstance(chosen.get("style"), str):
+        category = chosen["style"]
 
     result = {
         "prompt": prompt_text,

@@ -3,7 +3,8 @@
 
 # Base directories
 DATA_DIR: /journals
-APP_DIR: /app/echo_journal
+APP_DIR: /app/
+STATIC_DIR: /app/static
 
 # Optional API integrations
 WORDNIK_API_KEY: your-wordnik-api-key
@@ -15,3 +16,5 @@ JELLYFIN_API_KEY: your-jellyfin-api-key
 JELLYFIN_USER_ID: your-jellyfin-user-id
 NOMINATIM_USER_AGENT: EchoJournal/1.0 (you@example.com)
 MINDLOOM_ENERGY_LOG_PATH: /home/eoghann/docker/mindloom/data/energy_log.yaml
+INTEGRATION_LOCATION: true
+INTEGRATION_WEATHER: true

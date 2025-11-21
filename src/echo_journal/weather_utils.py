@@ -56,11 +56,12 @@ async def build_frontmatter(
     lat = float(location.get("lat") or 0)
     lon = float(location.get("lon") or 0)
     label = location.get("label") or ""
-    weather_str: str | None
-    if weather and "temperature" in weather and "code" in weather:
-        weather_str = f"{weather['temperature']}°C code {int(weather['code'])}"
-    else:
-        weather_str = await fetch_weather(lat, lon)
+    weather_str: str | None = None
+    if integrations.get("weather", True):
+        if weather and "temperature" in weather and "code" in weather:
+            weather_str = f"{weather['temperature']}°C code {int(weather['code'])}"
+        else:
+            weather_str = await fetch_weather(lat, lon)
     wotd_word = wotd_def = None
     if integrations.get("wordnik", True):
         wotd = await fetch_word_of_day()
@@ -68,7 +69,7 @@ async def build_frontmatter(
             wotd_word, wotd_def = wotd
 
     lines = []
-    if label:
+    if integrations.get("location", True) and label:
         lines.append(f"location: {label}")
     if weather_str:
         lines.append(f"weather: {weather_str}")

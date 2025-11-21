@@ -1,3 +1,22 @@
+- id: daily-001
+  prompt: What is one gentle intention for this morning?
+  tags:
+  - mood
+  - temporal
+  anchor: soft
+  style: daily
+  times:
+  - Morning
+- id: daily-002
+  prompt: What lingered with you this evening?
+  tags:
+  - mood
+  - temporal
+  anchor: soft
+  style: daily
+  times:
+  - Evening
+  - Night
 - id: memory-001
   prompt: 'Describe a place from your past in detail: what could you see, hear, and
     smell there?'

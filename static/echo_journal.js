@@ -8,7 +8,15 @@
   const readonly = cfg.readonly === true || cfg.readonly === "true";
   const energyLevels = { drained: 1, low: 2, ok: 3, energized: 4 };
   const getEnergyValue = (level) => energyLevels[level] || null;
-  const defaultIntegrations = { wordnik: true, immich: true, jellyfin: true, fact: true, ai: true };
+  const defaultIntegrations = {
+    wordnik: true,
+    immich: true,
+    jellyfin: true,
+    fact: true,
+    ai: true,
+    location: true,
+    weather: true,
+  };
   const integrationSettings = { ...defaultIntegrations, ...(cfg.integrations || {}) };
   const tz_offset = -new Date().getTimezoneOffset();
 
@@ -51,7 +59,7 @@
   };
 
   async function fetchGeolocationDetails() {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation || !integrationSettings.location) return;
 
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude, accuracy } = pos.coords;
@@ -77,7 +85,7 @@
       }
 
       const weatherEl = document.getElementById('weather-display');
-      if (weatherEl) {
+      if (weatherEl && integrationSettings.weather) {
         const weather = await fetchWeather(latitude, longitude);
         if (weather) {
           weatherEl.dataset.temp = weather.temperature;
@@ -139,6 +147,35 @@
     const editorSection = document.getElementById('editor-section');
     const moodSelect = document.getElementById('mood-select');
     const energySelect = document.getElementById('energy-select');
+    const styleSelect = document.getElementById('style-select');
+    const textOnlyToggle = document.getElementById('text-only-toggle');
+    const TEXT_ONLY_KEY = 'ej-text-only-tags';
+
+    const updateTagLabels = (textOnly) => {
+      [moodSelect, energySelect].forEach((sel) => {
+        if (!sel) return;
+        Array.from(sel.options).forEach((opt) => {
+          if (!opt.dataset.label) opt.dataset.label = opt.textContent;
+          const label = opt.dataset.label;
+          if (textOnly) {
+            opt.textContent = label.replace(/^([^A-Za-z0-9\s]+\s*)/, '');
+          } else {
+            opt.textContent = label;
+          }
+        });
+      });
+    };
+
+    const storedTextOnly = localStorage.getItem(TEXT_ONLY_KEY) === '1';
+    updateTagLabels(storedTextOnly);
+    if (textOnlyToggle) {
+      textOnlyToggle.checked = storedTextOnly;
+      textOnlyToggle.addEventListener('change', () => {
+        const val = textOnlyToggle.checked;
+        localStorage.setItem(TEXT_ONLY_KEY, val ? '1' : '0');
+        updateTagLabels(val);
+      });
+    }
     let moodEnergyLocked = false;
     let delay = 0;
     if (restartNotice) {
@@ -228,7 +265,8 @@
       const mood = moodSelect ? moodSelect.value : '';
       const energyStr = energySelect ? energySelect.value : '';
       const energy = getEnergyValue(energyStr);
-      // Only fetch when both fields are chosen
+      const style = styleSelect ? styleSelect.value : '';
+      // Only fetch when mood and energy are chosen
       if (!mood || !energy) return;
       // Hide any existing prompt to avoid flashing stale content
       if (promptSection) promptSection.classList.add('hidden');
@@ -240,6 +278,7 @@
         .forEach(btn => btn.classList.add('hidden'));
       try {
         const params = new URLSearchParams({ mood, energy });
+        if (style) params.set('style', style);
         const res = await fetch(`/api/new_prompt?${params.toString()}`);
         if (res.ok) {
           const data = await res.json();
@@ -258,6 +297,9 @@
     }
     if (energySelect) {
       energySelect.addEventListener('change', maybeFetchPrompt);
+    }
+    if (styleSelect) {
+      styleSelect.addEventListener('change', maybeFetchPrompt);
     }
     const params = new URLSearchParams(window.location.search);
     if (params.get('focus') === '1') {
@@ -511,7 +553,22 @@
       });
     });
 
-    if (!readonly) {
+    const metaDetails = document.getElementById('meta-details');
+    if (metaDetails) {
+      if (!integrationSettings.location) {
+        const locEl = document.getElementById('location-display');
+        if (locEl) locEl.remove();
+      }
+      if (!integrationSettings.weather) {
+        const weatherEl = document.getElementById('weather-display');
+        if (weatherEl) weatherEl.remove();
+      }
+      if (!integrationSettings.location && !integrationSettings.weather) {
+        metaDetails.remove();
+      }
+    }
+
+    if (!readonly && integrationSettings.location) {
       fetchGeolocationDetails();
     }
   });

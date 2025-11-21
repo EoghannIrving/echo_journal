@@ -801,7 +801,7 @@ The following issues were identified and subsequently resolved.
      【F:src/echo_journal/env_utils.py†L10-L18】
 
 66. **Numbers API requests insecure and incorrectly formatted** (fixed)
-   - `fetch_date_fact` used HTTP and passed `json=True`, which could return
+   - `fetch_random_fact` used HTTP and passed `json=True`, which could return
      non‑JSON responses.
    - The function now uses HTTPS and appends the `?json` flag.
    - Fixed lines:

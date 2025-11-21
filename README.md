@@ -2,6 +2,14 @@
 
 > **A low-friction, neurodivergent-friendly journaling app that stores your words in timeless Markdown and adapts to your mood and energy.**  
 
+## Why I Built Echo Journal
+
+I’ve tried and bounced off journaling apps for years. Some felt overwhelming. Others felt like a chore, too cluttered, too demanding, too rigid. The list of reasons they didn’t work for me goes on and on. Inevitably, I’d stop using them and never go back.
+
+I needed something frictionless. Something that encouraged me to write without guilt, and helped anchor me in the day I was living. So I built my own.
+
+Echo Journal provides prompts that adapt to my energy and mood. It gets out of the way and just lets me write when I feel like it. It saves everything in Markdown, so my raw text is always accessible no matter what happens. It's stored locally, with no privacy compromises. And by pulling in gentle context like weather, location, music, media, and photos, each entry becomes a personal time capsule for that day.
+
 Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds** and anyone who values simplicity, flexibility, and control over their own data.
 
 - **Markdown at its core** — every entry is a plain `.md` file you can read, edit, and back up forever.  
@@ -9,9 +17,7 @@ Echo Journal is a minimalist FastAPI journaling app designed for **AuADHD minds*
 - **Ultra-low friction** — open → type → save. No clutter, no pressure.  
 - **Optional enrichment** — mood, energy, location, weather, photos, media — all if you want, none if you don’t.
 
-Journalling should not feel like a chore or a responsibility. I have bounced off so many different tools over the years because in the end it just became a burden and I was left with feelling like I **had** to do something.
-
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/EoghannIrving/echo_journal/actions/workflows/main.yml/badge.svg)](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Version 0.1.0-alpha](https://img.shields.io/badge/version-0.1.0-blue) [![Built with Human + AI Collaboration](https://img.shields.io/badge/Built%20with-Human%20+%20AI%20Collaboration-blue)](#about-the-development)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE) [![CI](https://github.com/EoghannIrving/echo_journal/actions/workflows/main.yml/badge.svg)](https://github.com/EoghannIrving/echo_journal/actions/workflows/pytest.yml) ![Release](https://img.shields.io/github/v/release/EoghannIrving/echo_journal) ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue) ![Last Commit](https://img.shields.io/github/last-commit/EoghannIrving/echo_journal) [![Built with Human + AI Collaboration](https://img.shields.io/badge/Built%20with-Human%20+%20AI%20Collaboration-blue)](#about-the-development)
 
 ## Table of Contents
 
@@ -29,6 +35,7 @@ Journalling should not feel like a chore or a responsibility. I have bounced off
 - [YAML Frontmatter Reference](#yaml-frontmatter-reference)
 - [Deployment](#deployment)
 - [Testing](#testing)
+- [Alpha Feedback](#alpha-feedback)
 - [Bugs and Issues](#bugs-and-issues)
 - [Contributing](#contributing)
 - [About the Development](#about-the-development)
@@ -52,14 +59,18 @@ Journalling should not feel like a chore or a responsibility. I have bounced off
 - Optional auto-enrichment (location, weather, media, photos, trivia).  
 - Stats and archive views for gentle pattern tracking.  
 
-**🔌 Optional integrations**  
-- **Wordnik** (word of the day), **Immich** (photos), **Jellyfin** (media history), **Useless Facts** (random fact).
+**🔌 Optional integrations**
+- **Wordnik** (word of the day), **Immich** (photos), **Jellyfin** (media history), **Useless Facts** (random fact), **Location**, **Weather**.
 - Per-browser toggles — nothing is forced, nothing runs you didn’t ask for.
 - See your day in context.
 
-**🔐 Local-first & private**  
-- Runs on your machine or private server.  
-- Optional HTTP Basic authentication for remote use.  
+**🔐 Local-first & private**
+- Runs on your machine or private server.
+- Optional HTTP Basic authentication for remote use.
+
+**♿ Accessibility**
+- Toggle "Text-only tags" under mood & energy to remove emoji from selectors. Your choice is remembered per browser.
+- "Prompt Style" dropdown includes tooltips explaining each prompt category.
 
 ## How It Looks
 
@@ -89,7 +100,52 @@ Journalling should not feel like a chore or a responsibility. I have bounced off
 
 ## Installation
 
-### Automated setup
+## Docker
+
+Docker Compose offers the fastest way to get Echo Journal running, while the Python workflow is ideal for development or customization.
+
+### Run with Docker Compose
+
+> Note: The following commands use Docker Compose v2. If `docker compose` is unavailable, install the [Docker Compose plugin](https://docs.docker.com/compose/install/).
+
+1. **Copy the example environment file and adjust settings as needed:**
+
+   ```bash
+   cp .env.example .env
+   # edit .env to change HOST_PORT, DATA_DIR, or TLS paths
+   ```
+
+2. **Prepare a persistent journals directory (matches `DATA_DIR`, default `data`):**
+
+   ```bash
+   mkdir -p data
+   ```
+
+3. **Add the Settings.yaml**
+
+   ```bash
+   mkdir -p data/.settings
+   cp .settings.example.yaml data/.settings/settings.yaml
+   #edit .settings.yaml
+   ```
+
+4. **Start the container:**
+
+   ```bash
+   docker compose up -d
+   ```
+
+   Then open <http://localhost:8510> (or your chosen `HOST_PORT`) in your browser.
+
+5. **Stop the container while preserving data:**
+
+   ```bash
+   docker compose down
+   ```
+
+   Journal files remain in the mounted `data` directory on the host.
+   
+### Automated Python setup
 
 ```bash
 git clone https://github.com/EoghannIrving/echo_journal.git
@@ -112,8 +168,6 @@ The repository bundles a compiled `static/tailwind.css`, so Node.js and npm are 
 
 Python dependencies are defined in `pyproject.toml` and installed with `pip install .`.
 
-## Usage
-
 ### Run with Python
 
 1. Create a virtual environment and install dependencies:
@@ -131,39 +185,6 @@ Python dependencies are defined in `pyproject.toml` and installed with `pip inst
    # or use the console script
    echo-journal
    ```
-
-### Run with Docker Compose
-
-> Note: The following commands use Docker Compose v2. If `docker compose` is unavailable, install the [Docker Compose plugin](https://docs.docker.com/compose/install/).
-
-1. **Copy the example environment file and adjust settings as needed:**
-
-   ```bash
-   cp .env.example .env
-   # edit .env to change HOST_PORT, DATA_DIR, or TLS paths
-   ```
-
-2. **Prepare a persistent journals directory (matches `DATA_DIR`, default `data`):**
-
-   ```bash
-   mkdir -p data
-   ```
-
-3. **Start the container:**
-
-   ```bash
-   docker compose up --build
-   ```
-
-   Then open <http://localhost:8510> (or your chosen `HOST_PORT`) in your browser.
-
-4. **Stop the container while preserving data:**
-
-   ```bash
-   docker compose down
-   ```
-
-   Journal files remain in the mounted `data` directory on the host.
 
 ## Configuration
 
@@ -242,11 +263,10 @@ Details about the entry front matter and energy level mapping have moved to [doc
 ### Disabling integrations
 
 The web UI includes a **Settings** page where optional integrations can be
-toggled per browser. Uncheck Wordnik, Immich, or Jellyfin integrations to
-disable their metadata. A future "Fact of the Day" option will also be
-toggleable here once implemented. Your choices are stored in `localStorage` and
-the server skips fetching data for any disabled integrations when building
-frontmatter.
+toggled per browser. Uncheck Wordnik, Immich, Jellyfin, Location, Weather, or
+Fact integrations to disable their metadata. Your choices are stored in
+`localStorage` and the server skips fetching data for any disabled integrations
+when building frontmatter.
 
 ## Deployment
 
@@ -265,6 +285,24 @@ pytest
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup and testing details.
 
+## Alpha Feedback
+
+Echo Journal is currently in alpha so while the core features are functional it is still evolving. Your feedback at this stage could have a big impact.
+
+If you're trying it out, please consider sharing:
+
+- What’s working well for you?
+- What’s confusing, frustrating, or missing?
+- Any bugs or quirks you noticed?
+- Feature ideas that could make journaling even easier?
+
+Ways to give feedback:
+- Open an issue on GitHub
+- Email me directly if you prefer something more private
+- Start a discussion in the GitHub Discussions tab (if enabled)
+
+I’d especially love to hear from AuADHD users, privacy-conscious folks, and anyone who usually bounces off journaling apps. Even short notes make a difference.
+
 ## Bugs and Issues
 
 Known issues are tracked in [BUGS.md](BUGS.md). If you run into a problem that's not listed there, please follow the guidance in that file to file a bug report or open a GitHub issue.
@@ -276,10 +314,11 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 ## About the Development
 
 Echo Journal was created using an AI-assisted development workflow guided by human design and review.
-This process allowed for rapid prototyping, iterative feature testing, and fast refinement while maintaining control over architecture, security, and usability.
-Every feature in this Alpha is been reviewed, tested, and integrated with a focus on privacy, accessibility, and low-friction journaling.
+This process allowed me as a single developer to do rapid prototyping, iterative feature testing, and fast refinement while maintaining control over architecture, security, and usability.
 
-Human contributors are encouraged and welcome — your insight, creativity, and lived experience can help shape Echo Journal’s future.
+Every feature in this Alpha is being reviewed, tested, and integrated with a focus on privacy, accessibility, and low-friction journaling.
+
+Human contributors are encouraged and welcome. Your insight, creativity, and lived experience can help shape Echo Journal’s future.
 
 ## License
 
