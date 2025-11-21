@@ -14,3 +14,4 @@ JELLYFIN_URL: http://localhost:8096
 JELLYFIN_API_KEY: your-jellyfin-api-key
 JELLYFIN_USER_ID: your-jellyfin-user-id
 NOMINATIM_USER_AGENT: EchoJournal/1.0 (you@example.com)
+MINDLOOM_ENERGY_LOG_PATH: /home/eoghann/docker/mindloom/data/energy_log.yaml

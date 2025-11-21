@@ -23,26 +23,38 @@
 {% endif %}
 <section id="mood-energy-section" class="mt-4 w-full text-center space-y-2">
   <p class="font-semibold">Mood &amp; Energy</p>
+  {% set mood_value = prefilled_mood %}
+  {% set energy_value = prefilled_energy %}
   <fieldset id="mood-energy" class="mt-2 flex flex-wrap justify-center gap-4 border-0 m-0 p-0">
     <legend class="sr-only">Mood and energy (optional)</legend>
     <label for="mood-select" class="sr-only">Mood</label>
     <select id="mood-select" class="border rounded px-2 py-1 text-sm">
-      <option value="" {% if not mood %}selected{% endif %}>Mood</option>
-      <option value="sad" {% if mood == 'sad' %}selected{% endif %}>😔 Sad</option>
-      <option value="self-doubt" {% if mood == 'self-doubt' %}selected{% endif %}>😶 Self-doubt</option>
-      <option value="meh" {% if mood == 'meh' %}selected{% endif %}>😐 Meh</option>
-      <option value="okay" {% if mood == 'okay' %}selected{% endif %}>😊 Okay</option>
-      <option value="joyful" {% if mood == 'joyful' %}selected{% endif %}>😍 Joyful</option>
+      <option value="" {% if not mood_value %}selected{% endif %}>Mood</option>
+      <option value="sad" {% if mood_value == 'sad' %}selected{% endif %}>😔 Sad</option>
+      <option value="self-doubt" {% if mood_value == 'self-doubt' %}selected{% endif %}>😶 Self-doubt</option>
+      <option value="meh" {% if mood_value == 'meh' %}selected{% endif %}>😐 Meh</option>
+      <option value="okay" {% if mood_value == 'okay' %}selected{% endif %}>😊 Okay</option>
+      <option value="joyful" {% if mood_value == 'joyful' %}selected{% endif %}>😍 Joyful</option>
     </select>
     <label for="energy-select" class="sr-only">Energy</label>
     <select id="energy-select" class="border rounded px-2 py-1 text-sm">
-      <option value="" {% if not energy %}selected{% endif %}>Energy</option>
-      <option value="drained" {% if energy == 'drained' %}selected{% endif %}>🪫 Drained</option>
-      <option value="low" {% if energy == 'low' %}selected{% endif %}>😴 Low</option>
-      <option value="ok" {% if energy == 'ok' %}selected{% endif %}>🙂 OK</option>
-      <option value="energized" {% if energy == 'energized' %}selected{% endif %}>⚡ Energized</option>
+      <option value="" {% if not energy_value %}selected{% endif %}>Energy</option>
+      <option value="drained" {% if energy_value == 'drained' %}selected{% endif %}>🪫 Drained</option>
+      <option value="low" {% if energy_value == 'low' %}selected{% endif %}>😴 Low</option>
+      <option value="ok" {% if energy_value == 'ok' %}selected{% endif %}>🙂 OK</option>
+      <option value="energized" {% if energy_value == 'energized' %}selected{% endif %}>⚡ Energized</option>
     </select>
   </fieldset>
+  {% if mindloom_defaults_used %}
+  <p class="text-xs text-gray-500 dark:text-gray-400">
+    Using your latest Mindloom mood{% if mindloom_last_entry_date %} ({{ mindloom_last_entry_date }}){% endif %} as defaults.
+  </p>
+  {% endif %}
+  {% if mindloom_needs_entry %}
+  <p class="text-xs text-gray-500 dark:text-gray-400">
+    Mindloom hasn't recorded your mood and energy for today yet; saving the entry will log them there.
+  </p>
+  {% endif %}
 </section>
 <section id="prompt-section" class="hidden">
   <section class="w-full mx-auto space-y-2 p-4 rounded-xl text-left">

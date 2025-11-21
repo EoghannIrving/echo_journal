@@ -2,9 +2,11 @@
 
 import json
 import logging
+import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import httpx
 
@@ -46,6 +48,12 @@ async def fetch_assets_for_date(
     # implementation treated local times as UTC directly which could shift the
     # query window by the server's timezone offset.
     local_tz = datetime.now().astimezone().tzinfo
+    zone_name = os.environ.get("TZ") or getattr(local_tz, "key", None)
+    if zone_name:
+        try:
+            local_tz = ZoneInfo(zone_name)
+        except ZoneInfoNotFoundError:
+            pass
     date = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=local_tz)
     start = date - timedelta(hours=IMMICH_TIME_BUFFER)
     end = date + timedelta(days=1, hours=IMMICH_TIME_BUFFER) - timedelta(seconds=1)

@@ -56,6 +56,7 @@ from echo_journal import ai_prompt_utils  # pylint: disable=wrong-import-positio
 from echo_journal import immich_utils  # pylint: disable=wrong-import-position
 from echo_journal import jellyfin_utils  # pylint: disable=wrong-import-position
 from echo_journal import main  # type: ignore  # pylint: disable=wrong-import-position
+from echo_journal import mindloom_utils  # pylint: disable=wrong-import-position
 from echo_journal import numbers_utils  # pylint: disable=wrong-import-position
 from echo_journal import weather_utils  # pylint: disable=wrong-import-position
 from echo_journal.file_utils import (  # pylint: disable=wrong-import-position
@@ -111,6 +112,34 @@ def test_mood_energy_prefilled_on_reload(test_client):
         assert '<option value="energized" selected>' in resp.text
     finally:
         file_path.unlink()
+
+
+def test_mindloom_defaults_prefill_when_no_entry(test_client, monkeypatch):
+    """Mindloom defaults should show up when no journal entry exists today."""
+    source_date = date.today() - timedelta(days=1)
+    snapshot = mindloom_utils.MindloomSnapshot(
+        mood="meh",
+        energy="ok",
+        last_entry_date=source_date,
+        has_today_entry=False,
+        enabled=True,
+        available=True,
+    )
+
+    async def fake_snapshot():
+        return snapshot
+
+    monkeypatch.setattr(main, "load_mindloom_snapshot", fake_snapshot)
+    resp = test_client.get("/")
+    assert resp.status_code == 200
+    html = resp.text
+    assert '<option value="meh" selected>' in html
+    assert '<option value="ok" selected>' in html
+    assert (
+        f"Using your latest Mindloom mood ({source_date.isoformat()}) as defaults."
+        in html
+    )
+    assert "Mindloom hasn't recorded your mood and energy for today yet" in html
 
 
 def test_restart_notice_shown_when_yesterday_missing(test_client):

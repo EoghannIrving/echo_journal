@@ -44,6 +44,13 @@ DATA_DIR = Path(_get_setting("DATA_DIR", "/journals"))
 PROMPTS_FILE = Path(_get_setting("PROMPTS_FILE", str(APP_DIR / "prompts.yaml")))
 STATIC_DIR = Path(_get_setting("STATIC_DIR", str(APP_DIR / "static")))
 TEMPLATES_DIR = Path(_get_setting("TEMPLATES_DIR", str(APP_DIR / "templates")))
+_MINDLOOM_LOG_PATH = _get_setting(
+    "MINDLOOM_ENERGY_LOG_PATH",
+    "/home/eoghann/docker/mindloom/data/energy_log.yaml",
+)
+MINDLOOM_ENERGY_LOG_PATH = (
+    Path(_MINDLOOM_LOG_PATH) if _MINDLOOM_LOG_PATH is not None else None
+)
 ENCODING = "utf-8"
 WORDNIK_API_KEY = _get_setting("WORDNIK_API_KEY")
 OPENAI_API_KEY = _get_setting("OPENAI_API_KEY")

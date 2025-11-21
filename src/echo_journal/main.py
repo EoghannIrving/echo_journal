@@ -45,6 +45,10 @@ from .file_utils import (
 )
 from .immich_utils import update_photo_metadata
 from .jellyfin_utils import update_media_metadata, update_song_metadata
+from .mindloom_utils import (
+    load_snapshot as load_mindloom_snapshot,
+    record_entry_if_missing,
+)
 from .numbers_utils import fetch_date_fact
 from .prompt_utils import _choose_anchor, generate_prompt, load_prompts
 from .settings_utils import SETTINGS_PATH, load_settings, save_settings
@@ -336,6 +340,25 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         mood = ""
         energy = ""
 
+    mindloom_snapshot = await load_mindloom_snapshot()
+    mindloom_default_mood = mindloom_snapshot.mood
+    mindloom_default_energy = mindloom_snapshot.energy
+    mindloom_needs_entry = (
+        mindloom_snapshot.enabled
+        and mindloom_snapshot.available
+        and not mindloom_snapshot.has_today_entry
+    )
+    mindloom_last_entry_date = (
+        mindloom_snapshot.last_entry_date.isoformat()
+        if mindloom_snapshot.last_entry_date
+        else None
+    )
+    prefilled_mood = mood or mindloom_default_mood or ""
+    prefilled_energy = energy or mindloom_default_energy or ""
+    mindloom_defaults_used = bool(
+        (not mood and mindloom_default_mood) or (not energy and mindloom_default_energy)
+    )
+
     gap = _days_since_last_entry(config.DATA_DIR, today)
     missing_yesterday = gap is None or gap > 1
 
@@ -367,6 +390,11 @@ async def index(request: Request):  # pylint: disable=too-many-locals
             "wotd_def": wotd_def,
             "mood": mood,
             "energy": energy,
+            "prefilled_mood": prefilled_mood,
+            "prefilled_energy": prefilled_energy,
+            "mindloom_needs_entry": mindloom_needs_entry,
+            "mindloom_last_entry_date": mindloom_last_entry_date,
+            "mindloom_defaults_used": mindloom_defaults_used,
             "missing_yesterday": missing_yesterday,
             "integrations": integrations,
             "csrf_token": request.state.csrf_token,
@@ -559,6 +587,12 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
     async with lock:
         async with aiofiles.open(file_path, "w", encoding=config.ENCODING) as fh:
             await fh.write(md_text)
+
+    if mood and energy:
+        try:
+            await record_entry_if_missing(mood, energy)
+        except Exception as exc:  # pragma: no cover - defensive guard
+            save_logger.warning("Mindloom sync failed: %s", exc)
 
     if integrations.get("immich", True):
         await update_photo_metadata(entry_date, file_path)
