@@ -5,11 +5,11 @@ Thank you for your interest in improving Echo Journal! This project welcomes pul
 ## Development setup
 
 1. Fork the repository and clone your fork locally.
-2. Create a virtual environment and install the project:
+2. Create a virtual environment and install the project plus development helpers:
    ```sh
    python -m venv .venv
    source .venv/bin/activate
-   pip install .
+   pip install .[dev]
    ```
 3. Install Node dependencies and build the CSS:
    ```sh
@@ -28,6 +28,14 @@ Thank you for your interest in improving Echo Journal! This project welcomes pul
   ```
 - Execute the test suite with `pytest` before submitting a pull request.
 
+Install the pre-commit hooks once with:
+
+```sh
+pre-commit install
+```
+
+Then run `pre-commit run --all-files` to execute the full CI pipeline (via `scripts/ci-local.sh`). You can also run `scripts/ci-local.sh` directly if you need the full suite without committing.
+
 ### Running tests
 
 Set up a fresh environment and run the suite:
@@ -35,7 +43,7 @@ Set up a fresh environment and run the suite:
 ```sh
 python -m venv .venv
 source .venv/bin/activate
-pip install .
+pip install .[dev]
 pytest
 ```
 

@@ -168,6 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Paths: [
         'DATA_DIR',
         'PROMPTS_FILE',
+        'MINDLOOM_ENERGY_LOG_PATH',
       ],
       'API Keys': [
         'WORDNIK_API_KEY',
@@ -234,6 +235,11 @@ document.addEventListener("DOMContentLoaded", () => {
         label: 'Prompts file',
         help: 'YAML file containing writing prompts',
         placeholder: '/path/to/prompts.yaml',
+      },
+      MINDLOOM_ENERGY_LOG_PATH: {
+        label: 'Mindloom energy log path',
+        help: 'Full path to your Mindloom `energy_log.yaml` file',
+        placeholder: '/path/to/energy_log.yaml',
       },
       WORDNIK_API_KEY: {
         label: 'Wordnik API key',

@@ -6,6 +6,7 @@ import asyncio
 from datetime import date, timedelta
 
 import yaml
+
 from echo_journal import config, mindloom_utils
 
 

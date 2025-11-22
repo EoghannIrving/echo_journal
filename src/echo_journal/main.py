@@ -45,10 +45,13 @@ from .file_utils import (
 )
 from .immich_utils import update_photo_metadata
 from .jellyfin_utils import update_media_metadata, update_song_metadata
-from .numbers_utils import fetch_date_fact
+from .mindloom_utils import load_snapshot, record_entry_if_missing
+from .numbers_utils import fetch_random_fact
 from .prompt_utils import _choose_anchor, generate_prompt, load_prompts
 from .settings_utils import SETTINGS_PATH, load_settings, save_settings
 from .weather_utils import build_frontmatter, time_of_day_label
+
+load_mindloom_snapshot = load_snapshot
 
 # Provide pathlib.Path.is_relative_to on Python < 3.9
 if not hasattr(Path, "is_relative_to"):
@@ -188,6 +191,7 @@ NON_EDITABLE_SETTING_KEYS = {"APP_DIR", "STATIC_DIR", "TEMPLATES_DIR"}
 ENV_SETTING_KEYS = [
     "DATA_DIR",
     "PROMPTS_FILE",
+    "MINDLOOM_ENERGY_LOG_PATH",
     "WORDNIK_API_KEY",
     "OPENAI_API_KEY",
     "IMMICH_URL",

@@ -38,3 +38,15 @@ where = ["src"]
 [tool.isort]
 profile = "black"
 
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "black",
+    "isort",
+    "pylint",
+    "mypy",
+    "bandit",
+    "pip-audit",
+    "pytest",
+    "pytest-cov",
+]

@@ -283,7 +283,13 @@ Run the test suite with:
 pytest
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup and testing details.
+For the full CI surface run locally, install the development extras (`pip install .[dev]`), hook the git hooks with `pre-commit install`, and run `pre-commit run --all-files`. The `pre-commit` hook executes `scripts/ci-local.sh`, which mirrors the linting, typing, security, and pytest steps from the workflow.
+
+### Local CI
+
+Once `pip install .[dev]` has finished, `scripts/ci-local.sh` can be run directly whenever you want to reconfirm the full pipeline without invoking `pre-commit`.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more on the coding workflow.
 
 ## Alpha Feedback
 

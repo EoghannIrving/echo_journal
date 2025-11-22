@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ci-local-suite
+        name: Run the full local CI pipeline
+        entry: scripts/ci-local.sh
+        language: system
+        pass_filenames: false
+        always_run: true

@@ -1,17 +1,20 @@
 services:
   echo_journal:
-    image: eoghannirving/echo_journal:latest
-    container_name: echo-journal
+    build: .
+#    image: eoghannirving/echo_journal:latest
+#    container_name: echo-journal
     ports:
       - ${HOST_PORT}:8000
     volumes:
       - /home/eoghann/docker/echo_journal/static:/app/static
       - /home/eoghann/docker/echo_journal/prompts.yaml:/app/prompts.yaml
       - ${DATA_DIR}:/journals
+      - ${MINDLOOM_DATA_DIR}:/mindloom/data:ro
     environment:
       - TZ=${TZ:-UTC}
       - ECHO_JOURNAL_HOST=0.0.0.0
       - ECHO_JOURNAL_PORT=8000
+      - MINDLOOM_ENERGY_LOG_PATH=${MINDLOOM_ENERGY_LOG_PATH}
       # Uncomment to enable TLS inside the container
       # - ECHO_JOURNAL_SSL_KEYFILE=${TLS_KEY_PATH}
       # - ECHO_JOURNAL_SSL_CERTFILE=${TLS_CERT_PATH}

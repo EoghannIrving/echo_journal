@@ -4,6 +4,8 @@
   let currentPrompt = cfg.prompt || "";
   let currentCategory = cfg.category || "";
   let currentAnchor = cfg.anchor || "";
+  const prefilledMood = cfg.prefilled_mood || "";
+  const prefilledEnergy = cfg.prefilled_energy || "";
   const promptKey = `ej-prompt-${entryDate}`;
   const readonly = cfg.readonly === true || cfg.readonly === "true";
   const energyLevels = { drained: 1, low: 2, ok: 3, energized: 4 };
@@ -212,6 +214,8 @@
     const catEl = document.getElementById('prompt-category');
     const anchorEl = document.getElementById('prompt-anchor');
     const textarea = document.getElementById('journal-text');
+    if (prefilledMood && moodSelect) moodSelect.value = prefilledMood;
+    if (prefilledEnergy && energySelect) energySelect.value = prefilledEnergy;
     const stored = localStorage.getItem(promptKey);
     if (stored) {
       try {
@@ -254,16 +258,20 @@
       if (energySelect) energySelect.disabled = true;
       moodEnergyLocked = true;
     }
-    const initialMood = moodSelect ? moodSelect.value : '';
-    const initialEnergy = energySelect ? energySelect.value : '';
+    const initialMood =
+      (moodSelect ? moodSelect.value : "") || prefilledMood;
+    const initialEnergy =
+      (energySelect ? energySelect.value : "") || prefilledEnergy;
     if (currentPrompt && (hasEntryContent || (initialMood && initialEnergy))) {
       revealPrompt();
       promptShown = true;
     }
 
     const maybeFetchPrompt = async () => {
-      const mood = moodSelect ? moodSelect.value : '';
-      const energyStr = energySelect ? energySelect.value : '';
+      const mood =
+        (moodSelect ? moodSelect.value : '') || prefilledMood;
+      const energyStr =
+        (energySelect ? energySelect.value : '') || prefilledEnergy;
       const energy = getEnergyValue(energyStr);
       const style = styleSelect ? styleSelect.value : '';
       // Only fetch when mood and energy are chosen
@@ -300,6 +308,9 @@
     }
     if (styleSelect) {
       styleSelect.addEventListener('change', maybeFetchPrompt);
+    }
+    if (!currentPrompt && initialMood && initialEnergy) {
+      void maybeFetchPrompt();
     }
     const params = new URLSearchParams(window.location.search);
     if (params.get('focus') === '1') {
