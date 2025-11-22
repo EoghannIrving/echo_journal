@@ -49,7 +49,7 @@ from .mindloom_utils import load_snapshot, record_entry_if_missing
 from .numbers_utils import fetch_random_fact
 from .prompt_utils import _choose_anchor, generate_prompt, load_prompts
 from .settings_utils import SETTINGS_PATH, load_settings, save_settings
-from .weather_utils import build_frontmatter, time_of_day_label
+from .weather_utils import build_frontmatter, fetch_weather, time_of_day_label
 
 load_mindloom_snapshot = load_snapshot
 
@@ -493,6 +493,58 @@ def _with_updated_energy(frontmatter: str | None, energy: str | None) -> str | N
     return _update_field(frontmatter, "energy", energy)
 
 
+def _sanitize_location_label(location: dict | None) -> str | None:
+    """Return a cleaned location label safe for YAML frontmatter."""
+    if not location:
+        return None
+    label = location.get("label")
+    if label is None:
+        return None
+    cleaned = bleach.clean(str(label))
+    cleaned = cleaned.replace("\r", " ").replace("\n", " ").strip()
+    return cleaned or None
+
+
+def _format_provided_weather(weather: dict | None) -> str | None:
+    """Format weather dict values into the stored frontmatter string."""
+    if not weather:
+        return None
+    temp = weather.get("temperature")
+    code = weather.get("code")
+    if temp is None or code is None:
+        return None
+    try:
+        code_int = int(code)
+    except (TypeError, ValueError):
+        return None
+    return f"{str(temp)}°C code {code_int}"
+
+
+async def _resolve_weather_value(
+    weather: dict | None,
+    location: dict[str, float | str | None] | None,
+    integrations: dict,
+) -> str | None:
+    """Return the latest weather string either from payload or by fetching."""
+    if not integrations.get("weather", True):
+        return None
+    provided = _format_provided_weather(weather)
+    if provided:
+        return provided
+    if not location:
+        return None
+    lat_val = location.get("lat")
+    lon_val = location.get("lon")
+    if lat_val is None or lon_val is None:
+        return None
+    try:
+        lat = float(lat_val)
+        lon = float(lon_val)
+    except (TypeError, ValueError):
+        return None
+    return await fetch_weather(lat, lon)
+
+
 @app.post("/entry")
 async def save_entry(data: dict):  # pylint: disable=too-many-locals
     """Save a journal entry for the provided date."""
@@ -540,6 +592,16 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
         )
     else:
         frontmatter = await read_existing_frontmatter(file_path)
+
+    if integrations.get("location", True):
+        location_label = _sanitize_location_label(location)
+        if location_label:
+            frontmatter = _update_field(frontmatter, "location", location_label)
+
+    if not first_save or weather:
+        weather_value = await _resolve_weather_value(weather, location, integrations)
+        if weather_value:
+            frontmatter = _update_field(frontmatter, "weather", weather_value)
 
     # Update or add save_time field
     utc_now = datetime.now(timezone.utc)

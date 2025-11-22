@@ -452,8 +452,38 @@ def test_weather_saved_when_provided(test_client):
     text = (main.DATA_DIR / "2021-01-01.md").read_text(encoding="utf-8")
     frontmatter, _ = split_frontmatter(text)
     assert frontmatter is not None
-    assert "weather: 20°C code 1" in frontmatter
-    assert "..." not in frontmatter
+    meta = parse_frontmatter(frontmatter)
+    assert meta["weather"] == "20°C code 1"
+
+
+def test_location_and_weather_update_on_resave(test_client):
+    """Subsequent saves should refresh location and weather metadata."""
+    payload = {
+        "date": "2021-01-04",
+        "content": "entry",
+        "prompt": "prompt",
+        "location": {"lat": 1, "lon": 2, "accuracy": 0, "label": "Town"},
+        "weather": {"temperature": 20, "code": 1},
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+
+    updated = {
+        "date": "2021-01-04",
+        "content": "entry",
+        "prompt": "prompt",
+        "location": {"lat": 2, "lon": 3, "accuracy": 0, "label": "New Town"},
+        "weather": {"temperature": 25, "code": 3},
+    }
+    resp = test_client.post("/entry", json=updated)
+    assert resp.status_code == 200
+
+    text = (main.DATA_DIR / "2021-01-04.md").read_text(encoding="utf-8")
+    frontmatter, _ = split_frontmatter(text)
+    assert frontmatter is not None
+    meta = parse_frontmatter(frontmatter)
+    assert meta["location"] == "New Town"
+    assert meta["weather"] == "25°C code 3"
 
 
 def test_location_disabled_in_frontmatter(test_client):
@@ -471,8 +501,9 @@ def test_location_disabled_in_frontmatter(test_client):
     text = (main.DATA_DIR / "2021-01-02.md").read_text(encoding="utf-8")
     frontmatter, _ = split_frontmatter(text)
     assert frontmatter is not None
-    assert "location:" not in frontmatter
-    assert "weather: 20°C code 1" in frontmatter
+    meta = parse_frontmatter(frontmatter)
+    assert "location" not in meta
+    assert meta["weather"] == "20°C code 1"
 
 
 def test_weather_disabled_in_frontmatter(test_client):
