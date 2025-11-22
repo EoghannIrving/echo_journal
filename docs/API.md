@@ -67,3 +67,15 @@ curl -X POST http://localhost:8510/api/backfill_songs
 {"songs_added": 0, "media_added": 0}
 ```
 
+### POST /api/entry/{entry_date}/metadata
+Re-fetch metadata for a single journal entry. Immich and Jellyfin integrations will be rerun when enabled, making it easy to add missing photos, songs, or media after the fact.
+
+```bash
+curl -X POST http://localhost:8510/api/entry/2023-08-01/metadata \
+     -H 'Content-Type: application/json' \
+     -H 'X-CSRF-Token: <token>'
+```
+
+```json
+{"status": "success"}
+```

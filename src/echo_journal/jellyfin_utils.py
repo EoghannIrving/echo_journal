@@ -3,7 +3,7 @@
 import json
 import logging
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, AsyncIterator, Dict, List
 
@@ -35,12 +35,23 @@ logger = logging.getLogger("ej.jellyfin")
 # Number of items to request per page when fetching play history.
 
 
+def _apply_tz_offset(play_dt: datetime, tz_offset: int | None) -> datetime:
+    """Return the play time adjusted to the user's timezone offset."""
+    if tz_offset is None:
+        return play_dt
+    return play_dt + timedelta(minutes=tz_offset)
+
+
 async def _iter_items(
-    date_str: str, headers: Dict[str, str], url: str, base_params: Dict[str, str]
+    date_str: str,
+    headers: Dict[str, str],
+    url: str,
+    base_params: Dict[str, str],
+    tz_offset: int | None = None,
 ) -> AsyncIterator[Dict[str, Any]]:
     """Yield Jellyfin play history items until ``date_str`` is passed."""
     start_index = 0
-    last_page_date: str | None = None
+    last_page_local_date: str | None = None
     last_page_index: int = -1
     async with httpx.AsyncClient() as client:
         while True:
@@ -71,35 +82,34 @@ async def _iter_items(
                 logger.debug("No last played date in page starting %d", current_page)
                 continue
             try:
-                last_date = (
-                    datetime.fromisoformat(last_played.replace("Z", "+00:00"))
-                    .date()
-                    .isoformat()
-                )
+                last_date = datetime.fromisoformat(last_played.replace("Z", "+00:00"))
             except ValueError:
                 logger.debug("Could not parse last played date: %s", last_played)
                 continue
+            local_date = _apply_tz_offset(last_date, tz_offset).date().isoformat()
             if len(page_items) == JELLYFIN_PAGE_SIZE and (
-                last_page_date == last_date or last_page_index == current_page
+                last_page_local_date == local_date or last_page_index == current_page
             ):
                 logger.debug(
                     "Stopping iteration: page starting %d did not advance past %s",
                     current_page,
-                    last_date,
+                    local_date,
                 )
                 break
-            last_page_date = last_date
+            last_page_local_date = local_date
             last_page_index = current_page
-            if last_date < date_str or len(page_items) < JELLYFIN_PAGE_SIZE:
+            if local_date < date_str or len(page_items) < JELLYFIN_PAGE_SIZE:
                 logger.debug(
-                    "Stopping iteration: last_date=%s, page_len=%d",
-                    last_date,
+                    "Stopping iteration: last_local_date=%s, page_len=%d",
+                    local_date,
                     len(page_items),
                 )
                 break
 
 
-async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
+async def fetch_top_songs(
+    date_str: str, tz_offset: int | None = None
+) -> List[Dict[str, Any]]:
     """Return today's top songs from Jellyfin for the configured user."""
     if not JELLYFIN_URL or not JELLYFIN_USER_ID:
         logger.info("Jellyfin integration disabled; skipping fetch")
@@ -121,7 +131,9 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
     last_played: Dict[tuple[str, str], datetime] = {}
 
     try:
-        async for item in _iter_items(date_str, headers, url, base_params):
+        async for item in _iter_items(
+            date_str, headers, url, base_params, tz_offset=tz_offset
+        ):
             played = item.get("DatePlayed") or item.get("UserData", {}).get(
                 "LastPlayedDate"
             )
@@ -130,10 +142,11 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
                 continue
             try:
                 play_dt = datetime.fromisoformat(played.replace("Z", "+00:00"))
-                if play_dt.date().isoformat() != date_str:
+                local_play_dt = _apply_tz_offset(play_dt, tz_offset)
+                if local_play_dt.date().isoformat() != date_str:
                     logger.debug(
                         "Skipping play dated %s (target %s)",
-                        play_dt.date().isoformat(),
+                        local_play_dt.date().isoformat(),
                         date_str,
                     )
                     continue
@@ -158,8 +171,8 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
                 continue
             key = (track, artist)
             counts[key] += 1
-            if key not in last_played or play_dt > last_played[key]:
-                last_played[key] = play_dt
+            if key not in last_played or local_play_dt > last_played[key]:
+                last_played[key] = local_play_dt
             logger.debug("Counted play for %s - %s", track, artist)
     except (httpx.HTTPError, ValueError) as exc:
         logger.error("Error fetching Jellyfin items: %s", exc)
@@ -179,10 +192,16 @@ async def fetch_top_songs(date_str: str) -> List[Dict[str, Any]]:
     ]
 
 
-async def update_song_metadata(date_str: str, journal_path: Path) -> None:
+async def update_song_metadata(
+    date_str: str, journal_path: Path, tz_offset: int | None = None
+) -> None:
     """Fetch top songs for the date and store them next to the journal entry."""
     logger.info("Updating song metadata for %s", journal_path)
-    songs = await fetch_top_songs(date_str)
+    songs = (
+        await fetch_top_songs(date_str, tz_offset=tz_offset)
+        if tz_offset is not None
+        else await fetch_top_songs(date_str)
+    )
     if not songs:
         logger.info("No song data for %s", date_str)
         return
@@ -198,7 +217,9 @@ async def update_song_metadata(date_str: str, journal_path: Path) -> None:
         logger.error("Failed to write song metadata file: %s", exc)
 
 
-async def fetch_daily_media(date_str: str) -> List[Dict[str, Any]]:
+async def fetch_daily_media(
+    date_str: str, tz_offset: int | None = None
+) -> List[Dict[str, Any]]:
     """Return watched movies and episodes for the given date."""
     if not JELLYFIN_URL or not JELLYFIN_USER_ID:
         logger.info("Jellyfin integration disabled; skipping fetch")
@@ -218,7 +239,9 @@ async def fetch_daily_media(date_str: str) -> List[Dict[str, Any]]:
 
     records: List[Dict[str, str]] = []
     try:
-        async for item in _iter_items(date_str, headers, url, base_params):
+        async for item in _iter_items(
+            date_str, headers, url, base_params, tz_offset=tz_offset
+        ):
             played = item.get("DatePlayed") or item.get("UserData", {}).get(
                 "LastPlayedDate"
             )
@@ -226,7 +249,8 @@ async def fetch_daily_media(date_str: str) -> List[Dict[str, Any]]:
                 continue
             try:
                 play_dt = datetime.fromisoformat(played.replace("Z", "+00:00"))
-                if play_dt.date().isoformat() != date_str:
+                local_play_dt = _apply_tz_offset(play_dt, tz_offset)
+                if local_play_dt.date().isoformat() != date_str:
                     continue
             except ValueError:
                 continue
@@ -244,10 +268,16 @@ async def fetch_daily_media(date_str: str) -> List[Dict[str, Any]]:
     return records
 
 
-async def update_media_metadata(date_str: str, journal_path: Path) -> None:
+async def update_media_metadata(
+    date_str: str, journal_path: Path, tz_offset: int | None = None
+) -> None:
     """Fetch movies/TV watched for the date and save to ``.media.json``."""
     logger.info("Updating media metadata for %s", journal_path)
-    media = await fetch_daily_media(date_str)
+    media = (
+        await fetch_daily_media(date_str, tz_offset=tz_offset)
+        if tz_offset is not None
+        else await fetch_daily_media(date_str)
+    )
     if not media:
         logger.info("No media data for %s", date_str)
         return

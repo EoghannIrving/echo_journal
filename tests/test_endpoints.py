@@ -199,6 +199,21 @@ def test_save_entry_records_time(test_client, monkeypatch):
     assert "save_time: Evening" in text
 
 
+def test_save_entry_records_tz_offset(test_client):
+    """Entries persist the client timezone offset in frontmatter."""
+    payload = {
+        "date": "2020-01-04",
+        "content": "entry",
+        "prompt": "prompt",
+        "tz_offset": -120,
+    }
+    resp = test_client.post("/entry", json=payload)
+    assert resp.status_code == 200
+    file_path = main.DATA_DIR / "2020-01-04.md"
+    text = file_path.read_text(encoding="utf-8")
+    assert "tz_offset: -120" in text
+
+
 def test_save_entry_uses_timezone_offset(test_client, monkeypatch):
     """Timezone offset should adjust save_time label."""
 
@@ -981,6 +996,46 @@ def test_backfill_jellyfin_metadata(test_client, monkeypatch):
     media_path = main.DATA_DIR / ".meta" / "2023-06-06.media.json"
     assert songs_path.exists()
     assert media_path.exists()
+
+
+def test_refresh_entry_metadata_endpoint(test_client, monkeypatch):
+    """Metadata refresh runs each integration for a saved entry."""
+
+    entry_path = main.DATA_DIR / "2023-07-07.md"
+    entry_path.write_text("# Prompt\nP\n\n# Entry\nE", encoding="utf-8")
+
+    called = {"photos": False, "songs": False, "media": False}
+
+    async def fake_photo(date_str, path):
+        called["photos"] = True
+        assert date_str == "2023-07-07"
+        assert path.name == entry_path.name
+
+    async def fake_song(date_str, path, tz_offset=None):
+        called["songs"] = True
+        assert date_str == "2023-07-07"
+        assert path.name == entry_path.name
+
+    async def fake_media(date_str, path, tz_offset=None):
+        called["media"] = True
+        assert date_str == "2023-07-07"
+        assert path.name == entry_path.name
+
+    monkeypatch.setattr(main, "update_photo_metadata", fake_photo)
+    monkeypatch.setattr(main, "update_song_metadata", fake_song)
+    monkeypatch.setattr(main, "update_media_metadata", fake_media)
+
+    resp = test_client.post("/api/entry/2023-07-07/metadata")
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "success"
+    assert all(called.values())
+
+
+def test_refresh_entry_metadata_invalid_date(test_client):
+    """Invalid entry dates return a 400 before trying to load metadata."""
+
+    resp = test_client.post("/api/entry/not-a-date/metadata")
+    assert resp.status_code == 400
 
 
 def test_archive_shows_photo_icon(test_client, monkeypatch):

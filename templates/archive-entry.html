@@ -91,6 +91,25 @@
     </div>
   </section>
 </div>
+<section class="w-full mx-auto mt-4 text-center space-y-2">
+  <button
+    id="refresh-entry-metadata"
+    type="button"
+    data-entry-date="{{ date }}"
+    data-csrf="{{ csrf_token }}"
+    class="inline-flex items-center justify-center w-full max-w-sm mx-auto rounded-full border border-transparent bg-slate-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+  >
+    Refresh missing metadata
+  </button>
+  <p
+    id="metadata-refresh-status"
+    role="status"
+    aria-live="polite"
+    class="text-xs text-gray-500 dark:text-gray-400 hidden"
+  >
+    Re-fetching metadata…
+  </p>
+</section>
 <section id="photos-display" class="mt-4 space-y-2">
 <div id="photos-display" class="meta-card {% if not photos %}hidden{% endif %}">
   <h2 class="text-sm font-medium text-gray-700 dark:text-gray-300">📷 Today's Photos</h2>
@@ -205,6 +224,53 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   const firstBtn = Array.from(tabButtons).find((b) => !b.hasAttribute('hidden'));
   if (firstBtn) activateTab(firstBtn.dataset.target);
+  const refreshButton = document.getElementById('refresh-entry-metadata');
+  const refreshStatus = document.getElementById('metadata-refresh-status');
+  if (refreshButton && refreshStatus) {
+    const entryDate = refreshButton.dataset.entryDate;
+    const csrfToken = refreshButton.dataset.csrf;
+
+    const updateStatus = (message, type = 'neutral') => {
+      refreshStatus.classList.remove('hidden');
+      refreshStatus.classList.remove('text-red-500', 'text-emerald-500', 'text-gray-500');
+      if (type === 'error') {
+        refreshStatus.classList.add('text-red-500');
+      } else if (type === 'success') {
+        refreshStatus.classList.add('text-emerald-500');
+      } else {
+        refreshStatus.classList.add('text-gray-500');
+      }
+      refreshStatus.textContent = message;
+    };
+
+    refreshButton.addEventListener('click', async () => {
+      if (!entryDate) {
+        return;
+      }
+      refreshButton.disabled = true;
+      updateStatus('Refreshing missing metadata…');
+      try {
+        const response = await fetch(`/api/entry/${entryDate}/metadata`, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-Token': csrfToken,
+          },
+        });
+        if (response.ok) {
+          updateStatus('Metadata refreshed! Reloading the view…', 'success');
+          setTimeout(() => window.location.reload(), 800);
+          return;
+        }
+        const errorBody = await response.json().catch(() => ({}));
+        const message = errorBody.detail || 'Unable to refresh metadata.';
+        updateStatus(message, 'error');
+      } catch (err) {
+        updateStatus('Network error while refreshing metadata.', 'error');
+      } finally {
+        refreshButton.disabled = false;
+      }
+    });
+  }
 });
 </script>
 

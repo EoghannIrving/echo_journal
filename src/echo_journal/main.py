@@ -564,6 +564,7 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
     frontmatter = _with_updated_category(frontmatter, category)
     frontmatter = _with_updated_mood(frontmatter, mood)
     frontmatter = _with_updated_energy(frontmatter, energy)
+    frontmatter = _update_field(frontmatter, "tz_offset", tz_offset)
     try:
         fact_date = datetime.strptime(entry_date, "%Y-%m-%d").date()
     except ValueError:
@@ -599,8 +600,8 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
     if integrations.get("immich", True):
         await update_photo_metadata(entry_date, file_path)
     if integrations.get("jellyfin", True):
-        await update_song_metadata(entry_date, file_path)
-        await update_media_metadata(entry_date, file_path)
+        await update_song_metadata(entry_date, file_path, tz_offset=tz_offset)
+        await update_media_metadata(entry_date, file_path, tz_offset=tz_offset)
 
     return {"status": "success"}
 
@@ -814,6 +815,7 @@ async def archive_entry(request: Request, entry_date: str):
             "meta": meta,
             "readonly": True,  # Read-only mode for archive
             "active_page": "archive",
+            "csrf_token": request.state.csrf_token,
         },
     )
 
@@ -1122,6 +1124,34 @@ async def backfill_jellyfin_metadata() -> dict:
         media_added,
     )
     return {"songs_added": songs_added, "media_added": media_added}
+
+
+@app.post("/api/entry/{entry_date}/metadata")
+async def refresh_entry_metadata(entry_date: str) -> dict:
+    """Re-fetch metadata for a given journal entry."""
+    try:
+        file_path = safe_entry_path(entry_date, config.DATA_DIR)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Invalid entry date") from exc
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Entry not found")
+    frontmatter = await read_existing_frontmatter(file_path)
+    meta = parse_frontmatter(frontmatter) if frontmatter else {}
+    tz_offset = meta.get("tz_offset")
+    if tz_offset is not None:
+        try:
+            tz_offset = int(tz_offset)
+        except (TypeError, ValueError):
+            tz_offset = None
+    settings = load_settings()
+    immich_enabled = settings.get("INTEGRATION_IMMICH", "true").lower() != "false"
+    jellyfin_enabled = settings.get("INTEGRATION_JELLYFIN", "true").lower() != "false"
+    if immich_enabled:
+        await update_photo_metadata(entry_date, file_path)
+    if jellyfin_enabled:
+        await update_song_metadata(entry_date, file_path, tz_offset=tz_offset)
+        await update_media_metadata(entry_date, file_path, tz_offset=tz_offset)
+    return {"status": "success"}
 
 
 def main() -> None:

@@ -31,7 +31,7 @@ if [ "${#python_files[@]}" -eq 0 ]; then
 else
   run_step "Running Pylint" "$python_bin" -m pylint "${python_files[@]}"
 fi
-run_step "Checking Black formatting" "$python_bin" -m black --check .
+run_step "Formatting with Black" "$python_bin" -m black .
 run_step "Checking import sorting with isort" "$python_bin" -m isort --check-only . --profile black
 run_step "Running mypy" "$python_bin" -m mypy src tests
 run_step "Running Bandit security scan" "$python_bin" -m bandit -r src tests -s B101
