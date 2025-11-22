@@ -7,7 +7,7 @@ import logging
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import yaml
 
@@ -35,6 +35,14 @@ OKAY_KEYWORDS = (
     "content",
     "balanced",
     "centered",
+)
+
+# Morning, afternoon, and evening buckets reweight today’s entries so later
+# moments influence the “average” more heavily.
+BUCKET_DEFINITIONS = (
+    (0, 12 * 60 * 60, 0.6),
+    (12 * 60 * 60, 17 * 60 * 60, 0.8),
+    (17 * 60 * 60, 24 * 60 * 60, 1.0),
 )
 
 
@@ -99,6 +107,20 @@ def _parse_entry_date(entry: Dict[str, Any]) -> date | None:
         return None
 
 
+def _bucket_weight_for_timestamp(timestamp: datetime | None) -> float:
+    """Return the weight for the bucket (morning/afternoon/evening) of ``timestamp``."""
+
+    if timestamp is None:
+        return BUCKET_DEFINITIONS[0][2]
+    seconds_since_midnight = (
+        timestamp.hour * 60 * 60 + timestamp.minute * 60 + timestamp.second
+    )
+    for start, end, weight in BUCKET_DEFINITIONS:
+        if start <= seconds_since_midnight < end:
+            return weight
+    return BUCKET_DEFINITIONS[-1][2]
+
+
 def _latest_entry(entries: List[Dict[str, Any]]) -> Dict[str, Any] | None:
     """Return the entry with the most recent timestamp."""
 
@@ -116,6 +138,52 @@ def _latest_entry(entries: List[Dict[str, Any]]) -> Dict[str, Any] | None:
     if entries:
         return entries[-1]
     return None
+
+
+def _bucketed_today_snapshot(
+    entries: List[Dict[str, Any]], today: date
+) -> Tuple[str | None, str | None]:
+    """Return today’s mood and energy based on weighted buckets."""
+
+    energy_total = 0.0
+    energy_weight = 0.0
+    mood_scores: Dict[str, float] = {}
+    mood_last_seen: Dict[str, datetime] = {}
+    for entry in entries:
+        entry_date = _parse_entry_date(entry)
+        timestamp = _entry_timestamp(entry)
+        if entry_date is None and timestamp is not None:
+            entry_date = timestamp.date()
+        if entry_date != today:
+            continue
+        if timestamp is None:
+            timestamp = datetime.combine(entry_date, datetime.min.time())
+        weight = _bucket_weight_for_timestamp(timestamp)
+        energy_value = _energy_value_from_raw(entry.get("energy"))
+        if energy_value is not None:
+            energy_total += energy_value * weight
+            energy_weight += weight
+        mood_label = _map_mindloom_mood(entry.get("mood"))
+        if mood_label:
+            mood_scores[mood_label] = mood_scores.get(mood_label, 0.0) + weight
+            last_seen = mood_last_seen.get(mood_label)
+            if last_seen is None or timestamp > last_seen:
+                mood_last_seen[mood_label] = timestamp
+    aggregated_energy: str | None = None
+    if energy_weight > 0:
+        aggregated_energy = _map_average_energy_to_category(
+            energy_total / energy_weight
+        )
+    aggregated_mood = None
+    if mood_scores:
+        aggregated_mood = max(
+            mood_scores.keys(),
+            key=lambda label: (
+                mood_scores[label],
+                mood_last_seen.get(label, datetime.min),
+            ),
+        )
+    return aggregated_mood, aggregated_energy
 
 
 def _map_mindloom_mood(raw_mood: str | None) -> str | None:
@@ -142,20 +210,42 @@ def _map_mindloom_mood(raw_mood: str | None) -> str | None:
 def _map_mindloom_energy(raw_energy: Any) -> str | None:
     """Convert a Mindloom energy value to one of the UI categories."""
 
-    if raw_energy is None:
+    raw_energy_value = _energy_value_from_raw(raw_energy)
+    if raw_energy_value is None:
         return None
-    if isinstance(raw_energy, str) and raw_energy.strip() in ENERGY_CATEGORY_TO_VALUE:
-        raw_energy_value = ENERGY_CATEGORY_TO_VALUE[raw_energy.strip()]
-    else:
-        try:
-            raw_energy_value = int(raw_energy)
-        except (TypeError, ValueError):
-            return None
     if raw_energy_value <= 1:
         return "drained"
     if raw_energy_value == 2:
         return "low"
     if raw_energy_value == 3:
+        return "ok"
+    return "energized"
+
+
+def _energy_value_from_raw(raw_energy: Any) -> int | None:
+    """Return a normalized numeric energy score or None if unknown."""
+
+    if raw_energy is None:
+        return None
+    if isinstance(raw_energy, str):
+        token = raw_energy.strip().lower()
+        if token in ENERGY_CATEGORY_TO_VALUE:
+            return ENERGY_CATEGORY_TO_VALUE[token]
+    try:
+        return int(raw_energy)
+    except (TypeError, ValueError):
+        return None
+
+
+def _map_average_energy_to_category(value: float) -> str:
+    """Translate a weighted average value into Echo Journal's energy labels."""
+
+    rounded = max(1, min(4, int(value + 0.5)))
+    if rounded <= 1:
+        return "drained"
+    if rounded == 2:
+        return "low"
+    if rounded == 3:
         return "ok"
     return "energized"
 
@@ -171,17 +261,18 @@ def _load_snapshot_sync() -> MindloomSnapshot:
     except (OSError, yaml.YAMLError) as exc:  # pragma: no cover - defensive guard
         logger.warning("Failed to read Mindloom energy log %s: %s", log_path, exc)
         return MindloomSnapshot(None, None, None, False, True, False)
+    today = date.today()
+    today_mood, today_energy = _bucketed_today_snapshot(entries, today)
     latest_entry = _latest_entry(entries)
     latest_date = _parse_entry_date(latest_entry) if latest_entry else None
     latest_mood = _map_mindloom_mood(latest_entry.get("mood") if latest_entry else None)
     latest_energy = _map_mindloom_energy(
         latest_entry.get("energy") if latest_entry else None
     )
-    today = date.today()
     has_today = any(_parse_entry_date(entry) == today for entry in entries)
     return MindloomSnapshot(
-        mood=latest_mood,
-        energy=latest_energy,
+        mood=today_mood if today_mood is not None else latest_mood,
+        energy=today_energy if today_energy is not None else latest_energy,
         last_entry_date=latest_date,
         has_today_entry=has_today,
         enabled=True,
