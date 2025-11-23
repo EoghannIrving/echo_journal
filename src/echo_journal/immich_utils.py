@@ -15,7 +15,6 @@ from . import config
 # Expose configuration values for tests while deriving from the config module.
 IMMICH_URL = config.IMMICH_URL
 IMMICH_API_KEY = config.IMMICH_API_KEY
-IMMICH_TIME_BUFFER = config.IMMICH_TIME_BUFFER
 
 # ``config.IMMICH_TIME_BUFFER`` ensures empty environment values fall back to
 # the default defined in the configuration module.
@@ -55,8 +54,9 @@ async def fetch_assets_for_date(
         except ZoneInfoNotFoundError:
             pass
     date = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=local_tz)
-    start = date - timedelta(hours=IMMICH_TIME_BUFFER)
-    end = date + timedelta(days=1, hours=IMMICH_TIME_BUFFER) - timedelta(seconds=1)
+    buffer_hours = int(config.IMMICH_TIME_BUFFER)
+    start = date - timedelta(hours=buffer_hours)
+    end = date + timedelta(days=1, hours=buffer_hours) - timedelta(seconds=1)
 
     payload = {
         "takenAfter": start.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),

@@ -4,7 +4,26 @@ import os
 from pathlib import Path
 from typing import overload
 
+from .env_utils import load_env as _load_env
 from .settings_utils import load_settings
+
+
+def _load_dotenv() -> None:
+    """Merge values from the .env file into os.environ without overriding existing keys.
+
+    The test suite should not be affected by developer .env files, so
+    loading is skipped when running under pytest.
+    """
+    # Skip loading developer .env when running under pytest
+    import sys
+
+    if os.environ.get("PYTEST_CURRENT_TEST") or "pytest" in sys.modules:
+        return
+    for key, value in _load_env().items():
+        os.environ.setdefault(key, value)
+
+
+_load_dotenv()
 
 _SETTINGS = load_settings()
 
@@ -26,7 +45,17 @@ def _get_setting(key: str, default: str | None = None) -> str | None:
     """
     value = _SETTINGS.get(key)
     if value in (None, ""):
-        value = os.getenv(key, default)
+        # Avoid leaking developer .env values into the test suite
+        if os.environ.get("PYTEST_CURRENT_TEST") and key in {
+            "WORDNIK_API_KEY",
+            "OPENAI_API_KEY",
+            "IMMICH_API_KEY",
+            "JELLYFIN_API_KEY",
+            "IMMICH_TIME_BUFFER",
+        }:
+            value = default
+        else:
+            value = os.getenv(key, default)
     if value == "":
         return default
     return value
@@ -65,6 +94,27 @@ JELLYFIN_PLAY_THRESHOLD = int(_get_setting("JELLYFIN_PLAY_THRESHOLD", "90"))
 NOMINATIM_USER_AGENT = _get_setting(
     "NOMINATIM_USER_AGENT", "EchoJournal/1.0 (contact@example.com)"
 )
+
+# AudioBookShelf configuration
+AUDIOBOOKSHELF_URL = _get_setting("AUDIOBOOKSHELF_URL")
+AUDIOBOOKSHELF_API_TOKEN = _get_setting("AUDIOBOOKSHELF_API_TOKEN")
+AUDIOBOOKSHELF_POLL_ENABLED = (
+    _get_setting("AUDIOBOOKSHELF_POLL_ENABLED", "false").lower() == "true"
+)
+AUDIOBOOKSHELF_POLL_INTERVAL_SECONDS = int(
+    _get_setting("AUDIOBOOKSHELF_POLL_INTERVAL_SECONDS", "600")
+)
+
+# LocationIQ reverse geocoding configuration
+LOCATIONIQ_API_KEY = _get_setting("LOCATIONIQ_API_KEY")
+
+# Disk cache configuration for reverse geocoding
+_DEFAULT_CACHE_PATH = (
+    Path(_get_setting("DATA_DIR", "/journals")) / ".cache" / "reverse_geocode.json"
+)
+GEO_CACHE_PATH = Path(_get_setting("GEO_CACHE_PATH", str(_DEFAULT_CACHE_PATH)))
+GEO_CACHE_TTL_SECONDS = int(_get_setting("GEO_CACHE_TTL_SECONDS", "86400"))
+GEO_CACHE_MAX_ENTRIES = int(_get_setting("GEO_CACHE_MAX_ENTRIES", "1000"))
 
 # Number of retry attempts for Numbers API requests.
 NUMBERS_API_RETRIES = int(_get_setting("NUMBERS_API_RETRIES", "0"))

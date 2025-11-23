@@ -16,13 +16,14 @@
 </section>
 
 <div id="entry-wrapper" class="md:flex md:items-start md:space-x-4">
-  <details id="metadata-panel" class="meta-card md:w-1/4 {% if not (wotd or songs or media or fact) %}hidden{% endif %}">
+  <details id="metadata-panel" class="meta-card md:w-1/4 {% if not (wotd or songs or media or fact or audio) %}hidden{% endif %}">
     <summary class="md:hidden cursor-pointer font-medium mb-2">Extras</summary>
     <div>
       <div id="meta-tabs" class="flex justify-center gap-2 border-b border-gray-300 dark:border-gray-600">
         <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="trivia-tab" {% if not (fact or wotd) %}hidden{% endif %}>Trivia</button>
         <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="media-tab" {% if not media %}hidden{% endif %}>Media</button>
         <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="music-tab" {% if not songs %}hidden{% endif %}>Music</button>
+        <button type="button" class="tab-btn px-3 py-2 text-sm font-semibold tracking-wide uppercase rounded-t-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-b-0 border-transparent" data-target="audio-tab" {% if not audio %}hidden{% endif %}>Audio</button>
       </div>
       <div id="trivia-tab" class="tab-content mt-2 {% if not (fact or wotd) %}hidden{% endif %}">
         {% if fact %}
@@ -47,6 +48,18 @@
         <ul class="text-xs text-gray-600 dark:text-gray-300 list-disc list-inside pl-4 mt-1">
           {% for s in songs %}
           <li>{{ s.track }} - {{ s.artist }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div id="audio-tab" class="tab-content mt-2 {% if not audio %}hidden{% endif %}">
+        <ul class="text-xs text-gray-600 dark:text-gray-300 list-disc list-inside pl-4 mt-1">
+          {% for a in audio %}
+          <li>
+            {% if a.series %}{{ a.series }} - {% endif %}{{ a.title }}
+            {% if a.author %} — {{ a.author }}{% endif %}
+            {% if a.narrator %} (Narrator: {{ a.narrator }}){% endif %}
+            {% if a.publisher %} [{{ a.publisher }}]{% endif %}
+          </li>
           {% endfor %}
         </ul>
       </div>

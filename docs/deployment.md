@@ -5,7 +5,7 @@
 ## Security
 
 - Set `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` before exposing the app to the internet. Without these variables, anyone can access your journal.
-- Provide a valid contact email in `NOMINATIM_USER_AGENT` to comply with the Nominatim usage policy; requests without contact info may be throttled or rejected.
+- Configure `LOCATIONIQ_API_KEY` for reverse geocoding. Legacy `NOMINATIM_USER_AGENT` remains for older clients but is no longer used by the server.
 - The `/api/settings` endpoint returns server configuration details for convenience during development. Restrict it to trusted networks or run the app behind a VPN or reverse proxy to avoid leaking secrets.
 - Outbound requests include a 10-second timeout and prompt categories are sanitized before saving or rendering, limiting the impact of malicious or unexpected input.
 

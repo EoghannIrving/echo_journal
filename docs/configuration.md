@@ -20,7 +20,11 @@ On startup the application looks for a `settings.yaml` file in `<DATA_DIR>/.sett
 | `JELLYFIN_USER_ID` | Jellyfin user ID. | |
 | `JELLYFIN_PAGE_SIZE` | Pagination size for Jellyfin API. | Default `200`. |
 | `JELLYFIN_PLAY_THRESHOLD` | Percent threshold for "played". | Default `90`. |
-| `NOMINATIM_USER_AGENT` | Identifies your app when calling the Nominatim reverse geocoding API. | Include contact info per the usage policy. |
+| `NOMINATIM_USER_AGENT` | Legacy user agent for Nominatim requests. | Still used by older clients; safe to leave default. |
+| `LOCATIONIQ_API_KEY` | Enables reverse geocoding via LocationIQ. | Required for `/api/reverse_geocode`. |
+| `GEO_CACHE_PATH` | Disk path of the geocode cache file. | Default `<DATA_DIR>/.cache/reverse_geocode.json`. |
+| `GEO_CACHE_TTL_SECONDS` | Cache entry expiration in seconds. | Default `86400` (24 hours). |
+| `GEO_CACHE_MAX_ENTRIES` | Maximum number of cached entries. | Default `1000`. |
 | `INTEGRATION_LOCATION` | Include geolocation data in entry frontmatter. | Default `true`. |
 | `INTEGRATION_WEATHER` | Include current weather in entry frontmatter. | Default `true`. |
 | `LOG_LEVEL` | Logging verbosity. | Default `DEBUG`. |
@@ -34,5 +38,10 @@ On startup the application looks for a `settings.yaml` file in `<DATA_DIR>/.sett
 | `BASIC_AUTH_USERNAME` | Username for optional HTTP Basic authentication. | |
 | `BASIC_AUTH_PASSWORD` | Password for optional HTTP Basic authentication. | |
 | `ECHO_JOURNAL_ENV_PATH` | Path to the .env file read by helper utilities. | Default `<APP_DIR>/../.env`. |
+| `AUDIOBOOKSHELF_URL` | Base URL to AudioBookShelf server. | Example `http://abs:13378`. |
+| `AUDIOBOOKSHELF_API_TOKEN` | API token for AudioBookShelf. | Used as `Authorization: Bearer <token>`. |
+| `INTEGRATION_AUDIOBOOKSHELF` | Enable AudioBookShelf metadata sync. | Defaults to `true`. |
+| `AUDIOBOOKSHELF_POLL_ENABLED` | Enable background polling for playback. | Defaults to `false`. |
+| `AUDIOBOOKSHELF_POLL_INTERVAL_SECONDS` | Poll interval for playback sync. | Defaults to `600`. |
 
 Set any of these variables in `settings.yaml` to tailor the app to your setup. Values provided via environment variables can override the defaults, but `settings.yaml` takes precedence. The **Settings** page lists current values and lets you edit them; changes are written to `settings.yaml` and take effect after restarting the server.

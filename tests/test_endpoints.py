@@ -1417,7 +1417,7 @@ def test_thumbnail_proxy_download(test_client, monkeypatch):
 
 
 def test_reverse_geocode_network_error(test_client, monkeypatch):
-    """Network failures should return a 502 error instead of crashing."""
+    """Network failures should return fallback coordinates when reverse API is unreachable."""
 
     class BadClient:
         """Minimal async client that always raises a connection error."""
@@ -1436,20 +1436,26 @@ def test_reverse_geocode_network_error(test_client, monkeypatch):
 
     monkeypatch.setattr(main.httpx, "AsyncClient", BadClient)
 
-    resp = test_client.get("/api/reverse_geocode", params={"lat": 1.0, "lon": 2.0})
+    resp = test_client.get(
+        "/api/reverse_geocode", params={"lat": 1.2345, "lon": 2.3456}
+    )
 
-    assert resp.status_code == 502
-    assert resp.json()["detail"] == "Reverse geocoding failed"
+    assert resp.status_code == 200
+    payload = resp.json()
+    assert payload["display_name"] == "1.2345, 2.3456"
+    assert payload["city"] is None
+    assert payload["region"] is None
+    assert payload["country"] is None
 
 
-def test_reverse_geocode_user_agent(test_client, monkeypatch):
-    """Configured User-Agent header is sent to Nominatim."""
+def test_reverse_geocode_locationiq_params(test_client, monkeypatch):
+    """LocationIQ requests include API key and coordinate parameters."""
 
     class FakeClient:
-        """Async HTTP client capturing request headers."""
+        """Async client stub that records LocationIQ request parameters."""
 
         def __init__(self):
-            self.request_headers = None
+            self.request_params = None
 
         async def __aenter__(self):
             return self
@@ -1458,37 +1464,34 @@ def test_reverse_geocode_user_agent(test_client, monkeypatch):
             return False
 
         async def get(self, url, params=None, headers=None, timeout=None):
-            """Return a fake response while capturing request headers."""
-            self.request_headers = headers
+            self.request_params = params or {}
 
             class Resp:  # pylint: disable=too-few-public-methods
-                """Simple fake HTTP response."""
+                """Simple response that mimics the LocationIQ payload."""
 
                 status_code = 200
                 headers = {}
 
                 def json(self):
-                    """Return dummy JSON data."""
                     return {
                         "display_name": "X",
                         "address": {"city": "C", "state": "S", "country": "CO"},
                     }
 
                 def raise_for_status(self):
-                    """No-op status check."""
                     return None
 
             return Resp()
 
     client = FakeClient()
     monkeypatch.setattr(main.httpx, "AsyncClient", lambda: client)
-    monkeypatch.setattr(main, "NOMINATIM_USER_AGENT", "TestAgent/1.0")
-    monkeypatch.setattr(main.config, "NOMINATIM_USER_AGENT", "TestAgent/1.0")
+    monkeypatch.setattr(main.config, "LOCATIONIQ_API_KEY", "abc123")
 
     resp = test_client.get("/api/reverse_geocode", params={"lat": 1.0, "lon": 2.0})
-
     assert resp.status_code == 200
-    assert client.request_headers == {"User-Agent": "TestAgent/1.0"}
+    assert client.request_params["key"] == "abc123"
+    assert float(client.request_params["lat"]) == 1.0
+    assert float(client.request_params["lon"]) == 2.0
 
 
 def test_new_prompt_endpoint(test_client, monkeypatch):

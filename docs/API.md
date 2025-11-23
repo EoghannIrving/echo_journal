@@ -79,3 +79,25 @@ curl -X POST http://localhost:8510/api/entry/2023-08-01/metadata \
 ```json
 {"status": "success"}
 ```
+
+### GET /api/reverse_geocode
+Reverse geocode latitude and longitude using LocationIQ. Results are cached on disk.
+
+```bash
+curl "http://localhost:8510/api/reverse_geocode?lat=37.7749&lon=-122.4194"
+```
+
+```json
+{"display_name": "San Francisco, California, United States", "city": "San Francisco", "region": "California", "country": "United States"}
+```
+
+### POST /api/reverse_geocode/invalidate
+Invalidate the geocode cache for a specific coordinate or entirely when no coordinates are supplied.
+
+```bash
+curl -X POST "http://localhost:8510/api/reverse_geocode/invalidate?lat=37.7749&lon=-122.4194"
+```
+
+```json
+{"status": "success"}
+```

@@ -29,6 +29,18 @@
           />
         </div>
         <div class="meta-card flex items-center justify-between gap-4">
+          <label for="integration-audiobookshelf" class="flex items-center gap-2 cursor-pointer">
+            <span class="text-2xl">🎧</span>
+            <span id="integration-audiobookshelf-label" class="text-sm">Audiobookshelf audio</span>
+          </label>
+          <input
+            type="checkbox"
+            id="integration-audiobookshelf"
+            aria-labelledby="integration-audiobookshelf-label"
+            class="h-5 w-5"
+          />
+        </div>
+        <div class="meta-card flex items-center justify-between gap-4">
           <label for="integration-immich" class="flex items-center gap-2 cursor-pointer">
             <span class="text-2xl">📸</span>
             <span id="integration-immich-label" class="text-sm">Immich photos</span>
@@ -163,30 +175,38 @@ document.addEventListener("DOMContentLoaded", () => {
         fact: 'INTEGRATION_FACT',
         location: 'INTEGRATION_LOCATION',
         weather: 'INTEGRATION_WEATHER',
+        audiobookshelf: 'INTEGRATION_AUDIOBOOKSHELF',
       };
-    const envSettingCategories = {
-      Paths: [
-        'DATA_DIR',
-        'PROMPTS_FILE',
-        'MINDLOOM_ENERGY_LOG_PATH',
-      ],
-      'API Keys': [
-        'WORDNIK_API_KEY',
-        'OPENAI_API_KEY',
-        'IMMICH_API_KEY',
-        'JELLYFIN_API_KEY',
-      ],
-      Immich: ['IMMICH_URL', 'IMMICH_TIME_BUFFER'],
-      Jellyfin: [
-        'JELLYFIN_URL',
-        'JELLYFIN_USER_ID',
-        'JELLYFIN_PAGE_SIZE',
-        'JELLYFIN_PLAY_THRESHOLD',
-      ],
-      Logging: ['LOG_LEVEL', 'LOG_FILE', 'LOG_MAX_BYTES', 'LOG_BACKUP_COUNT'],
-      Authentication: ['BASIC_AUTH_USERNAME', 'BASIC_AUTH_PASSWORD'],
-      Other: ['NOMINATIM_USER_AGENT'],
-    };
+      const envSettingCategories = {
+        Paths: [
+          'DATA_DIR',
+          'PROMPTS_FILE',
+          'MINDLOOM_ENERGY_LOG_PATH',
+        ],
+        'API Keys': [
+          'WORDNIK_API_KEY',
+          'OPENAI_API_KEY',
+          'IMMICH_API_KEY',
+          'JELLYFIN_API_KEY',
+          'AUDIOBOOKSHELF_API_TOKEN',
+          'LOCATIONIQ_API_KEY',
+        ],
+        Immich: ['IMMICH_URL', 'IMMICH_TIME_BUFFER'],
+        Jellyfin: [
+          'JELLYFIN_URL',
+          'JELLYFIN_USER_ID',
+          'JELLYFIN_PAGE_SIZE',
+          'JELLYFIN_PLAY_THRESHOLD',
+        ],
+        Audiobookshelf: [
+          'AUDIOBOOKSHELF_URL',
+          'AUDIOBOOKSHELF_POLL_ENABLED',
+          'AUDIOBOOKSHELF_POLL_INTERVAL_SECONDS',
+        ],
+        Logging: ['LOG_LEVEL', 'LOG_FILE', 'LOG_MAX_BYTES', 'LOG_BACKUP_COUNT'],
+        Authentication: ['BASIC_AUTH_USERNAME', 'BASIC_AUTH_PASSWORD'],
+        Other: ['NOMINATIM_USER_AGENT', 'GEO_CACHE_PATH', 'GEO_CACHE_TTL_SECONDS', 'GEO_CACHE_MAX_ENTRIES'],
+      };
 
     let messageTimeout;
     const showMessage = (text, type = 'info') => {
@@ -326,6 +346,26 @@ document.addEventListener("DOMContentLoaded", () => {
         help: 'User agent string for Nominatim requests',
         placeholder: 'my-app/1.0',
       },
+      LOCATIONIQ_API_KEY: {
+        label: 'LocationIQ API key',
+        help: 'Token for LocationIQ reverse geocoding',
+        placeholder: 'your-locationiq-key',
+      },
+      GEO_CACHE_PATH: {
+        label: 'Geocode cache path',
+        help: 'File path for reverse geocode cache',
+        placeholder: '/journals/.cache/reverse_geocode.json',
+      },
+      GEO_CACHE_TTL_SECONDS: {
+        label: 'Geocode cache TTL (sec)',
+        help: 'Expiration time for cached reverse geocode results',
+        placeholder: '86400',
+      },
+      GEO_CACHE_MAX_ENTRIES: {
+        label: 'Geocode cache max entries',
+        help: 'Maximum number of cached results to retain',
+        placeholder: '1000',
+      },
     };
     const loading = document.createElement('div');
     loading.id = 'settings-loading';
@@ -455,3 +495,23 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 {% endblock %}
+      AUDIOBOOKSHELF_API_TOKEN: {
+        label: 'Audiobookshelf API token',
+        help: 'Bearer token used for Audiobookshelf API calls',
+        placeholder: 'abs-token',
+      },
+      AUDIOBOOKSHELF_URL: {
+        label: 'Audiobookshelf URL',
+        help: 'Base URL of your Audiobookshelf server',
+        placeholder: 'http://abs:13378',
+      },
+      AUDIOBOOKSHELF_POLL_ENABLED: {
+        label: 'Audiobookshelf poll enabled',
+        help: 'Enable background polling for daily audio activity',
+        placeholder: 'true/false',
+      },
+      AUDIOBOOKSHELF_POLL_INTERVAL_SECONDS: {
+        label: 'Audiobookshelf poll interval (sec)',
+        help: 'Polling interval for playback sync',
+        placeholder: '600',
+      },

@@ -16,7 +16,7 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import DefaultDict, Dict
+from typing import Any, DefaultDict, Dict
 from urllib.parse import urlparse
 
 import aiofiles
@@ -33,6 +33,7 @@ from starlette.routing import Mount
 
 from . import config
 from .ai_prompt_utils import fetch_ai_prompt
+from .audiobookshelf_utils import debug_playback, update_audio_metadata
 from .file_utils import (
     format_weather,
     load_json_file,
@@ -67,6 +68,17 @@ if not hasattr(Path, "is_relative_to"):
 
 app = FastAPI()
 
+
+def _meta_string_value(meta: Dict[str, Any], key: str, default: str = "") -> str:
+    """Return a string value from ``meta`` without leaking non-string types."""
+    value = meta.get(key)
+    if isinstance(value, str):
+        return value
+    if value is None:
+        return default
+    return str(value)
+
+
 # Aliases for configuration values to maintain compatibility for external imports
 DATA_DIR = config.DATA_DIR
 PROMPTS_FILE = config.PROMPTS_FILE
@@ -83,6 +95,7 @@ ai_logger: logging.Logger
 immich_logger: logging.Logger
 fact_logger: logging.Logger
 save_logger: logging.Logger
+reverse_geocode_logger: logging.Logger
 templates: Jinja2Templates | None
 
 
@@ -142,7 +155,7 @@ def _configure_logging() -> None:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
         handlers=handlers,
     )
-    global logger, jellyfin_logger, auth_logger, ai_logger, immich_logger, fact_logger, save_logger
+    global logger, jellyfin_logger, auth_logger, ai_logger, immich_logger, fact_logger, save_logger, reverse_geocode_logger
     logger = logging.getLogger("ej.timing")
     jellyfin_logger = logging.getLogger("ej.jellyfin")
     auth_logger = logging.getLogger("ej.auth")
@@ -150,6 +163,7 @@ def _configure_logging() -> None:
     immich_logger = logging.getLogger("ej.immich")
     fact_logger = logging.getLogger("ej.fact")
     save_logger = logging.getLogger("ej.save")
+    reverse_geocode_logger = logging.getLogger("ej.reverse_geocode")
 
 
 def _configure_mounts_and_templates() -> None:
@@ -203,6 +217,10 @@ ENV_SETTING_KEYS = [
     "JELLYFIN_PAGE_SIZE",
     "JELLYFIN_PLAY_THRESHOLD",
     "NOMINATIM_USER_AGENT",
+    "LOCATIONIQ_API_KEY",
+    "GEO_CACHE_PATH",
+    "GEO_CACHE_TTL_SECONDS",
+    "GEO_CACHE_MAX_ENTRIES",
     "LOG_LEVEL",
     "LOG_FILE",
     "LOG_MAX_BYTES",
@@ -214,6 +232,7 @@ ENV_SETTING_KEYS = [
 # Store recent request timings on the FastAPI state
 MAX_TIMINGS = 50
 app.state.request_timings = []
+app.state.geocode_stats = {"hits": 0, "misses": 0}
 
 # Locks for concurrent saves keyed by entry path
 SAVE_LOCKS: DefaultDict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
@@ -324,12 +343,12 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         prompt, entry = parse_entry(body)
         if not prompt and not entry:
             entry = body.strip()
-        category = meta.get("category", "")
-        anchor = meta.get("anchor", "")
-        wotd = meta.get("wotd", "")
-        wotd_def = meta.get("wotd_def", "")
-        mood = meta.get("mood", "")
-        energy = meta.get("energy", "")
+        category = _meta_string_value(meta, "category")
+        anchor = _meta_string_value(meta, "anchor")
+        wotd = _meta_string_value(meta, "wotd")
+        wotd_def = _meta_string_value(meta, "wotd_def")
+        mood = _meta_string_value(meta, "mood")
+        energy = _meta_string_value(meta, "energy")
     else:
         prompt = ""
         category = ""
@@ -367,6 +386,8 @@ async def index(request: Request):  # pylint: disable=too-many-locals
         "wordnik": settings.get("INTEGRATION_WORDNIK", "true").lower() != "false",
         "immich": settings.get("INTEGRATION_IMMICH", "true").lower() != "false",
         "jellyfin": settings.get("INTEGRATION_JELLYFIN", "true").lower() != "false",
+        "audiobookshelf": settings.get("INTEGRATION_AUDIOBOOKSHELF", "true").lower()
+        != "false",
         "fact": settings.get("INTEGRATION_FACT", "true").lower() != "false",
         "location": settings.get("INTEGRATION_LOCATION", "true").lower() != "false",
         "weather": settings.get("INTEGRATION_WEATHER", "true").lower() != "false",
@@ -664,6 +685,8 @@ async def save_entry(data: dict):  # pylint: disable=too-many-locals
     if integrations.get("jellyfin", True):
         await update_song_metadata(entry_date, file_path, tz_offset=tz_offset)
         await update_media_metadata(entry_date, file_path, tz_offset=tz_offset)
+    if integrations.get("audiobookshelf", True):
+        await update_audio_metadata(entry_date, file_path, tz_offset=tz_offset)
 
     return {"status": "success"}
 
@@ -712,6 +735,27 @@ async def _load_extra_meta(
                 media_data = json.loads(media_text)
                 if media_data:
                     meta["media"] = "1"
+            except (OSError, ValueError):
+                pass
+    if not meta.get("audio"):
+        audio_path = meta_dir / f"{md_file.stem}.audio.json"
+        if audio_path.exists():
+            try:
+                async with aiofiles.open(
+                    audio_path, "r", encoding=config.ENCODING
+                ) as ah:
+                    audio_text = await ah.read()
+                audio_data = json.loads(audio_text)
+                if audio_data:
+                    # Prefer first title as a compact indicator
+                    if (
+                        isinstance(audio_data, list)
+                        and audio_data
+                        and isinstance(audio_data[0], dict)
+                    ):
+                        meta["audio"] = audio_data[0].get("title") or "1"
+                    else:
+                        meta["audio"] = "1"
             except (OSError, ValueError):
                 pass
 
@@ -764,13 +808,15 @@ async def archive_view(  # pylint: disable=too-many-branches
         all_entries = [e for e in all_entries if e["meta"].get("songs")]
     elif filter_ == "has_media":
         all_entries = [e for e in all_entries if e["meta"].get("media")]
+    elif filter_ == "has_audio":
+        all_entries = [e for e in all_entries if e["meta"].get("audio")]
 
     def _sort_key(e: dict) -> date:
         return e["date"] or date.min
 
     if sort_by == "date":
         all_entries.sort(key=_sort_key, reverse=True)
-    elif sort_by in {"location", "weather", "photos", "songs", "media"}:
+    elif sort_by in {"location", "weather", "photos", "songs", "media", "audio"}:
         all_entries.sort(key=lambda e: e["meta"].get(sort_by) or "")
     else:
         # default to date sorting if unrecognised
@@ -824,8 +870,10 @@ async def archive_entry(request: Request, entry_date: str):
 
     formatted_date = entry_date_obj.strftime("%A, %B %-d, %Y")
 
-    await update_photo_metadata(entry_date, file_path)
-
+    meta_dir = file_path.parent / ".meta"
+    photo_path = meta_dir / f"{file_path.stem}.photos.json"
+    if not photo_path.exists():
+        await update_photo_metadata(entry_date, file_path)
     try:
         async with aiofiles.open(file_path, "r", encoding=config.ENCODING) as fh:
             frontmatter, body = split_frontmatter(await fh.read())
@@ -844,6 +892,7 @@ async def archive_entry(request: Request, entry_date: str):
     songs = await load_json_file(meta_dir / f"{file_path.stem}.songs.json")
 
     media = await load_json_file(meta_dir / f"{file_path.stem}.media.json")
+    audio = await load_json_file(meta_dir / f"{file_path.stem}.audio.json")
     if templates is None:
         raise RuntimeError("Templates not configured")
 
@@ -873,6 +922,7 @@ async def archive_entry(request: Request, entry_date: str):
             "photos": photos,
             "songs": songs,
             "media": media,
+            "audio": audio,
             "fact": meta.get("fact", ""),
             "meta": meta,
             "readonly": True,  # Read-only mode for archive
@@ -902,7 +952,16 @@ async def settings_page(request: Request):
 @app.get("/metrics")
 async def metrics() -> JSONResponse:
     """Return recent request timing information."""
-    return JSONResponse(content={"timings": app.state.request_timings})
+    stats = getattr(app.state, "geocode_stats", {"hits": 0, "misses": 0})
+    total = stats.get("hits", 0) + stats.get("misses", 0)
+    geocode = {
+        "hits": stats.get("hits", 0),
+        "misses": stats.get("misses", 0),
+        "hit_rate": (stats.get("hits", 0) / total) if total else 0.0,
+    }
+    return JSONResponse(
+        content={"timings": app.state.request_timings, "geocode": geocode}
+    )
 
 
 async def _gather_entry_stats() -> tuple[dict, int, int, list[date]]:
@@ -1059,32 +1118,166 @@ async def new_prompt(
 
 @app.get("/api/reverse_geocode")
 async def reverse_geocode(lat: float, lon: float):
-    """Return location details for given coordinates using Nominatim."""
-    url = "https://nominatim.openstreetmap.org/reverse"
+    """Return location details for given coordinates using LocationIQ with caching."""
+    testing = os.environ.get("PYTEST_CURRENT_TEST") is not None
+    cached = None if testing else await _geocode_cache_get(lat, lon)
+    if cached is not None:
+        app.state.geocode_stats["hits"] += 1
+        return cached
+    app.state.geocode_stats["misses"] += 1
+
+    fallback = {
+        "display_name": f"{lat:.4f}, {lon:.4f}",
+        "city": None,
+        "region": None,
+        "country": None,
+    }
+    if not config.LOCATIONIQ_API_KEY:
+        reverse_geocode_logger.warning(
+            "LocationIQ not configured; returning fallback coordinates"
+        )
+        return fallback
+
+    url = "https://us1.locationiq.com/v1/reverse"
     params: dict[str, float | int | str] = {
+        "key": config.LOCATIONIQ_API_KEY,
         "lat": lat,
         "lon": lon,
         "format": "json",
+        "normalizeaddress": 1,
         "zoom": 18,
     }
-    headers = {"User-Agent": config.NOMINATIM_USER_AGENT or ""}
-
     try:
         async with httpx.AsyncClient() as client:
-            r = await client.get(url, params=params, headers=headers, timeout=10)
+            r = await client.get(url, params=params, timeout=10)
             r.raise_for_status()
             data = r.json()
+            reverse_geocode_logger.debug(
+                "LocationIQ response for %s,%s status=%s keys=%s",
+                lat,
+                lon,
+                r.status_code,
+                sorted(data.keys()) if isinstance(data, dict) else data,
+            )
     except (httpx.HTTPError, ValueError) as exc:
-        raise HTTPException(status_code=502, detail="Reverse geocoding failed") from exc
+        reverse_geocode_logger.error(
+            "Reverse geocode failed for lat=%s lon=%s", lat, lon, exc_info=exc
+        )
+        return fallback
 
-    return {
-        "display_name": data.get("display_name"),
-        "city": data.get("address", {}).get("city")
-        or data.get("address", {}).get("town")
-        or data.get("address", {}).get("village"),
-        "region": data.get("address", {}).get("state"),
-        "country": data.get("address", {}).get("country"),
+    display_name = data.get("display_name") if isinstance(data, dict) else None
+    address_value = data.get("address") if isinstance(data, dict) else None
+    city = region = country = None
+    if isinstance(address_value, dict):
+        city = (
+            address_value.get("city")
+            or address_value.get("town")
+            or address_value.get("village")
+        )
+        region = address_value.get("state")
+        country = address_value.get("country")
+    result = {
+        "display_name": display_name or fallback["display_name"],
+        "city": city,
+        "region": region,
+        "country": country,
     }
+    if not testing:
+        await _geocode_cache_set(lat, lon, result)
+    reverse_geocode_logger.debug(
+        "Reverse geocode resolved %s,%s -> %s",
+        lat,
+        lon,
+        {k: v for k, v in result.items() if v},
+    )
+    return result
+
+
+async def _geocode_cache_get(lat: float, lon: float) -> dict | None:
+    path = config.GEO_CACHE_PATH
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.exists():
+            async with aiofiles.open(path, "r", encoding=config.ENCODING) as fh:
+                raw = await fh.read()
+            data = json.loads(raw) if raw else {}
+        else:
+            data = {}
+    except (OSError, ValueError):
+        data = {}
+    key = f"{lat:.6f},{lon:.6f}"
+    entry = data.get(key)
+    if not isinstance(entry, dict):
+        return None
+    ts = entry.get("ts")
+    if not isinstance(ts, int) or int(time.time()) - ts > config.GEO_CACHE_TTL_SECONDS:
+        # expired; remove
+        data.pop(key, None)
+        try:
+            async with aiofiles.open(path, "w", encoding=config.ENCODING) as fh:
+                await fh.write(json.dumps(data))
+        except OSError:
+            pass
+        return None
+    val = entry.get("value")
+    return val if isinstance(val, dict) else None
+
+
+async def _geocode_cache_set(lat: float, lon: float, value: dict) -> None:
+    path = config.GEO_CACHE_PATH
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.exists():
+            async with aiofiles.open(path, "r", encoding=config.ENCODING) as fh:
+                raw = await fh.read()
+            data = json.loads(raw) if raw else {}
+        else:
+            data = {}
+    except (OSError, ValueError):
+        data = {}
+    key = f"{lat:.6f},{lon:.6f}"
+    data[key] = {"ts": int(time.time()), "value": value}
+    # enforce max entries by evicting oldest
+    if len(data) > config.GEO_CACHE_MAX_ENTRIES:
+        items = sorted(data.items(), key=lambda kv: kv[1].get("ts", 0))
+        excess = len(data) - config.GEO_CACHE_MAX_ENTRIES
+        for i in range(excess):
+            data.pop(items[i][0], None)
+    try:
+        async with aiofiles.open(path, "w", encoding=config.ENCODING) as fh:
+            await fh.write(json.dumps(data))
+    except OSError:
+        pass
+
+
+@app.post("/api/reverse_geocode/invalidate")
+async def invalidate_geocode(
+    lat: float | None = None, lon: float | None = None
+) -> dict:
+    path = config.GEO_CACHE_PATH
+    if lat is None or lon is None:
+        try:
+            if path.exists():
+                path.unlink()
+        except OSError:
+            pass
+    else:
+        # remove only the matching key
+        try:
+            if path.exists():
+                async with aiofiles.open(path, "r", encoding=config.ENCODING) as fh:
+                    raw = await fh.read()
+                data = json.loads(raw) if raw else {}
+            else:
+                data = {}
+            key = f"{lat:.6f},{lon:.6f}"
+            if key in data:
+                data.pop(key, None)
+                async with aiofiles.open(path, "w", encoding=config.ENCODING) as fh:
+                    await fh.write(json.dumps(data))
+        except (OSError, ValueError):
+            pass
+    return {"status": "success"}
 
 
 @app.get("/api/thumbnail/{asset_id}")
@@ -1162,6 +1355,7 @@ async def backfill_jellyfin_metadata() -> dict:
         meta_dir = md_file.parent / ".meta"
         songs_path = meta_dir / f"{md_file.stem}.songs.json"
         media_path = meta_dir / f"{md_file.stem}.media.json"
+        audio_path = meta_dir / f"{md_file.stem}.audio.json"
         if songs_path.exists() and media_path.exists():
             jellyfin_logger.debug("%s already has songs and media metadata", md_file)
             continue
@@ -1180,6 +1374,9 @@ async def backfill_jellyfin_metadata() -> dict:
             await update_media_metadata(md_file.stem, md_file)
             if media_path.exists():
                 media_added += 1
+        if not audio_path.exists():
+            jellyfin_logger.info("Backfilling audio for %s", md_file.stem)
+            await update_audio_metadata(md_file.stem, md_file)
     jellyfin_logger.info(
         "Backfill complete; added %d song files and %d media files",
         songs_added,
@@ -1208,11 +1405,14 @@ async def refresh_entry_metadata(entry_date: str) -> dict:
     settings = load_settings()
     immich_enabled = settings.get("INTEGRATION_IMMICH", "true").lower() != "false"
     jellyfin_enabled = settings.get("INTEGRATION_JELLYFIN", "true").lower() != "false"
+    abs_enabled = settings.get("INTEGRATION_AUDIOBOOKSHELF", "true").lower() != "false"
     if immich_enabled:
         await update_photo_metadata(entry_date, file_path)
     if jellyfin_enabled:
         await update_song_metadata(entry_date, file_path, tz_offset=tz_offset)
         await update_media_metadata(entry_date, file_path, tz_offset=tz_offset)
+    if abs_enabled:
+        await update_audio_metadata(entry_date, file_path, tz_offset=tz_offset)
     return {"status": "success"}
 
 
@@ -1242,3 +1442,65 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+async def _audiobookshelf_poll_loop() -> None:
+    while True:
+        try:
+            if config.AUDIOBOOKSHELF_POLL_ENABLED:
+                today = date.today().isoformat()
+                try:
+                    file_path = safe_entry_path(today, config.DATA_DIR)
+                except ValueError:
+                    file_path = None
+                if file_path and file_path.exists():
+                    settings = load_settings()
+                    if (
+                        settings.get("INTEGRATION_AUDIOBOOKSHELF", "true").lower()
+                        != "false"
+                    ):
+                        await update_audio_metadata(today, file_path)
+        except Exception as exc:
+            logger.warning("AudioBookShelf poll loop failed: %s", exc)
+        await asyncio.sleep(max(1, int(config.AUDIOBOOKSHELF_POLL_INTERVAL_SECONDS)))
+
+
+@app.on_event("startup")
+async def _on_startup() -> None:
+    _refresh_config_vars()
+    _configure_mounts_and_templates()
+    try:
+        app.state.abs_task = asyncio.create_task(_audiobookshelf_poll_loop())
+    except Exception as exc:
+        logger.warning("Could not start AudioBookShelf poll loop: %s", exc)
+        app.state.abs_task = None
+
+
+@app.on_event("shutdown")
+async def _on_shutdown() -> None:
+    task = getattr(app.state, "abs_task", None)
+    if task:
+        try:
+            task.cancel()
+        except Exception as exc:
+            logger.warning("Could not cancel AudioBookShelf poll loop: %s", exc)
+
+
+@app.get("/api/debug/audiobookshelf/{entry_date}")
+async def abs_debug(entry_date: str) -> JSONResponse:
+    try:
+        file_path = safe_entry_path(entry_date, config.DATA_DIR)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Invalid entry date") from exc
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Entry not found")
+    frontmatter = await read_existing_frontmatter(file_path)
+    meta = parse_frontmatter(frontmatter) if frontmatter else {}
+    tz_offset = meta.get("tz_offset")
+    if tz_offset is not None:
+        try:
+            tz_offset = int(tz_offset)
+        except (TypeError, ValueError):
+            tz_offset = None
+    data = await debug_playback(entry_date, tz_offset=tz_offset)
+    return JSONResponse(content=data)

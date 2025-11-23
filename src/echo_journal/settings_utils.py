@@ -4,7 +4,10 @@ import importlib
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict
+from typing import (
+    Any,
+    Dict,
+)
 
 import yaml
 
@@ -119,6 +122,7 @@ def save_settings(values: Dict[str, Any], path: Path | None = None) -> Dict[str,
                 importlib.reload(config_module)
                 try:
                     from echo_journal import (
+                        audiobookshelf_utils,
                         immich_utils,
                         jellyfin_utils,
                     )
@@ -137,6 +141,7 @@ def save_settings(values: Dict[str, Any], path: Path | None = None) -> Dict[str,
                         wordnik_utils,
                         immich_utils,
                         jellyfin_utils,
+                        audiobookshelf_utils,
                     ):
                         if hasattr(mod, "refresh_config"):
                             mod.refresh_config()
