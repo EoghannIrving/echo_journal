@@ -1,0 +1,57 @@
+{
+  "app": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "timezone": "UTC",
+    "dataDir": "./data",
+    "staticDir": "./static",
+    "promptsFile": "./prompts.yaml",
+    "templatesDir": "./templates"
+  },
+  "logging": {
+    "level": "INFO",
+    "maxBytes": 1048576,
+    "backupCount": 3,
+    "path": "./build/logs/echo_journal.log"
+  },
+  "integrations": {
+    "wordnik": {
+      "apiKey": "",
+      "baseUrl": "https://api.wordnik.com/v4"
+    },
+    "immich": {
+      "url": "",
+      "apiKey": "",
+      "timeBuffer": 15
+    },
+    "jellyfin": {
+      "url": "",
+      "apiKey": "",
+      "userId": ""
+    },
+    "location": {
+      "nominatimUserAgent": "EchoJournal/1.0 (support@example.com)",
+      "apiKey": ""
+    },
+    "audiobookshelf": {
+      "url": "",
+      "apiToken": "",
+      "pollEnabled": false,
+      "pollIntervalSeconds": 600
+    }
+  },
+  "security": {
+    "basicAuth": {
+      "username": "",
+      "password": ""
+    },
+    "tls": {
+      "cert": "",
+      "key": ""
+    }
+  },
+  "docker": {
+    "composeFile": "docker-compose.yml",
+    "dockerfile": "docker/Dockerfile"
+  }
+}

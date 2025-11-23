@@ -1,15 +1,19 @@
 services:
   echo_journal:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
 #    image: eoghannirving/echo_journal:latest
 #    container_name: echo-journal
     ports:
       - ${HOST_PORT}:8000
     volumes:
-      - /home/eoghann/docker/echo_journal/static:/app/static
-      - /home/eoghann/docker/echo_journal/prompts.yaml:/app/prompts.yaml
+      - ./static:/app/static
+      - ./prompts.yaml:/app/prompts.yaml
       - ${DATA_DIR}:/journals
       - ${MINDLOOM_DATA_DIR}:/mindloom/data:ro
+    env_file:
+      - .env
     environment:
       - TZ=${TZ:-UTC}
       - ECHO_JOURNAL_HOST=0.0.0.0

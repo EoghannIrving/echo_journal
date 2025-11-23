@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  echo_journal:
+    # The service is built from the Dockerfile stored under docker/
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: echojournal/echo_journal:latest
+    ports:
+      # Host port is configurable through .env, defaults to 8000 inside the container.
+      - "${HOST_PORT:-8000}:8000"
+    env_file:
+      - .env
+    volumes:
+      # Mount the repo static assets and prompts using relative paths.
+      - ./static:/app/static:ro
+      - ./prompts.yaml:/app/prompts.yaml:ro
+      # Allow local data and mindloom paths to be injected via environment vars.
+      - ${DATA_DIR}:/journals
+      - ${MINDLOOM_DATA_DIR}:/mindloom/data:ro
+    environment:
+      - TZ=${TZ:-UTC}
+      - ECHO_JOURNAL_HOST=0.0.0.0
+      - ECHO_JOURNAL_PORT=8000
+      - MINDLOOM_ENERGY_LOG_PATH=${MINDLOOM_ENERGY_LOG_PATH}
+      # Uncomment the following to enable HTTPS inside the container.
+      # - ECHO_JOURNAL_SSL_KEYFILE=${TLS_KEY_PATH}
+      # - ECHO_JOURNAL_SSL_CERTFILE=${TLS_CERT_PATH}
+
+networks: {}
